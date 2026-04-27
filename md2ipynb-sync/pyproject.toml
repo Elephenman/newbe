@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "md2ipynb-sync"
+version = "1.0.0"
+description = "基于 Jupytext 的 Obsidian Markdown 与 Jupyter Notebook 双向同步工具"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+dependencies = [
+    "pyyaml>=6.0",
+    "jupytext>=1.16.0",
+    "nbformat>=5.9.0",
+    "watchdog>=3.0.0",
+    "PyQt5>=5.15.0",
+]
+
+[project.scripts]
+md2ipynb = "md2ipynb_sync.main:main"
+
+[tool.setuptools.packages.find]
+include = ["md2ipynb_sync*"]

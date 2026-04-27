@@ -4,13 +4,13 @@
 
 **Bioinformatics Toolbox · Open Source · Ready to Use**
 
-进化树处理 · R绘图模板 · 论文深度解读 · 组会汇报流水线
+进化树处理 · R绘图模板 · 论文深度解读 · 组会汇报流水线 · Obsidian↔Jupyter同步
 
 [![GitHub](https://img.shields.io/badge/GitHub-Elephenman/newbe-blue?logo=github)](https://github.com/Elephenman/newbe)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.8+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![R](https://img.shields.io/badge/R-4.0+-276DC3?logo=r&logoColor=white)](https://cran.r-project.org/)
-[![Files](https://img.shields.io/badge/Files-200+-orange)](https://github.com/Elephenman/newbe)
+[![Files](https://img.shields.io/badge/Files-210+-orange)](https://github.com/Elephenman/newbe)
 
 </div>
 
@@ -70,6 +70,19 @@
 <sub>7 AI Skills · 论文→PPT→答辩</sub>
 <br>
 <sub>架构→逐字稿→防御话术</sub>
+
+</td>
+<td width="25%" align="center">
+
+<a href="./md2ipynb-sync/">
+<img src="https://img.shields.io/badge/📝-md2ipynb_sync-FF6F00?style=for-the-badge" alt="md2ipynb-sync"/>
+</a>
+<br><br>
+**Obsidian↔Jupyter同步**
+<br>
+<sub>MD ↔ IPYNB 双向实时同步</sub>
+<br>
+<sub>GUI+CLI · watchdog · 冲突解决</sub>
 
 </td>
 </tr>
@@ -203,6 +216,43 @@ paper-deep-read/
 
 ---
 
+## 📝 md2ipynb-sync — Obsidian ↔ Jupyter Notebook Sync
+
+> **Write in Obsidian, Run in JupyterLab — Changes sync automatically**
+
+Based on [Jupytext](https://jupytext.readthedocs.io/), this tool keeps your Obsidian Markdown notes and Jupyter Notebooks in perfect sync.
+
+```mermaid
+graph LR
+    O[Obsidian MD] -->|save| W[Watchdog]
+    J[Jupyter IPYNB] -->|save| W
+    W -->|auto sync| S[Sync Engine]
+    S -->|conflict?| C[Manual Resolve]
+    S -->|no conflict| O
+    S -->|no conflict| J
+    style O fill:#7B1FA2,color:#fff
+    style J fill:#F57C00,color:#fff
+    style S fill:#4CAF50,color:#fff
+```
+
+| Feature | Description |
+|---------|-------------|
+| 🔄 Bidirectional sync | MD ↔ IPYNB changes auto-sync on save |
+| 👁 Real-time monitor | Watchdog detects file changes instantly |
+| 🖱 GUI + CLI modes | Full GUI for daily use, CLI for automation |
+| ⚠️ Conflict resolution | Visual diff when both sides changed |
+| 📋 Batch pairing | Scan directory → one-click pair all MD files |
+| 🔗 Jupytext compatible | Created notebooks work natively in JupyterLab |
+
+```bash
+pip install -e .            # Install
+python -m md2ipynb_sync.main # Launch GUI
+```
+
+📚 [Full Documentation →](./md2ipynb-sync/README.md)
+
+---
+
 ## 🚀 Quick Start
 
 ```bash
@@ -221,7 +271,7 @@ Each sub-directory is self-contained — just navigate and start using.
 
 ## 📌 Recent Updates
 
-> **2026-04-27** — Initial release: phylo-tools · r-plot-templates (156 R scripts) · paper-deep-read v3 · academic-group-meeting-pipeline
+> **2026-04-27** — Initial release: phylo-tools · r-plot-templates · paper-deep-read v3 · academic-group-meeting-pipeline · md2ipynb-sync
 
 ---
 
