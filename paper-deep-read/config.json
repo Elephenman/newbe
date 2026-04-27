@@ -1,0 +1,110 @@
+{
+  "version": "3.0",
+  "defaults": {
+    "read_depth": "reproduction",
+    "audience": "beginner",
+    "language": "zh-CN",
+    "image_format": "png",
+    "image_dpi": 300,
+    "terminology_style": "chinese-primary-english-parentheses"
+  },
+  "vault": {
+    "root": "",
+    "auto_create": true,
+    "dataview_enabled": true,
+    "structure": {
+      "inbox": "00-Inbox",
+      "domains": {
+        "bioinformatics": "01-Bioinformatics",
+        "biology": "01-Biology",
+        "ai-ml": "02-AI-ML",
+        "structural-biology": "03-Structural-Biology",
+        "other": "04-Other"
+      },
+      "templates": "Templates",
+      "moc": "MOC",
+      "resources": "Resources"
+    }
+  },
+  "quality": {
+    "min_score": 3.5,
+    "self_criticism_rounds": 3,
+    "auto_fix": true,
+    "checkpoint_gates": true,
+    "scoring_dimensions": [
+      "reproducibility",
+      "clarity",
+      "completeness",
+      "depth"
+    ]
+  },
+  "extraction": {
+    "batch_size": 8,
+    "extract_tables": true,
+    "extract_formulas": true,
+    "extract_embedded_images": true,
+    "crop_vector_regions": true,
+    "formula_dpi": 300,
+    "table_crop_padding": 10
+  },
+  "naming": {
+    "note_format": "{year}-{journal}-{keyword}",
+    "journal_abbreviations": {
+      "Nature": "Nature",
+      "Science": "Science",
+      "Cell": "Cell",
+      "Nature Methods": "Nat-Methods",
+      "Nature Biotechnology": "Nat-Biotech",
+      "Nature Genetics": "Nat-Genet",
+      "PNAS": "PNAS",
+      "Bioinformatics": "Bioinformatics",
+      "Nucleic Acids Research": "NAR",
+      "Genome Research": "GenomeRes",
+      "Genome Biology": "GenomeBiol",
+      "NeurIPS": "NeurIPS",
+      "ICML": "ICML",
+      "ICLR": "ICLR",
+      "ACL": "ACL",
+      "AAAI": "AAAI",
+      "CVPR": "CVPR"
+    },
+    "image_prefixes": {
+      "figure": "fig",
+      "table": "table",
+      "formula": "formula-eq",
+      "pipeline": "pipeline"
+    }
+  },
+  "obsidian": {
+    "callout_types": ["abstract", "info", "tip", "warning", "example", "question"],
+    "callout_default_folded": true,
+    "wikilink_auto_create": true,
+    "tag_hierarchy": {
+      "type": "#type/",
+      "domain": "#domain/",
+      "method": "#method/",
+      "tool": "#tool/",
+      "database": "#database/",
+      "year": "#year/"
+    },
+    "mermaid_layouts": {
+      "pipeline": "LR",
+      "architecture": "TD",
+      "concept_map": "TD",
+      "timeline": "LR"
+    }
+  },
+  "interaction": {
+    "confirm_at_type_identification": true,
+    "confirm_at_outline": true,
+    "show_progress": true,
+    "checkpoint_reports": true
+  },
+  "multi_paper": {
+    "batch_parallel_extractions": 3,
+    "comparison_default_focus": "methods",
+    "auto_update_moc": true,
+    "dedup_by_doi": true,
+    "dedup_by_title_similarity": 0.85
+  }
+}
