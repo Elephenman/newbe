@@ -4,13 +4,13 @@
 
 **Bioinformatics Toolbox · Open Source · Ready to Use**
 
-进化树处理 · R绘图模板 · 论文深度解读 · 组会汇报流水线 · Obsidian↔Jupyter同步
+进化树处理 · R绘图模板 · 论文深度解读 · 组会汇报流水线 · Obsidian↔Jupyter同步 · FASTQ质控 · BAM统计 · 序列分析 · DNA损伤基因 · DESeq2格式化
 
 [![GitHub](https://img.shields.io/badge/GitHub-Elephenman/newbe-blue?logo=github)](https://github.com/Elephenman/newbe)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.8+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![R](https://img.shields.io/badge/R-4.0+-276DC3?logo=r&logoColor=white)](https://cran.r-project.org/)
-[![Files](https://img.shields.io/badge/Files-210+-orange)](https://github.com/Elephenman/newbe)
+[![Files](https://img.shields.io/badge/Files-225+-orange)](https://github.com/Elephenman/newbe)
 
 </div>
 
@@ -83,6 +83,71 @@
 <sub>MD ↔ IPYNB 双向实时同步</sub>
 <br>
 <sub>GUI+CLI · watchdog · 冲突解决</sub>
+
+</td>
+<td width="25%" align="center">
+
+<a href="./fastq-qc-checker/">
+<img src="https://img.shields.io/badge/🧬-fastq_qc-00897B?style=for-the-badge" alt="fastq-qc-checker"/>
+</a>
+<br><br>
+**FASTQ质量体检**
+<br>
+<sub>纯Python · Q20/Q30/GC/Adapter</sub>
+<br>
+<sub>无外部依赖 · 3秒出报告</sub>
+
+</td>
+<td width="25%" align="center">
+
+<a href="./bam-stats-reporter/">
+<img src="https://img.shields.io/badge/📊-bam_stats-5D4037?style=for-the-badge" alt="bam-stats-reporter"/>
+</a>
+<br><br>
+**BAM指标速查**
+<br>
+<sub>pysam封装 · mapped率/覆盖度</sub>
+<br>
+<sub>MAPQ/插入长度分布</sub>
+
+</td>
+<td width="25%" align="center">
+
+<a href="./sequence-stat-visualizer/">
+<img src="https://img.shields.io/badge/📈-seq_stat-004D40?style=for-the-badge" alt="sequence-stat-visualizer"/>
+</a>
+<br><br>
+**序列统计可视化**
+<br>
+<sub>长度/GC/氨基酸分析</sub>
+<br>
+<sub>matplotlib分布图</sub>
+
+</td>
+<td width="25%" align="center">
+
+<a href="./dna-damage-gene-collector/">
+<img src="https://img.shields.io/badge/🔬-dna_damage-880E4F?style=for-the-badge" alt="dna-damage-gene-collector"/>
+</a>
+<br><br>
+**DNA损伤修复基因集**
+<br>
+<sub>HR/NHEJ/BER/MMR/SSB/FA/p53</sub>
+<br>
+<sub>Venn交叉 + PubMed补充</sub>
+
+</td>
+<td width="25%" align="center">
+
+<a href="./deseq2-result-formatter/">
+<img src="https://img.shields.io/badge/📊-deseq2_fmt-1565C0?style=for-the-badge" alt="deseq2-result-formatter"/>
+</a>
+<br><br>
+**DESeq2结果格式化**
+<br>
+<sub>过滤+火山图+统计</sub>
+<br>
+<sub>R脚本 · Nature配色</sub>
 
 </td>
 </tr>
@@ -271,16 +336,26 @@ Each sub-directory is self-contained — just navigate and start using.
 
 ## 📌 Recent Updates
 
+> **2026-04-28** — Batch 1 tools added: fastq-qc-checker · bam-stats-reporter · sequence-stat-visualizer · dna-damage-gene-collector · deseq2-result-formatter
 > **2026-04-27** — Initial release: phylo-tools · r-plot-templates · paper-deep-read v3 · academic-group-meeting-pipeline · md2ipynb-sync
 
 ---
 
 ## 🗺️ Roadmap
 
-- [ ] More bioinformatics tools incoming
-- [ ] R plot HTML gallery preview
-- [ ] paper-deep-read multilingual support
-- [ ] Group meeting video output pipeline
+- [x] FASTQ质量体检工具 (fastq-qc-checker)
+- [x] BAM统计速查工具 (bam-stats-reporter)
+- [x] 序列统计可视化 (sequence-stat-visualizer)
+- [x] DNA损伤修复基因集收集器 (dna-damage-gene-collector)
+- [x] DESeq2结果格式化+火山图 (deseq2-result-formatter)
+- [ ] GO/KEGG富集分析流水线 (enrichment-auto-pipeline)
+- [ ] PCA/tSNE/UMAP降维可视化
+- [ ] Seurat质控一键流水线
+- [ ] 科研绘图配色方案生成器
+- [ ] 多子图组合排版工具
+- [ ] 项目目录初始化器
+- [ ] PubMed批量检索器
+- [ ] ... 50 tools total, 45 more incoming
 
 ---
 

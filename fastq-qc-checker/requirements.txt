@@ -1,0 +1,2 @@
+# fastq-qc-checker 无外部依赖
+# 纯Python标准库实现
