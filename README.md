@@ -174,14 +174,6 @@ git sparse-checkout set r-plot-templates  # 只要R绘图模板
 - [ ] paper-deep-read 多语言论文支持
 - [ ] 组会流水线视频输出支持
 
----
-
-## 👤 作者
-
-**叶泳峰 / Elephenman**
-- 🎓 浙江大学生物信息学研究生
-- 🔬 专注生信+AI交叉方向
-- 🐙 GitHub: [Elephenman](https://github.com/Elephenman)
 
 ---
 
