@@ -1,12 +1,15 @@
 {
-  "version": "3.0",
+  "version": "4.1",
   "defaults": {
     "read_depth": "reproduction",
     "audience": "beginner",
     "language": "zh-CN",
     "image_format": "png",
-    "image_dpi": 300,
-    "terminology_style": "chinese-primary-english-parentheses"
+    "terminology_style": "chinese-primary-english-parentheses",
+    "enable_critical_evaluation": true,
+    "figure_embed_mode": "narrative-paragraph",
+    "logical_transition_format": "5-step-closure",
+    "critique_mode": "supplementary-perspective"
   },
   "vault": {
     "root": "",
@@ -31,21 +34,14 @@
     "self_criticism_rounds": 3,
     "auto_fix": true,
     "checkpoint_gates": true,
-    "scoring_dimensions": [
-      "reproducibility",
-      "clarity",
-      "completeness",
-      "depth"
-    ]
+    "scoring_dimensions": ["reproducibility", "clarity", "completeness", "depth"]
   },
   "extraction": {
     "batch_size": 8,
-    "extract_tables": true,
-    "extract_formulas": true,
     "extract_embedded_images": true,
-    "crop_vector_regions": true,
-    "formula_dpi": 300,
-    "table_crop_padding": 10
+    "figure_caption_search": true,
+    "figure_caption_verification": true,
+    "panel_number_must_match_original": true
   },
   "naming": {
     "note_format": "{year}-{journal}-{keyword}",
@@ -55,28 +51,15 @@
       "Cell": "Cell",
       "Nature Methods": "Nat-Methods",
       "Nature Biotechnology": "Nat-Biotech",
-      "Nature Genetics": "Nat-Genet",
-      "PNAS": "PNAS",
-      "Bioinformatics": "Bioinformatics",
       "Nucleic Acids Research": "NAR",
+      "Bioinformatics": "Bioinformatics",
+      "PNAS": "PNAS",
       "Genome Research": "GenomeRes",
-      "Genome Biology": "GenomeBiol",
-      "NeurIPS": "NeurIPS",
-      "ICML": "ICML",
-      "ICLR": "ICLR",
-      "ACL": "ACL",
-      "AAAI": "AAAI",
-      "CVPR": "CVPR"
-    },
-    "image_prefixes": {
-      "figure": "fig",
-      "table": "table",
-      "formula": "formula-eq",
-      "pipeline": "pipeline"
+      "Life Science Alliance": "LSA"
     }
   },
   "obsidian": {
-    "callout_types": ["abstract", "info", "tip", "warning", "example", "question"],
+    "callout_types": ["abstract", "figure", "critique", "tip", "question"],
     "callout_default_folded": true,
     "wikilink_auto_create": true,
     "tag_hierarchy": {
@@ -87,24 +70,25 @@
       "database": "#database/",
       "year": "#year/"
     },
-    "mermaid_layouts": {
-      "pipeline": "LR",
-      "architecture": "TD",
-      "concept_map": "TD",
-      "timeline": "LR"
+    "figure_default_mode": "narrative-paragraph",
+    "figure_callout_mode": "supplementary-only",
+    "visual_hierarchy": {
+      "structural_label": "**Label：** (colon-ending)",
+      "panel_label": "**Panel X — subtitle** (dash-connected)",
+      "caption": "*Figure N title. (a)...(b)...* (italic)"
+    },
+    "critique_marking": {
+      "method_limitation": "> 🧪 Method limitation: {{sentence+[[4.X]]link}}",
+      "hard_critique": "> [!critique]- Hard critique (only real flaws)"
+    },
+    "transition_rules": {
+      "turning_point": "★ (≥8 sentences, 5-step closure)",
+      "confirmation_point": "(confirmation) (4-6 sentences, 3-step)",
+      "dual_node": "★dual (≥8 sentences, 5-step + dual expectation)"
     }
   },
   "interaction": {
     "confirm_at_type_identification": true,
-    "confirm_at_outline": true,
-    "show_progress": true,
-    "checkpoint_reports": true
-  },
-  "multi_paper": {
-    "batch_parallel_extractions": 3,
-    "comparison_default_focus": "methods",
-    "auto_update_moc": true,
-    "dedup_by_doi": true,
-    "dedup_by_title_similarity": 0.85
+    "confirm_at_outline": true
   }
 }

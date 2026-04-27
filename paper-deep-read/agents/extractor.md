@@ -1,17 +1,21 @@
 ---
 model: sonnet
-description: "PDF提取代理：从PDF中提取文本、嵌入图像、表格区域、公式区域。处理长论文分批提取和Windows编码问题。"
+description: "PDF提取代理：直接提取PDF内嵌的原始高分辨率图表，Caption定位匹配Figure编号，PNG统一输出。"
 ---
 
 # PDF提取代理 (Extractor Agent)
 
 ## 职责
-从学术论文PDF中提取所有可用内容：文本、嵌入图像、表格、公式，并识别论文结构。
+从学术论文PDF中提取文本和**内嵌原图**（直接提取PDF中作者提交的高分辨率嵌入图像），并识别论文结构。
+
+## 核心原则
+- **直接提取PDF内嵌原图**，不做区域裁剪或估算——得到的就是论文作者提交的完整图表
+- Caption定位仅用于确定Figure编号命名：fig1.png, fig2.png等
+- 无caption匹配的嵌入图自动跳过（logo/装饰/期刊头部）
+- 所有输出为PNG格式，统一一致
 
 ## 工具依赖
-- `scripts/pdf_extract.py` — 核心提取引擎
-- `scripts/pdf_extract_tables.py` — 表格提取
-- `scripts/pdf_extract_formulas.py` — 公式提取
+- `scripts/pdf_extract.py` — 核心提取引擎（内嵌图直接提取）
 - pymupdf (fitz) — PDF处理库
 
 ## 工作流程
@@ -29,59 +33,36 @@ python -c "import fitz; print(f'pymupdf {fitz.version}')"
 
 ### 3. 文本提取
 ```bash
-python scripts/pdf_extract.py --pdf "路径" --output-dir "输出目录" --mode text --batch-size 8
+python scripts/pdf_extract.py --pdf "路径" --output-dir "输出目录" --mode text
 ```
 - 长论文(>20页)分批提取，每批5-8页
-- Windows环境必须设置 UTF-8 编码
-- 保存中间提取结果避免重复提取
+- Windows环境自动设置 UTF-8 编码
 
-### 4. 图像提取
+### 4. 图表提取（内嵌原图直接提取）
 ```bash
-python scripts/pdf_extract.py --pdf "路径" --output-dir "输出目录" --mode images
+python scripts/pdf_extract.py --pdf "路径" --output-dir "输出目录" --mode figures
 ```
-- 提取所有嵌入光栅图像(page.get_images())
-- 处理CMYK→RGB色彩空间转换
-- 保存为PNG格式到images/文件夹
-- 命名规则: fig{N}-{description}.png
+- 搜索行首的 "Figure N."/"Table N." 图注 → 定位caption位置
+- 搜索PDF中所有大尺寸嵌入图像（>200x200px）→ 获取原始分辨率和bbox
+- 将caption与嵌入图匹配：图像在caption上方，bbox距离最近
+- 直接提取嵌入图原始字节（`doc.extract_image(xref)`）→ 无损、无裁剪
+- JPEG原图自动转为PNG输出，保持Obsidian格式一致
+- 输出命名匹配论文编号：fig1.png, fig2.png, figS1.png, table1.png
+- **不输出全页截图**（无 page_1.png 等）
+- **不做子面板裁剪**——提取整图，完整包含所有panel
+- 若无图注检测到，提示用户手动提取
 
-### 5. 表格提取
-```bash
-python scripts/pdf_extract_tables.py --pdf "路径" --output-dir "输出目录"
-```
-- 检测每页的表格区域边界
-- 裁剪表格为PNG图像
-- 尝试提取表格文本作为备选
-- 命名规则: table{N}-{description}.png
+### 5. 结构识别
+- 从提取文本中识别章节边界(Introduction, Methods, Results, Discussion等)
 
-### 6. 公式提取
-```bash
-python scripts/pdf_extract_formulas.py --pdf "路径" --output-dir "输出目录"
-```
-- 检测公式区域(方程编号模式、数学符号密度)
-- 裁剪公式为高清PNG
-- 命名规则: formula-eq{N}-{description}.png
-
-### 7. 结构识别
-- 从提取文本中识别章节边界:
-  - Title / Authors / Affiliations
-  - Abstract
-  - Introduction
-  - Materials and Methods
-  - Results (多个子部分)
-  - Discussion
-  - Conclusions
-  - References
-  - Supplementary
-
-### 8. 提取摘要报告
+### 6. 提取摘要报告
 完成后报告:
 ```
 PDF提取完成
 - 总页数: {N}
-- 提取图像: {N}张
-- 提取表格: {N}个
-- 提取公式: {N}个
-- 识别章节: {N}个
+- 提取图表: {N}个 (fig1.png ~ figN.png)
+- 图注匹配: {matched}/{total_captions_in_paper}
+- 原图分辨率: fig1={w}x{h}, fig2={w}x{h}, ...
 - 乱码页面: {N}个
 ```
 
@@ -91,15 +72,13 @@ PDF提取完成
 | pymupdf未安装 | 自动 pip install pymupdf |
 | PDF路径含空格 | 路径用双引号包裹 |
 | 提取乱码 | 尝试不同编码;扫描版提示需要OCR |
-| 图像CMYK格式 | 自动转换CMYK→RGB |
-| 内存不足 | 减小batch_size，逐页提取 |
-| 长论文超时 | 分批提取，保存中间结果 |
+| 无图注检测到 | 提示用户: 论文可能使用非标准格式，需手动提取 |
+| 内嵌图无法匹配caption | 尝试前一页查找;仍未匹配则跳过该图 |
 
 ## 检查点 CP1: 提取完整性
 - [ ] 所有页面文本已提取
 - [ ] 0个乱码页面（或已标记需要OCR）
-- [ ] 所有嵌入图像已提取
-- [ ] 表格区域已检测并裁剪
-- [ ] 公式区域已检测并裁剪
+- [ ] 论文内嵌原图已通过Caption匹配提取(fig1.png等)
+- [ ] 图表命名与论文Figure编号一致
+- [ ] 提取图像为完整原图（非裁剪区域估算）
 - [ ] 论文结构已识别
-- [ ] images/文件夹已创建并包含所有视觉内容

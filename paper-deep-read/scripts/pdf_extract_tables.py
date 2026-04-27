@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Specialized table extraction from PDF documents.
 
-Detects table regions by analyzing text block alignment, crops them as images,
-and attempts structured text extraction from table cells.
+Detects table regions by both caption-driven search and alignment-based
+analysis, crops them as images, and attempts structured text extraction
+from table cells.
 
 Usage:
     python pdf_extract_tables.py --pdf paper.pdf --output-dir ./tables
@@ -13,8 +14,26 @@ import os
 import json
 import argparse
 import subprocess
+import re
 
 sys.stdout.reconfigure(encoding='utf-8')
+
+
+# ---------------------------------------------------------------------------
+# Shared caption regex patterns — reusable across caption detection functions
+# ---------------------------------------------------------------------------
+_TABLE_CAPTION_PATTERNS = [
+    # "Table 1", "Table 12" — English, numeric
+    re.compile(r'\bTable\s+(\d+)\b', re.IGNORECASE),
+    # "Table S1", "Table S12" — Supplementary, letter + numeric
+    re.compile(r'\bTable\s+S(\d+)\b', re.IGNORECASE),
+    # "Table S1.1" — Supplementary with sub-number
+    re.compile(r'\bTable\s+S(\d+)[.:](\d+)\b', re.IGNORECASE),
+    # "表 1", "表1" — Chinese
+    re.compile(r'表\s*(\d+)', re.UNICODE),
+    # "附表 1", "附表1" — Chinese supplementary
+    re.compile(r'附表\s*(\d+)', re.UNICODE),
+]
 
 
 def _ensure_pymupdf():
@@ -31,6 +50,314 @@ def _ensure_pymupdf():
         )
         import fitz
         return fitz
+
+
+def detect_tables_by_caption(pdf_path):
+    """Detect tables by scanning all pages for caption patterns.
+
+    Searches page text for patterns like "Table 1", "Table S1", "表 1",
+    then retrieves the bounding box of the caption text span.
+
+    Args:
+        pdf_path: Path to the PDF file.
+
+    Returns:
+        List of dicts with keys:
+            - table_number (str): The number part of the caption (e.g. "1", "S1").
+            - page_num (int): Zero-based page number where the caption was found.
+            - caption_text (str): The full caption text span.
+            - caption_bbox (list): [x0, y0, x1, y1] of the caption span.
+            - is_supplementary (bool): True if the caption indicates a
+              supplementary table (e.g. "Table S1").
+
+    Raises:
+        FileNotFoundError: If pdf_path does not exist.
+    """
+    fitz = _ensure_pymupdf()
+
+    if not os.path.isfile(pdf_path):
+        raise FileNotFoundError(f"PDF not found: {pdf_path}")
+
+    doc = fitz.open(pdf_path)
+    try:
+        results = []
+        for page_num in range(len(doc)):
+            page = doc[page_num]
+            blocks = page.get_text(
+                "dict", flags=fitz.TEXT_PRESERVE_WHITESPACE
+            )["blocks"]
+
+            for block in blocks:
+                if block["type"] != 0:
+                    continue
+                for line in block["lines"]:
+                    for span in line["spans"]:
+                        text = span["text"].strip()
+                        if not text:
+                            continue
+
+                        # Check each caption pattern
+                        for pattern in _TABLE_CAPTION_PATTERNS:
+                            match = pattern.search(text)
+                            if match is None:
+                                continue
+
+                            # Determine table number and supplementary flag
+                            is_supplementary = False
+                            table_number = ""
+
+                            matched_text = match.group(0)
+
+                            if '附表' in matched_text:
+                                # Chinese supplementary
+                                table_number = match.group(1)
+                                is_supplementary = True
+                            elif '表' in matched_text:
+                                # Chinese standard
+                                table_number = match.group(1)
+                            elif 'S' in matched_text.upper():
+                                # Supplementary English patterns (Table S1, Table S1.1)
+                                groups = match.groups()
+                                if len(groups) >= 2 and groups[1]:
+                                    # "Table S1.1" style — combine groups
+                                    table_number = f"S{groups[0]}.{groups[1]}"
+                                else:
+                                    table_number = f"S{match.group(1)}"
+                                is_supplementary = True
+                            else:
+                                # Standard English "Table N"
+                                table_number = match.group(1)
+
+                            results.append({
+                                "table_number": table_number,
+                                "page_num": page_num,
+                                "caption_text": text,
+                                "caption_bbox": list(span["bbox"]),
+                                "is_supplementary": is_supplementary,
+                            })
+                            # Only match the first pattern that hits
+                            break
+
+        return results
+
+    finally:
+        doc.close()
+
+
+def _extract_description_from_caption(caption_text):
+    """Extract a short filesystem-safe description from a table caption.
+
+    Takes the first meaningful words after the table number, sanitizes them
+    for use in filenames, and truncates to a reasonable length.
+
+    Args:
+        caption_text: The full caption text string.
+
+    Returns:
+        A sanitized description string (lowercase, hyphen-separated).
+    """
+    # Remove the table number prefix (e.g. "Table 1", "Table S1", "表 1")
+    cleaned = caption_text
+    for pattern in _TABLE_CAPTION_PATTERNS:
+        cleaned = pattern.sub('', cleaned)
+    cleaned = cleaned.strip()
+
+    # Remove leading punctuation like ".", ":", "—", "-"
+    cleaned = re.sub(r'^[.:;\-\—–,\s]+', '', cleaned)
+
+    if not cleaned:
+        return "untitled"
+
+    # Take first meaningful words (up to ~5 words)
+    words = cleaned.split()
+    desc_words = words[:5]
+
+    # Sanitize for filesystem: lowercase, replace non-alphanumeric with hyphen
+    desc = '-'.join(desc_words).lower()
+    desc = re.sub(r'[^\w\-]', '-', desc)
+    desc = re.sub(r'-+', '-', desc)
+    desc = desc.strip('-')
+
+    if not desc:
+        return "untitled"
+
+    return desc
+
+
+def _bbox_overlap_ratio(bbox_a, bbox_b):
+    """Compute the overlap ratio between two bounding boxes.
+
+    Returns the ratio of the intersection area to the smaller box area.
+    A ratio >= 0.3 is generally considered "overlapping enough" for
+    deduplication purposes.
+
+    Args:
+        bbox_a: (x0, y0, x1, y1) or [x0, y0, x1, y1].
+        bbox_b: (x0, y0, x1, y1) or [x0, y0, x1, y1].
+
+    Returns:
+        Float overlap ratio (0.0 if no overlap).
+    """
+    a = list(bbox_a)
+    b = list(bbox_b)
+
+    ix0 = max(a[0], b[0])
+    iy0 = max(a[1], b[1])
+    ix1 = min(a[2], b[2])
+    iy1 = min(a[3], b[3])
+
+    if ix1 <= ix0 or iy1 <= iy0:
+        return 0.0
+
+    intersection = (ix1 - ix0) * (iy1 - iy0)
+    area_a = max((a[2] - a[0]) * (a[3] - a[1]), 1)
+    area_b = max((b[2] - b[0]) * (b[3] - b[1]), 1)
+    smaller_area = min(area_a, area_b)
+
+    return intersection / smaller_area
+
+
+def crop_table_by_caption(
+    pdf_path, page_num, caption_bbox, table_number, caption_text, output_dir
+):
+    """Crop a table region identified by its caption.
+
+    Estimates the table region as being above or containing the caption.
+    Uses alignment-based detection as a confirmatory check: if a matching
+    alignment-detected table exists on the same page near the caption,
+    that bbox is preferred over the estimated region.
+
+    Args:
+        pdf_path: Path to the PDF file.
+        page_num: Zero-based page number.
+        caption_bbox: [x0, y0, x1, y1] of the caption text span.
+        table_number: The table number string (e.g. "1", "S1").
+        caption_text: The full caption text.
+        output_dir: Directory to save the cropped image.
+
+    Returns:
+        Dict with keys:
+            - page (int): Page number.
+            - bbox (list): Final bounding box used [x0, y0, x1, y1].
+            - image_path (str): Filename of the cropped PNG.
+            - text_or_none (list or null): Extracted table text, or None.
+
+    Raises:
+        FileNotFoundError: If pdf_path does not exist.
+    """
+    fitz = _ensure_pymupdf()
+
+    if not os.path.isfile(pdf_path):
+        raise FileNotFoundError(f"PDF not found: {pdf_path}")
+
+    # --- Step 1: Try alignment-based detection on the same page ---
+    try:
+        alignment_bboxes = detect_table_regions(pdf_path, page_num)
+    except Exception as e:
+        print(
+            f"Warning: alignment detection failed on page {page_num}: {e}",
+            file=sys.stderr,
+        )
+        alignment_bboxes = []
+
+    # Find the alignment bbox that is near the caption (overlapping or
+    # directly above it within a reasonable vertical gap).
+    best_alignment_bbox = None
+    caption_y0 = caption_bbox[1]
+    caption_y1 = caption_bbox[3]
+    caption_cy = (caption_y0 + caption_y1) / 2
+    # A table is "near" its caption if it overlaps or is within 50 points
+    # vertically above the caption.
+    proximity_threshold = 50
+
+    for abbox in alignment_bboxes:
+        abbox_y0 = abbox[1]
+        abbox_y1 = abbox[3]
+
+        # Check if the alignment bbox is on the same page region as caption
+        # The table should be above or overlapping the caption
+        vertical_gap = caption_y0 - abbox_y1  # gap between table bottom and caption top
+        overlaps = _bbox_overlap_ratio(abbox, caption_bbox) > 0
+
+        if overlaps or (vertical_gap >= -10 and vertical_gap <= proximity_threshold):
+            # Also check horizontal alignment — table and caption should
+            # share some horizontal range
+            horizontal_overlap = min(abbox[2], caption_bbox[2]) - max(abbox[0], caption_bbox[0])
+            if horizontal_overlap > 0:
+                best_alignment_bbox = abbox
+                break
+
+    # --- Step 2: Determine final bbox ---
+    if best_alignment_bbox is not None:
+        # Use the alignment-detected bbox, but extend it to include the caption
+        final_bbox = [
+            min(best_alignment_bbox[0], caption_bbox[0]),
+            min(best_alignment_bbox[1], caption_bbox[1]),
+            max(best_alignment_bbox[2], caption_bbox[2]),
+            max(best_alignment_bbox[3], caption_bbox[3]),
+        ]
+    else:
+        # Estimate the table region above the caption
+        doc = fitz.open(pdf_path)
+        try:
+            page = doc[page_num]
+            page_height = page.rect.height
+            page_width = page.rect.width
+        finally:
+            doc.close()
+
+        # Estimate: table content is above the caption, typically occupying
+        # the region from some point above to the caption position.
+        # Heuristic: table height is roughly 3x the caption height, and
+        # extends to the page margins horizontally.
+        caption_height = caption_bbox[3] - caption_bbox[1]
+        estimated_table_height = max(caption_height * 8, 100)
+        margin = 30  # left/right margin from page edge
+
+        final_bbox = [
+            margin,
+            max(0, caption_bbox[1] - estimated_table_height),
+            page_width - margin,
+            caption_bbox[3],
+        ]
+
+    # --- Step 3: Crop the table image ---
+    description = _extract_description_from_caption(caption_text)
+    image_filename = f"table{table_number}-{description}.png"
+    image_path = os.path.join(output_dir, image_filename)
+
+    try:
+        crop_table_to_image(pdf_path, page_num, tuple(final_bbox), image_path)
+    except Exception as e:
+        print(
+            f"Warning: Failed to crop caption-detected table {table_number} "
+            f"on page {page_num}: {e}",
+            file=sys.stderr,
+        )
+        return {
+            "page": page_num,
+            "bbox": list(final_bbox),
+            "image_path": None,
+            "text_or_none": None,
+        }
+
+    # --- Step 4: Attempt text extraction ---
+    text_result = None
+    try:
+        text_result = extract_table_text(pdf_path, page_num, tuple(final_bbox))
+    except Exception as e:
+        print(
+            f"Warning: Failed to extract text from caption-detected table "
+            f"{table_number} on page {page_num}: {e}",
+            file=sys.stderr,
+        )
+
+    return {
+        "page": page_num,
+        "bbox": list(final_bbox),
+        "image_path": image_filename,
+        "text_or_none": text_result,
+    }
 
 
 def detect_table_regions(pdf_path, page_num):
@@ -420,7 +747,16 @@ def extract_table_text(pdf_path, page_num, bbox):
 def process_all_tables(pdf_path, output_dir):
     """Find and extract all tables across all pages of a PDF.
 
+    Strategy:
+        1. First try caption-driven detection via detect_tables_by_caption().
+        2. For each caption-detected table, call crop_table_by_caption().
+        3. Then fall back to alignment-based detection for tables not found
+           by caption search.
+        4. Deduplicate: skip alignment-based tables whose bbox overlaps with
+           a caption-based table.
+
     For each detected table, crops an image and attempts text extraction.
+    The output format is backward-compatible with the original version.
 
     Args:
         pdf_path: Path to the PDF file.
@@ -444,12 +780,49 @@ def process_all_tables(pdf_path, output_dir):
 
     os.makedirs(output_dir, exist_ok=True)
 
+    results = []
+    caption_bbox_set = []  # Collect bboxes from caption-based detection for dedup
+
+    # ------------------------------------------------------------------
+    # Phase 1: Caption-driven detection
+    # ------------------------------------------------------------------
+    try:
+        caption_tables = detect_tables_by_caption(pdf_path)
+    except Exception as e:
+        print(
+            f"Warning: caption-based table detection failed: {e}",
+            file=sys.stderr,
+        )
+        caption_tables = []
+
+    for cap_info in caption_tables:
+        try:
+            result = crop_table_by_caption(
+                pdf_path,
+                cap_info["page_num"],
+                cap_info["caption_bbox"],
+                cap_info["table_number"],
+                cap_info["caption_text"],
+                output_dir,
+            )
+            if result["image_path"] is not None:
+                results.append(result)
+                caption_bbox_set.append(result["bbox"])
+        except Exception as e:
+            print(
+                f"Warning: Failed to process caption-detected table "
+                f"{cap_info['table_number']} on page {cap_info['page_num']}: {e}",
+                file=sys.stderr,
+            )
+
+    # ------------------------------------------------------------------
+    # Phase 2: Alignment-based fallback for tables not found by captions
+    # ------------------------------------------------------------------
     doc = fitz.open(pdf_path)
     total_pages = len(doc)
     doc.close()
 
-    results = []
-    table_counter = 0
+    table_counter = len(results)  # Continue numbering from caption-based results
 
     for page_num in range(total_pages):
         try:
@@ -462,6 +835,16 @@ def process_all_tables(pdf_path, output_dir):
             continue
 
         for bbox in bboxes:
+            # Deduplication: skip if this bbox overlaps with any caption-based bbox
+            is_duplicate = False
+            for cap_bbox in caption_bbox_set:
+                if _bbox_overlap_ratio(bbox, cap_bbox) >= 0.3:
+                    is_duplicate = True
+                    break
+
+            if is_duplicate:
+                continue
+
             table_counter += 1
             image_filename = f"table_p{page_num}_{table_counter}.png"
             image_path = os.path.join(output_dir, image_filename)

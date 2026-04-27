@@ -34,7 +34,7 @@ OPTIONAL_FRONTMATTER_FIELDS = [
     "note_version", "aliases", "source_pdf"
 ]
 
-CALLOUT_TYPES = {"abstract", "figure", "info", "tip", "warning", "example", "question"}
+CALLOUT_TYPES = {"abstract", "figure", "info", "tip", "warning", "example", "question", "important", "attack"}
 
 MERMAID_DIAGRAM_TYPES = {"flowchart", "sequence", "graph"}
 

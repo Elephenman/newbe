@@ -6,61 +6,86 @@
 {年}-{期刊}-{关键词}/
 ├── {年}-{期刊}-{关键词}.md
 └── images/
-    ├── fig1-overview.png
-    ├── fig2-method-flowchart.png
-    ├── fig3-result-heatmap.png
-    ├── table1-params.png
-    ├── table2-comparison.png
-    ├── formula-eq1-loss.png
-    ├── formula-eq2-attention.png
-    └── pipeline-overall.png
+    ├── fig1.png
+    ├── fig2.png
+    ├── fig3.png
+    ├── fig4.png
+    ├── figS1.png
+    ├── figS2.png
+    ├── table1.png
+    └── tableS1.png
 ```
 
 ## 命名规则
-格式：`{类型}{编号}-{简短描述}.png`
+文件名直接匹配论文中的Figure/Table编号，简单直观：
 
-| 类型 | 前缀 | 说明 |
-|------|------|------|
-| 论文插图 | fig | 论文中的Figure |
-| 表格 | table | 论文中的Table |
-| 公式 | formula-eq | 论文中的公式，eq后接编号 |
-| 流水线 | pipeline | 分析流程概览图 |
+| 类型 | 格式 | 说明 | 示例 |
+|------|------|------|------|
+| 主文插图 | fig{N}.png | 论文Figure N | fig1.png, fig2.png |
+| 补充插图 | figS{N}.png | 论文Supplementary Figure N | figS1.png, figS2.png |
+| 主文表格 | table{N}.png | 论文Table N | table1.png |
+| 补充表格 | tableS{N}.png | 论文Supplementary Table N | tableS1.png |
+
+**规则**：
+- 文件名与论文原始编号一一对应，无需添加描述性后缀
+- 主文Figure编号为 `fig1`, `fig2`, ...（按论文Figure 1, Figure 2, ...）
+- 补充Figure编号为 `figS1`, `figS2`, ...（按论文Figure S1, Figure S2, ...）
+- 表格同理：`table1`, `tableS1`, ...
+- 多面板图（Figure 2A/B/C）作为整图提取为 `fig2.png`，不做子面板拆分
+- 所有输出为PNG格式，统一一致
 
 ## 引用方式
 在Obsidian笔记中使用 `![[filename]]` 语法：
-- `![[fig1-overview.png]]` — 原始大小
-- `![[fig1-overview.png|w800]]` — 限制宽度800px
-- `![[fig1-overview.png|500]]` — 指定宽度500px
+- `![[fig1.png|w800]]` — Figure 1，限制宽度800px
+- `![[figS1.png|w800]]` — Supplementary Figure 1
+- `![[table1.png|w600]]` — Table 1，指定宽度600px
 
 ## 图文融合引用规范
 图像**不可孤立堆放**，必须在正文叙述中嵌入并解读。遵循四步节奏：
 1. **前导句**（1句话）→ 预告图将展示什么关键数据
 2. **图片嵌入** → `![[filename.png|w800]]`
-3. **解读Callout** → `[!figure]-` 块，7个必含字段（目的/坐标轴/趋势/统计/对照/异常/支撑结论）
+3. **解读Callout** → `[!figure]-` 块，3个必含字段+适用的条件字段，无空洞字段
 4. **后续叙述**（1-2句话）→ 基于图数据继续推进论述
 
 **禁止**：在"图像"独立小节下集中堆放所有图，与正文叙述脱节。
+
+**[!figure]- 解读Callout字段规格**：
+
+3个必含字段（每张图必须有）：
+- **图的目的**：这张图要回答什么问题，在论证链中扮演什么角色
+- **关键趋势**：主要数据趋势方向和转折点
+- **支撑结论**：图中哪个特征支撑论文哪个结论
+
+5个条件字段（仅当适用时包含，不适用的字段整个省略，绝不留空占位）：
+- **坐标轴/分区**：X轴、Y轴含义，各panel展示内容（数据图适用）
+- **统计显著性**：p值、效应量、置信区间（报告了统计值时适用）
+- **对照组差异**：与对照组/基准方法的差异（存在对照组时适用）
+- **异常点**：偏离趋势的数据点或边界情况（存在异常时适用）
+- **样本/数据规模**：n值、数据集大小、样本数（需要说明量级时适用）
 
 示例：
 ```
 如图所示，野生型(WT)组在处理24h后基因表达量上升约3.2倍(p<0.001)。
 
-![[fig3-gene-expression.png|w800]]
+![[fig3.png|w800]]
 
 > [!figure]- 图3解读
 > **图的目的**：比较WT和KO组基因表达动态变化
-> **坐标轴**：X轴=时间(0-72h)，Y轴=相对表达量
+> **坐标轴/分区**：X轴=时间(0-72h)，Y轴=相对表达量；左侧panel=WT，右侧panel=KO
 > **关键趋势**：WT组24h达峰值3.2x后回落；KO组全程<1.5x
 > **统计显著性**：24h时WT vs KO: p<0.001
 > **对照组差异**：KO组表达量始终低于WT的50%
 > **异常点**：WT组样本#7偏离至5.8x
+> **样本/数据规模**：WT/KO两组各n=6
 > **支撑结论**：WT组显著上调支撑"该基因调控此通路"的核心结论
 
 这一时间进程数据表明基因调控的关键时间窗口在24-48h...
 ```
 
 ## 提取规格
-- 格式：PNG
-- DPI：300
-- 嵌入式图像：原尺寸提取
-- 裁剪区域：2x渲染（600 DPI等效）
+- 格式：PNG（统一格式，JPEG原图自动转换）
+- 提取方式：直接提取PDF内嵌的原始高分辨率图像，裁剪出图片位置、不估算区域
+- Caption驱动——通过搜索"Figure N"/"Table N"图注定位对应嵌入图
+- 多面板图作为整图提取，不做子面板裁剪
+- 过滤：只提取有caption匹配的图表，跳过logo/装饰/期刊头部图形
+- 无caption匹配的嵌入图自动跳过（非论文图表内容）
