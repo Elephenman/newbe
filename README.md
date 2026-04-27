@@ -1,190 +1,239 @@
-# 🛠️ Newbe Toolbox
+<div align="center">
 
-> 叶泳峰（Elephenman）的个人开源工具箱——生信脚本、R绘图模板、论文解读、组会PPT，开箱即用。
->
-> "newbe" = 新手的工具，但工具不新手。
+# 🛠️ Newbe
+
+**Bioinformatics Toolbox · Open Source · Ready to Use**
+
+进化树处理 · R绘图模板 · 论文深度解读 · 组会汇报流水线
+
+[![GitHub](https://img.shields.io/badge/GitHub-Elephenman/newbe-blue?logo=github)](https://github.com/Elephenman/newbe)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.8+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![R](https://img.shields.io/badge/R-4.0+-276DC3?logo=r&logoColor=white)](https://cran.r-project.org/)
+[![Files](https://img.shields.io/badge/Files-200+-orange)](https://github.com/Elephenman/newbe)
+
+</div>
 
 ---
 
-## 📦 工具索引
+## ✨ What's Inside
 
-| # | 工具 | 简介 | 语言/依赖 | 文件数 |
-|---|------|------|-----------|--------|
-| 1 | [phylo-tools](./phylo-tools/) | 进化树枝名批量处理（解析FASTA→补全CSV→重命名树） | Python + BioPython | 4 |
-| 2 | [r-plot-templates](./r-plot-templates/) | R语言科研绘图模板库（106个绑图模板 + 51个SCI图表代码 + Seurat + 生信工具） | R / ggplot2 | 180+ |
-| 3 | [paper-deep-read](./paper-deep-read/) | 论文深度解读 Skill v3.0（Obsidian笔记+知识图谱+复现者/审稿人双视角） | Skill / Python | 30+ |
-| 4 | [academic-group-meeting-pipeline](./academic-group-meeting-pipeline/) | 组会汇报全流水线（7个AI Skill：PPT架构→逐字稿→答辩防御） | Skill / PPTX | 8 |
+<table>
+<tr>
+<td width="25%" align="center">
+
+<a href="./phylo-tools/">
+<img src="https://img.shields.io/badge/🧬-phylo_tools-6B8E23?style=for-the-badge" alt="phylo-tools"/>
+</a>
+<br><br>
+**进化树批量处理**
+<br>
+<sub>3 Python脚本 · FASTA→CSV→Tree</sub>
+<br>
+<sub>NCBI自动补全 · Newick/Nexus</sub>
+
+</td>
+<td width="25%" align="center">
+
+<a href="./r-plot-templates/">
+<img src="https://img.shields.io/badge/🎨-r_plot_templates-E91E63?style=for-the-badge" alt="r-plot-templates"/>
+</a>
+<br><br>
+**R科研绘图模板库**
+<br>
+<sub>106 绑图模板 · 51 SCI图表</sub>
+<br>
+<sub>Seurat · clusterProfiler · DESeq2</sub>
+
+</td>
+<td width="25%" align="center">
+
+<a href="./paper-deep-read/">
+<img src="https://img.shields.io/badge/📖-paper_deep_read_v3-1565C0?style=for-the-badge" alt="paper-deep-read"/>
+</a>
+<br><br>
+**论文深度解读**
+<br>
+<sub>复现者+审稿人双视角</sub>
+<br>
+<sub>Obsidian笔记 · 知识图谱 · 9参考指南</sub>
+
+</td>
+<td width="25%" align="center">
+
+<a href="./academic-group-meeting-pipeline/">
+<img src="https://img.shields.io/badge/🎤-group_meeting-7B1FA2?style=for-the-badge" alt="group-meeting"/>
+</a>
+<br><br>
+**组会汇报流水线**
+<br>
+<sub>7 AI Skills · 论文→PPT→答辩</sub>
+<br>
+<sub>架构→逐字稿→防御话术</sub>
+
+</td>
+</tr>
+</table>
 
 ---
 
-## 🔬 1. phylo-tools — 进化树批量处理工具集
+## 🧬 phylo-tools — Phylogenetic Tree Processing
 
-三个 Python 脚本，用于进化树构建后的枝名批量处理。
+One-liner pipeline for batch tip renaming after tree construction:
 
-**典型工作流：**
+```mermaid
+graph LR
+    A[NCBI FASTA] -->|parse_fasta_headers| B[CSV Mapping]
+    B -->|fill_csv_from_ncbi| C[Complete CSV]
+    C -->|rename_tree_tips| D[Renamed Tree ✅]
+    style A fill:#4CAF50,color:#fff
+    style D fill:#2196F3,color:#fff
 ```
-NCBI下载FASTA → parse_fasta_headers.py 提取CSV
-CSV不完整     → fill_csv_from_ncbi.py 从NCBI补全
-替换树枝名    → rename_tree_tips.py 生成美化树文件
+
+| Script | What it does |
+|--------|-------------|
+| `parse_fasta_headers.py` | Extract accession + species from NCBI FASTA headers → CSV |
+| `fill_csv_from_ncbi.py` | Auto-detect missing columns → fetch from NCBI Entrez |
+| `rename_tree_tips.py` | Batch rename tree tips using CSV mapping (Newick/Nexus) |
+
+```bash
+pip install biopython  # Only needed for scripts 2 & 3
+python rename_tree_tips.py -t tree.nwk -c mapping.csv --column 2 -o tree_species.nwk
 ```
 
-| 脚本 | 功能 |
-|------|------|
-| `parse_fasta_headers.py` | 解析NCBI FASTA头→提取序列号+物种名→生成CSV |
-| `fill_csv_from_ncbi.py` | 自动识别CSV缺列→NCBI抓取填补 |
-| `rename_tree_tips.py` | 用CSV映射表批量替换树文件枝名 |
-
-**依赖：** `pip install biopython`（rename_tree_tips.py 只需标准库）
-
-👉 [详细文档](./phylo-tools/README.md)
+📚 [Full Documentation →](./phylo-tools/README.md)
 
 ---
 
-## 🎨 2. r-plot-templates — R语言科研绘图模板库
+## 🎨 r-plot-templates — R Plot Template Gallery
 
-> 106个绑图模板 + 51个SCI图表代码 + Seurat单细胞分析 + 生信工具代码
-
-### 目录结构
+> **106 绑图模板 · 51 SCI图表代码 · Seurat单细胞 · 生信工具实战**
 
 ```
 r-plot-templates/
-├── 01_绘图模板代码/        ← 106个R绑图模板（按图表类型命名）
-├── 02_SCI图表代码/         ← 51个SCI标准图表代码（bioR系列）
-├── 05_Seurat单细胞分析/    ← Seurat完全手册 + 章节学习笔记
-├── 06_生信工具代码库/      ← clusterProfiler/DESeq2/tidyverse/pandas实战代码
-└── R绘图代码全集_Obsidian学习笔记.md  ← 106个模板的完整学习笔记
+├── 01_绘图模板代码/          ← 106 templates (file name = chart type)
+├── 02_SCI图表代码/           ← 51 bioR series (bioR02 ~ bioR51)
+├── 05_Seurat单细胞分析/      ← Complete Seurat handbook + chapter notes
+├── 06_生信工具代码库/        ← clusterProfiler · DESeq2 · tidyverse · pandas
+└── R绘图代码全集_Obsidian学习笔记.md
 ```
 
-### 01_绘图模板代码（106个）
+<details>
+<summary><b>📊 106 Drawing Templates — Full Category List</b></summary>
 
-按图表类型分类，每个文件名即功能描述：
+| Category | Templates |
+|----------|-----------|
+| 📊 Bar/Stacked | 柱状图 · 堆积图 · 双向柱状图 · 环形柱状图 · 嵌套柱状图 · 柱状堆积+多因子分面 |
+| 📦 Box/Violin | 箱线图 · 小提琴图 · 云雨图 · 豆荚图 · 半小提琴图 · 雨云图 |
+| 🔵 Scatter | 散点+回归 · 散点+拟合+分面 · 散点密度图 · ECDF · 散点+箱线+小提琴 |
+| 🔥 Heatmap | 环形热图 · 双层环形热图 · 单列热图 · 三角形热图 · 热图+柱状堆积 |
+| 🌋 Volcano | 火山图 · 多组火山图 |
+| 🌳 Phylo | 半圆进化树 · tree+分支颜色+注释 · tree+柱状堆积图 · 基于ggmsa多序列比对 |
+| 🗺️ Map | 世界地图+采样点 · 中国地图+散点+柱状图 |
+| 🕸️ Network | 网络图 · 弦图 · mantel test · 线性相关性 · 两组矩阵相关性 |
+| 🎯 Others | 桑基图 · 雷达图 · 曼哈顿图 · 南丁格尔图 · 词云图 · 花瓣图 · Venn · 气泡图 · 三元相图 · 平行坐标图 · 议会图 · 时间序列 |
 
-| 类别 | 示例 |
-|------|------|
-| **柱状/条形图** | 柱状图、柱状堆积图、双向柱状图、环形柱状图、嵌套柱状图 |
-| **箱线/小提琴图** | 分组箱线图、小提琴图、云雨图、豆荚图、半小提琴图 |
-| **散点/回归图** | 散点+回归曲线、散点+拟合+分面、散点密度图、ECDF图 |
-| **热图** | 环形热图、双层环形热图、单列热图、三角形热图 |
-| **火山图** | 火山图、多组火山图 |
-| **进化树** | 半圆进化树、tree+分支颜色+注释、tree+柱状堆积图 |
-| **地图** | 世界地图+采样点、中国地图+散点 |
-| **网络/相关** | 网络图、弦图、mantel test、线性相关性 |
-| **其他** | 桑基图、雷达图、曼哈顿图、南丁格尔图、词云图、花瓣图、Venn图 |
+</details>
 
-### 02_SCI图表代码（51个bioR系列）
+<details>
+<summary><b>🔬 51 SCI Chart Codes — bioR Series Index</b></summary>
 
-编号从 bioR02 到 bioR51，覆盖科研论文常见图表：
+| Range | Category |
+|-------|----------|
+| bioR02-06 | Bar plots (stat / p-value / percentage / grouped) |
+| bioR07-10 | Box plots (sorted / diff / clinical / facet) |
+| bioR11-13 | Violin plots (single / multi / facet) |
+| bioR14-16 | Pair diff · Balloon · Deviation |
+| bioR17-18 | Heatmap (pheatmap / clinical) |
+| bioR19-21 | Volcano · Venn · UpSetR |
+| bioR22-25 | Correlation (scatter / circos / network) |
+| bioR26-30 | Radar · Alluvial · Pie · Bubble · Lollipop |
+| bioR31-33 | GO circos · KEGG circos · multiGSEA |
+| bioR34-38 | Survival (discrete / continuous / cutoff / 2vars / forest) |
+| bioR39-44 | Nomogram · ROC · multiROC · timeROC · multiTimeROC |
+| bioR45-51 | PCA · 3dPCA · Circos · Genome · ggtree · maftools · gganatogram |
 
-| 范围 | 类型 |
-|------|------|
-| bioR02-06 | 柱状图（统计/P值/百分比/分组） |
-| bioR07-10 | 箱线图（排序/差异/临床/分面） |
-| bioR11-13 | 小提琴图 |
-| bioR14-16 | 配对差异/气球图/偏差图 |
-| bioR17-18 | 热图（pheatmap/临床热图） |
-| bioR19-21 | 火山图/Venn/UpSetR |
-| bioR22-25 | 相关性（散点/circos/网络） |
-| bioR26-30 | 雷达/桑基/饼图/气泡/棒棒糖 |
-| bioR31-33 | GO/KEGG circos/GSEA |
-| bioR34-38 | 生存分析（离散/连续/截断/双变量/森林图） |
-| bioR39-44 | 列线图/ROC/多变量ROC/timeROC |
-| bioR45-51 | PCA/3dPCA/circos/基因组/ggtree/maftools/解剖图 |
-
-**依赖：** R 4.0+、ggplot2、dplyr、pheatmap、survival、survminer、timeROC 等（各脚本头部有说明）
+</details>
 
 ---
 
-## 📖 3. paper-deep-read — 论文深度解读 v3.0
+## 📖 paper-deep-read v3 — Deep Paper Reading Skill
 
-> 复现者+审稿人双视角的论文解读 Skill，生成详尽 Obsidian 笔记。
-
-### 核心特性
-
-- 🔄 叙述流嵌入式 Figure 解读（⚠️原文caption对照）
-- 🔗 逻辑衔接5步闭环，★转折/双重节点标记
-- 🧪 方法局限醒目标注，[[4.X]]跨Section链接
-- 📊 PDF全图像提取（Figure+Table+公式）
-- 🧬 生信+AI/ML跨域解读支持
-
-### 目录结构
+> **Reproducer + Reviewer dual-perspective · Obsidian Vault output · Knowledge Graph**
 
 ```
 paper-deep-read/
-├── agents/          ← 4个Agent（分析器/提取器/知识构建器/QA审核）
-├── references/      ← 9个参考指南（生信/AI特殊处理/批判分析/图表解读/格式规范/质检标准）
-├── scripts/         ← 6个Python脚本（PDF提取/公式提取/表格提取/Obsidian笔记/知识图谱/Vault组织）
-├── templates/       ← 4类笔记模板（单篇/对比/生信/知识库）
-├── config.json      ← Skill配置
-├── SKILL.md         ← Skill主入口
-└── README.md        ← 详细说明
+├── agents/        ← analyzer · extractor · knowledge-builder · qa-reviewer
+├── references/    ← 9 guides (bioinfo specials · AI specials · critical analysis · figure interpretation · reading guide · format · quality · multi-paper · type adaptation)
+├── scripts/       ← pdf_extract · formulas · tables · obsidian_note · knowledge_graph · vault_organizer
+├── templates/     ← single-paper · comparison · bioinformatics · knowledge-base
+├── config.json · SKILL.md · README.md
 ```
 
-👉 [详细文档](./paper-deep-read/README.md)
+**Key Features:**
+- 🔄 Narrative-flow embedded Figure interpretation (⚠️ original caption cross-check)
+- 🔗 5-step logic closure · ★ Turning point / dual-node markers
+- 🧪 Method limitation highlighted · [[4.X]] cross-section links
+- 📊 Full PDF image extraction (Figure + Table + Formula)
+
+📚 [Full Documentation →](./paper-deep-read/README.md)
 
 ---
 
-## 🎤 4. academic-group-meeting-pipeline — 组会汇报全流水线
+## 🎤 academic-group-meeting-pipeline — Group Meeting Pipeline
 
-> 从论文分析到答辩防御的7个AI Skill，学术组会一键搞定。
+> **Paper → Architecture → Slides → Script → Defense — 7 Skills, One Pipeline**
 
-| Skill | 功能 |
-|-------|------|
-| `group-meeting-pipeline` | 组会汇报全流水线总控 |
-| `methodology-critic` | 论文方法论批判、研究设计漏洞挖掘 |
-| `paper-logic-deconstructor` | 论文逻辑解构、底层骨架提取 |
-| `ppt-architect` | 学术PPT架构设计、视觉层级规划 |
-| `ppt-implement-custom` | PPT生成实现、PPTX文件输出 |
-| `qa-defense-system` | 导师提问预测、答辩防御话术 |
-| `speech-writer` | 学术汇报逐字稿、口语化演讲稿 |
+```
+┌─────────────────────┐
+│  group-meeting-pipeline  │ ← Total orchestration
+├─────────────────────┤
+│  paper-logic-deconstructor │ ← Extract skeleton
+│  methodology-critic        │ ← Find design flaws
+├─────────────────────┤
+│  ppt-architect             │ ← Visual hierarchy
+│  ppt-implement-custom      │ ← PPTX generation
+├─────────────────────┤
+│  speech-writer             │ ← Oral script
+│  qa-defense-system         │ ← Predict advisor Q&A
+└─────────────────────┘
+```
 
-👉 [详细文档](./academic-group-meeting-pipeline/README.md)
+📚 [Full Documentation →](./academic-group-meeting-pipeline/README.md)
 
 ---
 
-## 🚀 快速开始
-
-每个子目录独立可用，直接进对应目录看 README 即可。
+## 🚀 Quick Start
 
 ```bash
-# 克隆整个工具箱
+# Clone everything
 git clone https://github.com/Elephenman/newbe.git
 
-# 稀疏检出——只要某个工具
+# Sparse checkout — only what you need
 git clone --filter=blob:none --sparse https://github.com/Elephenman/newbe.git
 cd newbe
-git sparse-checkout set r-plot-templates  # 只要R绘图模板
+git sparse-checkout set r-plot-templates
 ```
 
----
-
-## 📌 更新日志
-
-| 日期 | 更新内容 |
-|------|----------|
-| 2026-04-27 | 🎉 初始整合：phylo-tools + paper-deep-read-v3 + academic-group-meeting-pipeline + r-plot-templates |
-| 2026-04-27 | 📖 paper-deep-read 升级到 v3.0（本地最新版同步） |
-| 2026-04-27 | 🎨 新增 r-plot-templates：106个绑图模板 + 51个SCI图表 + Seurat + 生信工具代码 |
+Each sub-directory is self-contained — just navigate and start using.
 
 ---
 
-## 🗺️ 路线图
+## 📌 Recent Updates
 
-- [ ] 更多生信小工具持续整合
-- [ ] R绘图模板在线预览（HTML gallery）
-- [ ] paper-deep-read 多语言论文支持
-- [ ] 组会流水线视频输出支持
+> **2026-04-27** — Initial release: phylo-tools · r-plot-templates (156 R scripts) · paper-deep-read v3 · academic-group-meeting-pipeline
 
 ---
 
-## 👤 作者
+## 🗺️ Roadmap
 
-**叶泳峰 / Elephenman**
-- 🎓 浙江大学生物信息学研究生
-- 🔬 专注生信+AI交叉方向
-- 🐙 GitHub: [Elephenman](https://github.com/Elephenman)
+- [ ] More bioinformatics tools incoming
+- [ ] R plot HTML gallery preview
+- [ ] paper-deep-read multilingual support
+- [ ] Group meeting video output pipeline
 
 ---
 
 ## 📄 License
 
-各子工具保留各自原有的 License（见子目录），未特别声明的部分默认 [MIT License](./LICENSE)。
+[MIT License](./LICENSE) — use freely, modify freely, share freely.
