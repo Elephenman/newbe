@@ -1,4 +1,4 @@
-# Newbe 160工具开发进度追踪
+# Newbe 210工具开发进度追踪
 
 > 自动化循环：每3小时执行一次，每次脑暴50个新工具+开发+审核+推送+压缩上下文
 
@@ -6,7 +6,7 @@
 
 | 状态 | 数量 |
 |------|------|
-| ✅ 已完成 | 160 |
+| ✅ 已完成 | 210 |
 | 🔨 开发中 | 0 |
 | 🔍 审核中 | 0 |
 | ⏳ 待开发 | 0 |
@@ -209,3 +209,63 @@
 - [x] #158 boxplot-outlier-detector ✅ (交互版)
 - [x] #159 multi-omics-integration-helper ✅ (交互版)
 - [x] #160 benchmark-result-comparator ✅ (交互版)
+
+## Batch 18 - 测序数据处理深度扩展 (已完成 ✅)
+- [x] #161 fastq-read-name-extractor ✅ (交互版)
+- [x] #162 bam-insert-size-calculator ✅ (交互版)
+- [x] #163 vcf-allele-frequency-plotter ✅ (交互版)
+- [x] #164 fastq-barcode-splitter ✅ (交互版)
+- [x] #165 bam-mate-pair-resolver ✅ (交互版)
+- [x] #166 vcf-info-field-parser ✅ (交互版)
+- [x] #167 genome-gc-window-calculator ✅ (交互版)
+- [x] #168 bed-intersect-counter ✅ (交互版)
+- [x] #169 fastq-read-length-filter ✅ (交互版)
+- [x] #170 gtf-intron-extractor ✅ (交互版)
+
+## Batch 19 - 转录组/表达分析深度扩展 (已完成 ✅)
+- [x] #171 deg-effect-size-calculator ✅ (交互版)
+- [x] #172 expression-z-score-transformer ✅ (交互版)
+- [x] #173 rna-seq-spike-in-normalizer ✅ (交互版R)
+- [x] #174 gene-co-occurrence-analyzer ✅ (交互版)
+- [x] #175 deg-fdr-adjuster ✅ (交互版)
+- [x] #176 expression-percentile-ranker ✅ (交互版)
+- [x] #177 pathway-cross-talk-detector ✅ (交互版R)
+- [x] #178 rna-seq-power-calculator ✅ (交互版R)
+- [x] #179 deg-direction-plotter ✅ (交互版)
+- [x] #180 expression-signal-to-noise ✅ (交互版)
+
+## Batch 20 - 单细胞/空间组学深度扩展 (已完成 ✅)
+- [x] #181 sc-metadata-merger ✅ (交互版)
+- [x] #182 sc-clustering-resolution-optimizer ✅ (交互版R)
+- [x] #183 spatial-autocorrelation-tester ✅ (交互版R)
+- [x] #184 sc-batch-harmony-wrapper ✅ (交互版R)
+- [x] #185 sc-feature-plot-batcher ✅ (交互版R)
+- [x] #186 spatial-spot-quality-filter ✅ (交互版R)
+- [x] #187 sc-cell-cycle-regressor ✅ (交互版R)
+- [x] #188 spatial-co-expression-map ✅ (交互版R)
+- [x] #189 sc-novel-gene-finder ✅ (交互版)
+- [x] #190 spatial-zone-boundary-detector ✅ (交互版R)
+
+## Batch 21 - 基因组/变异/调控深度扩展 (已完成 ✅)
+- [x] #191 genome-bin-stat-calculator ✅ (交互版)
+- [x] #192 vcf-sample-missingness-checker ✅ (交互版)
+- [x] #193 tf-motif-enrichment-tester ✅ (交互版)
+- [x] #194 enhancer-signal-quantifier ✅ (交互版)
+- [x] #195 genome-synteny-block-detector ✅ (交互版)
+- [x] #196 variant-clinical-annotator ✅ (交互版)
+- [x] #197 ddr-pathway-mapper ✅ (交互版) 🔥DNA损伤修复通路映射
+- [x] #198 insulator-boundary-finder ✅ (交互版)
+- [x] #199 gene-desert-analyzer ✅ (交互版)
+- [x] #200 replication-origin-predictor ✅ (交互版)
+
+## Batch 22 - 文献/学术/绘图/流程深度扩展 (已完成 ✅)
+- [x] #201 paper-method-section-generator ✅ (交互版)
+- [x] #202 lab-protocol-versioner ✅ (交互版)
+- [x] #203 dot-plot-enhancer ✅ (交互版R)
+- [x] #204 stacked-bar-plotter ✅ (交互版R)
+- [x] #205 genome-track-overlay-builder ✅ (交互版)
+- [x] #206 forest-plot-maker ✅ (交互版R)
+- [x] #207 fasta-alignment-viewer ✅ (交互版)
+- [x] #208 vcf-ancestry-inferencer ✅ (交互版)
+- [x] #209 qc-report-aggregator ✅ (交互版)
+- [x] #210 gene-panel-designer ✅ (交互版)

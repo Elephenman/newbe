@@ -2,13 +2,13 @@
 
 # 🛠️ Newbe
 
-**面向生信研究者的开源工具箱 — 160+ 交互式小工具，开箱即用**
+**面向生信研究者的开源工具箱 — 210+ 交互式小工具，开箱即用**
 
 [![GitHub](https://img.shields.io/badge/GitHub-Elephenman/newbe-blue?logo=github)](https://github.com/Elephenman/newbe)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.8+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![R](https://img.shields.io/badge/R-4.0+-276DC3?logo=r&logoColor=white)](https://cran.r-project.org/)
-[![Tools](https://img.shields.io/badge/Tools-160+-orange)](https://github.com/Elephenman/newbe)
+[![Tools](https://img.shields.io/badge/Tools-210+-orange)](https://github.com/Elephenman/newbe)
 
 </div>
 
@@ -16,7 +16,7 @@
 
 ## 🌟 Newbe 是什么？
 
-**Newbe** 是一个面向生物信息学研究者的开源工具集合，涵盖从测序数据质控、转录组分析、单细胞处理、基因组变异注释，到文献管理、学术写作、科研可视化的 **160+ 个交互式小工具**。
+**Newbe** 是一个面向生物信息学研究者的开源工具集合，涵盖从测序数据质控、转录组分析、单细胞处理、基因组变异注释，到文献管理、学术写作、科研可视化的 **210+ 个交互式小工具**。
 
 每个工具都是**独立可运行**的——无需安装复杂依赖，无需配置环境文件，直接运行脚本，按提示输入参数即可。所有参数均提供合理默认值，回车即可使用。
 
@@ -36,7 +36,7 @@
 
 - 🎯 **交互式输入** — 每个参数都有提示和默认值，回车即用，零配置启动
 - 📦 **独立运行** — 每个工具自包含，不依赖项目内其他工具
-- 🐍 **双语言覆盖** — Python 工具 120+ 个，R 工具 40+ 个
+- 🐍 **双语言覆盖** — Python 工具 150+ 个，R 工具 50+ 个
 - 🧬 **全流程覆盖** — 从原始测序数据到发表级图表，一站式解决
 - 🔓 **完全开源** — MIT 协议，随意使用、修改、分享
 
@@ -88,7 +88,7 @@ Rscript seurat_qc_pipeline.R
 
 ## 📋 工具目录
 
-### 🧬 测序数据处理（30个）
+### 🧬 测序数据处理（40个）
 
 FASTQ/BAM/SAM/VCF/GTF/BED/FASTA 格式的质控、过滤、转换、统计工具。
 
@@ -124,8 +124,18 @@ FASTQ/BAM/SAM/VCF/GTF/BED/FASTA 格式的质控、过滤、转换、统计工具
 | 118 | [vcf-genotype-extractor](./vcf-genotype-extractor/) | Python | 从VCF提取指定样本的基因型矩阵 |
 | 119 | [bed-fasta-extractor](./bed-fasta-extractor/) | Python | 根据BED坐标从FASTA中提取序列 |
 | 120 | [multi-fasta-concatenator](./multi-fasta-concatenator/) | Python | 多FASTA合并+文件名前缀避免ID冲突 |
+| 161 | [fastq-read-name-extractor](./fastq-read-name-extractor/) | Python | FASTQ read名称提取与去重统计 |
+| 162 | [bam-insert-size-calculator](./bam-insert-size-calculator/) | Python | BAM插入片段大小统计+分布图 |
+| 163 | [vcf-allele-frequency-plotter](./vcf-allele-frequency-plotter/) | Python | VCF等位基因频率分布可视化 |
+| 164 | [fastq-barcode-splitter](./fastq-barcode-splitter/) | Python | FASTQ按barcode/标签拆分文件 |
+| 165 | [bam-mate-pair-resolver](./bam-mate-pair-resolver/) | Python | BAM mate-pair信息解析+配对修复 |
+| 166 | [vcf-info-field-parser](./vcf-info-field-parser/) | Python | VCF INFO字段批量解析到表格 |
+| 167 | [genome-gc-window-calculator](./genome-gc-window-calculator/) | Python | 基因组GC含量滑动窗口计算 |
+| 168 | [bed-intersect-counter](./bed-intersect-counter/) | Python | BED文件交集计数+重叠统计 |
+| 169 | [fastq-read-length-filter](./fastq-read-length-filter/) | Python | FASTQ按read长度范围精确过滤 |
+| 170 | [gtf-intron-extractor](./gtf-intron-extractor/) | Python | 从GTF提取内含子坐标+长度统计 |
 
-### 📊 转录组/表达分析（30个）
+### 📊 转录组/表达分析（40个）
 
 DESeq2/富集分析/GSEA/WGCNA/生存分析/标准化/差异表达工具。
 
@@ -161,8 +171,18 @@ DESeq2/富集分析/GSEA/WGCNA/生存分析/标准化/差异表达工具。
 | 128 | [rna-editing-site-finder](./rna-editing-site-finder/) | Python | RNA-seq VCF中候选RNA编辑位点筛选 |
 | 129 | [splice-junction-counter](./splice-junction-counter/) | Python | STAR SJ.out.tab剪接junction统计 |
 | 130 | [gene-id-version-normalizer](./gene-id-version-normalizer/) | Python | 基因ID格式统一(去版本号等) |
+| 171 | [deg-effect-size-calculator](./deg-effect-size-calculator/) | Python | DEG效应量计算(log2FC置信区间) |
+| 172 | [expression-z-score-transformer](./expression-z-score-transformer/) | Python | 表达矩阵Z-score标准化+热图 |
+| 173 | [rna-seq-spike-in-normalizer](./rna-seq-spike-in-normalizer/) | R | RNA-seq ERCC spike-in标准化 |
+| 174 | [gene-co-occurrence-analyzer](./gene-co-occurrence-analyzer/) | Python | 基因共出现频率分析+网络 |
+| 175 | [deg-fdr-adjuster](./deg-fdr-adjuster/) | Python | DEG多重检验校正对比(BH/BY/Q值) |
+| 176 | [expression-percentile-ranker](./expression-percentile-ranker/) | Python | 基因表达百分位排名+分箱 |
+| 177 | [pathway-cross-talk-detector](./pathway-cross-talk-detector/) | R | 通路交叉对话检测(共享基因) |
+| 178 | [rna-seq-power-calculator](./rna-seq-power-calculator/) | R | RNA-seq样本量/功效计算 |
+| 179 | [deg-direction-plotter](./deg-direction-plotter/) | Python | DEG方向一致性箭头图 |
+| 180 | [expression-signal-to-noise](./expression-signal-to-noise/) | Python | 表达信噪比计算+低质量基因过滤 |
 
-### 🔬 单细胞/空间组学（28个）
+### 🔬 单细胞/空间组学（38个）
 
 Seurat质控/注释/整合/拟时序/CellChat/空间转录组/双重细胞工具。
 
@@ -196,8 +216,18 @@ Seurat质控/注释/整合/拟时序/CellChat/空间转录组/双重细胞工具
 | 138 | [spatial-moran-plotter](./spatial-moran-plotter/) | R | 空间Moran's I自相关统计 |
 | 139 | [sc-gene-trend-plotter](./sc-gene-trend-plotter/) | R | 基因沿伪时间趋势图 |
 | 140 | [spatial-neighbor-graph](./spatial-neighbor-graph/) | R | 空间邻域图构建与可视化 |
+| 181 | [sc-metadata-merger](./sc-metadata-merger/) | Python | 单细胞metadata与表达矩阵合并 |
+| 182 | [sc-clustering-resolution-optimizer](./sc-clustering-resolution-optimizer/) | R | 聚类分辨率自动优化+稳定性评估 |
+| 183 | [spatial-autocorrelation-tester](./spatial-autocorrelation-tester/) | R | 空间自相关检验(Moran/Geary) |
+| 184 | [sc-batch-harmony-wrapper](./sc-batch-harmony-wrapper/) | R | Harmony批次校正包装 |
+| 185 | [sc-feature-plot-batcher](./sc-feature-plot-batcher/) | R | FeaturePlot批量生成+PDF输出 |
+| 186 | [spatial-spot-quality-filter](./spatial-spot-quality-filter/) | R | 空间spot质量过滤+阈值推荐 |
+| 187 | [sc-cell-cycle-regressor](./sc-cell-cycle-regressor/) | R | 单细胞周期效应回归消除 |
+| 188 | [spatial-co-expression-map](./spatial-co-expression-map/) | R | 空间共表达基因地图 |
+| 189 | [sc-novel-gene-finder](./sc-novel-gene-finder/) | Python | 单细胞新型基因发现(未注释表达) |
+| 190 | [spatial-zone-boundary-detector](./spatial-zone-boundary-detector/) | R | 空间区域边界检测+分割 |
 
-### 🧪 基因组/变异/调控（22个）
+### 🧪 基因组/变异/调控（32个）
 
 SNP/InDel/CNV/SV/甲基化/Hi-C/ATAC-seq/ChIP-seq/DNA损伤修复工具。
 
@@ -230,8 +260,18 @@ SNP/InDel/CNV/SV/甲基化/Hi-C/ATAC-seq/ChIP-seq/DNA损伤修复工具。
 | 148 | [tf-binding-site-comparer](./tf-binding-site-comparer/) | Python | 两条件TF结合位点差异比较 |
 | 149 | [snp-ld-block-extractor](./snp-ld-block-extractor/) | Python | LD block提取与tag SNP识别 |
 | 150 | [chromatin-state-annotator](./chromatin-state-annotator/) | Python | ChromHMM染色质状态注释 |
+| 191 | [genome-bin-stat-calculator](./genome-bin-stat-calculator/) | Python | 基因组窗口bin统计(GC/基因密度/SNP) |
+| 192 | [vcf-sample-missingness-checker](./vcf-sample-missingness-checker/) | Python | VCF样本缺失率检查+过滤 |
+| 193 | [tf-motif-enrichment-tester](./tf-motif-enrichment-tester/) | Python | TF motif富集统计检验 |
+| 194 | [enhancer-signal-quantifier](./enhancer-signal-quantifier/) | Python | 增强子信号定量(ATAC/H3K27ac) |
+| 195 | [genome-synteny-block-detector](./genome-synteny-block-detector/) | Python | 基因组同线性区块检测 |
+| 196 | [variant-clinical-annotator](./variant-clinical-annotator/) | Python | 变异临床注释(ClinVar/COSMIC) |
+| 197 | [ddr-pathway-mapper](./ddr-pathway-mapper/) | Python | 🔥DNA损伤修复通路映射(NER/BER/HR等) |
+| 198 | [insulator-boundary-finder](./insulator-boundary-finder/) | Python | CTCF绝缘子边界识别 |
+| 199 | [gene-desert-analyzer](./gene-desert-analyzer/) | Python | 基因荒漠区分析与注释 |
+| 200 | [replication-origin-predictor](./replication-origin-predictor/) | Python | 复制起始点预测与注释 |
 
-### 📖 文献/学术工具（18个）
+### 📖 文献/学术工具（20个）
 
 PubMed/DOI/引用/笔记/论文/基金/实验室管理工具。
 
@@ -255,8 +295,10 @@ PubMed/DOI/引用/笔记/论文/基金/实验室管理工具。
 | 98 | [research-diary-generator](./research-diary-generator/) | Python | 科研日记模板生成+Markdown格式 |
 | 99 | [thesis-chapter-outline](./thesis-chapter-outline/) | Python | 学位论文章节大纲生成+进度追踪 |
 | 100 | [lab-meeting-minute-generator](./lab-meeting-minute-generator/) | Python | 组会纪要模板生成+待办追踪 |
+| 201 | [paper-method-section-generator](./paper-method-section-generator/) | Python | 论文方法部分模板生成 |
+| 202 | [lab-protocol-versioner](./lab-protocol-versioner/) | Python | 实验protocol版本管理 |
 
-### 🎨 绘图/数据/流程工具（32个）
+### 🎨 绘图/数据/流程工具（40个）
 
 配色/出图/排版/项目管理/数据转换/可视化/文档生成工具。
 
@@ -289,6 +331,14 @@ PubMed/DOI/引用/笔记/论文/基金/实验室管理工具。
 | 158 | [boxplot-outlier-detector](./boxplot-outlier-detector/) | Python | 箱线图异常值检测与报告 |
 | 159 | [multi-omics-integration-helper](./multi-omics-integration-helper/) | Python | 多组学数据整合辅助 |
 | 160 | [benchmark-result-comparator](./benchmark-result-comparator/) | Python | 基准测试结果比较与排名 |
+| 203 | [dot-plot-enhancer](./dot-plot-enhancer/) | R | 点图增强版(大小+颜色双维度) |
+| 204 | [stacked-bar-plotter](./stacked-bar-plotter/) | R | 堆叠条形图(细胞比例/通路占比) |
+| 205 | [genome-track-overlay-builder](./genome-track-overlay-builder/) | Python | 基因组多轨道叠加配置生成 |
+| 206 | [forest-plot-maker](./forest-plot-maker/) | R | Forest图(效应量+置信区间) |
+| 207 | [fasta-alignment-viewer](./fasta-alignment-viewer/) | Python | FASTA多序列比对可视化 |
+| 208 | [vcf-ancestry-inferencer](./vcf-ancestry-inferencer/) | Python | VCF样本祖源推断 |
+| 209 | [qc-report-aggregator](./qc-report-aggregator/) | Python | 多QC报告汇总+综合评分 |
+| 210 | [gene-panel-designer](./gene-panel-designer/) | Python | 基因Panel设计(靶向测序) |
 
 ---
 
@@ -310,6 +360,7 @@ PubMed/DOI/引用/笔记/论文/基金/实验室管理工具。
 
 | 日期 | 更新内容 |
 |------|---------|
+| 2026-04-28 | Batch 4: 50 new bioinformatics tools added (#161-#210, 36 Python + 14 R, DDR pathway mapper, Forest plot, Harmony wrapper) |
 | 2026-04-28 | Batch 3: 50 new bioinformatics tools added (#111-#160, 36 Python + 14 R, DNA damage hotspot finder for LU lab) |
 | 2026-04-28 | Batch 2: 60 new bioinformatics tools added (#51-#110, interactive input, 45 Python + 15 R) |
 | 2026-04-28 | Batch 1: 50 bioinformatics tools added (all complete, interactive input) |
@@ -322,6 +373,7 @@ PubMed/DOI/引用/笔记/论文/基金/实验室管理工具。
 - [x] 50 bioinformatics tools (complete with interactive input)
 - [x] 60 new bioinformatics tools (#51-#110, all interactive)
 - [x] 50 new bioinformatics tools (#111-#160, 36 Python + 14 R)
+- [x] 50 new bioinformatics tools (#161-#210, 36 Python + 14 R, DDR/Spatial/Harmony)
 - [x] FASTQ/BAM/VCF/GTF/BED processing tools
 - [x] DESeq2/enrichment/WGCNA/survival analysis pipelines
 - [x] Seurat/CellChat/pseudotime/single-cell QC
@@ -334,6 +386,10 @@ PubMed/DOI/引用/笔记/论文/基金/实验室管理工具。
 - [x] Spatial niche/Moran/velocity/deconvolution tools
 - [x] SBS96/CNV/Enhancer/Methylation/ChromHMM tools
 - [x] Colorblind-safe palette/benchmark/outlier detection tools
+- [x] DDR pathway mapper (NER/BER/HR/NHEJ/MMR for LU lab)
+- [x] Harmony batch correction/Forest plot/Dot plot stacked bar
+- [x] Insert size/barcode splitter/mate-pair resolver tools
+- [x] Ancestry inference/QC aggregator/Gene panel designer
 - [ ] Auto-expand: more tools every 3 hours via automation
 
 ---
