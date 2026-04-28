@@ -1,22 +1,24 @@
-# fasta-stats-reporter
+# 🧬 fasta-stats-reporter
 
-统计FASTA文件中序列的长度、GC含量、N含量等
+**统计FASTA文件中序列的长度、GC含量、N含量等**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| input_fasta | 输入FASTA文件路径 | input.fasta |
-| output_file | 输出统计报告路径 | fasta_stats.txt |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd fasta-stats-reporter
 python fasta-stats-reporter.py
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
-```
-无额外依赖
-```
+无外部依赖，纯Python标准库
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

@@ -1,23 +1,24 @@
-# benchmark-result-comparator
+# 🎨 benchmark-result-comparator
 
-基准测试结果比较与排名(多方法/多指标)
+**基准测试结果比较与排名(多方法/多指标)**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| input_file | 基准结果CSV(方法,指标1,指标2,...) | benchmark.csv |
-| output_file | 比较报告路径 | benchmark_report.txt |
-| higher_is_better | 指标方向(逗号分隔,1=越高越好,0=越低越好) | 1,1,0 |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd benchmark-result-comparator
 python benchmark-result-comparator.py
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
-```
-pandas
-```
+无外部依赖，纯Python标准库
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

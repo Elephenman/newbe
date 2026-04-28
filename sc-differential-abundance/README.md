@@ -1,25 +1,27 @@
-# sc-differential-abundance
+# 🔬 sc-differential-abundance
 
-单细胞差异丰度分析(比较组间细胞比例变化)
+**单细胞差异丰度分析(比较组间细胞比例变化)**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| rds_file | Seurat对象RDS路径 | seurat_obj.rds |
-| group_col | 分组列名 | condition |
-| celltype_col | 细胞类型列名 | cell_type |
-| output_file | 输出CSV路径 | diff_abundance.csv |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd sc-differential-abundance
 Rscript sc-differential-abundance.R
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
+```r
+install.packages('Seurat')  # 或 BiocManager::install('Seurat')
+install.packages('dplyr')  # 或 BiocManager::install('dplyr')
 ```
-Seurat
-dplyr
-```
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

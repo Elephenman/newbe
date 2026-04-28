@@ -1,24 +1,24 @@
-# gene-fusion-detector
+# 🔧 gene-fusion-detector
 
-从STAR-Fusion/Arriba输出中筛选基因融合事件
+**从STAR-Fusion/Arriba输出中筛选基因融合事件**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| input_file | 融合检测结果路径 | fusions.tsv |
-| output_file | 筛选输出路径 | filtered_fusions.tsv |
-| min_junction | 最低junction reads | 3 |
-| tool | 工具格式(star_fusion/arriba) | star_fusion |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd gene-fusion-detector
 python gene-fusion-detector.py
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
-```
-无额外依赖
-```
+无外部依赖，纯Python标准库
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

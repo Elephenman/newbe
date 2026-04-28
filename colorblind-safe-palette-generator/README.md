@@ -1,24 +1,24 @@
-# colorblind-safe-palette-generator
+# 🎨 colorblind-safe-palette-generator
 
-色盲友好科研配色方案生成器
+**色盲友好科研配色方案生成器**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| n_colors | 颜色数量 | 8 |
-| palette_type | 类型(qualitative/sequential/diverging) | qualitative |
-| output_file | 输出配色文件路径(CSV) | palette.csv |
-| output_plot | 输出预览图路径 | palette_preview.png |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd colorblind-safe-palette-generator
 python colorblind-safe-palette-generator.py
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
-```
-matplotlib
-```
+无外部依赖，纯Python标准库
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

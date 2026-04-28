@@ -1,43 +1,42 @@
-# gff3-to-gtf-converter
+# 🧬 gff3-to-gtf-converter
 
-> GFF3到GTF格式转换+属性保留
+**GFF3到GTF格式转换+属性保留**
 
-## 一句话说明
-
-GFF3到GTF格式转换+属性保留 — 针对浙大生信研究生+陆慧智课题组（DNA损伤修复）方向优化。
-
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| input_file | 输入文件路径 | input.txt |
-| output_file | 输出文件路径 | output_gff3_to_gtf_converter.txt |
-| param1 | 主参数（阈值/数值） | 0.05 |
-| param2 | 辅参数（模式/格式） | default |
-
-## 使用示例
+## 使用方法
 
 ```bash
-# Python工具
 cd gff3-to-gtf-converter
 python gff3_to_gtf_converter.py
-
-# R工具
-cd gff3-to-gtf-converter
-Rscript gff3_to_gtf_converter.py
 ```
 
-所有参数通过交互式 `input()` 输入，带默认值可直接回车跳过。
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
 
-## 输出格式
+### 参数说明
 
-- TSV表格文件，带注释行
-- 包含处理统计摘要
+| # | 参数 | 默认值 |
+|---|------|--------|
+| 1 | `Input file path` | `input.txt` |
+| 2 | `Output file path` | `output_gff3_to_gtf_converter.txt` |
+| 3 | `Main parameter (threshold)` | `0.05` |
+| 4 | `Secondary parameter (mode)` | `default` |
+
+### 交互式输入示例
+
+```
+Input file path [默认: input.txt]: 
+Output file path [默认: output_gff3_to_gtf_converter.txt]: 
+Main parameter (threshold) [默认: 0.05]: 
+Secondary parameter (mode) [默认: default]: 
+```
 
 ## 依赖
 
-见 [requirements.txt](./requirements.txt)
+无外部依赖，纯Python标准库
 
-## 许可
+## 输出
 
-MIT License — [Newbe](https://github.com/Elephenman/newbe)
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

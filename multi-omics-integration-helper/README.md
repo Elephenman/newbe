@@ -1,24 +1,24 @@
-# multi-omics-integration-helper
+# 📝 multi-omics-integration-helper
 
-多组学数据整合辅助(联合矩阵构建+基础分析)
+**多组学数据整合辅助(联合矩阵构建+基础分析)**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| omics_files | 组学数据文件(逗号分隔CSV) | omics1.csv,omics2.csv |
-| output_file | 整合输出矩阵路径 | integrated.csv |
-| method | 整合方式(concat/intersect) | intersect |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd multi-omics-integration-helper
 python multi-omics-integration-helper.py
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
-```
-pandas
-numpy
-```
+无外部依赖，纯Python标准库
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

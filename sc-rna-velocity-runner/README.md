@@ -1,24 +1,26 @@
-# sc-rna-velocity-runner
+# 🔬 sc-rna-velocity-runner
 
-单细胞RNA velocity分析流程包装
+**单细胞RNA velocity分析流程包装**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| loom_file | Velocyto loom文件路径 | velocyto.loom |
-| rds_file | Seurat对象RDS路径 | seurat_obj.rds |
-| output_dir | 输出目录 | velocity_results |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd sc-rna-velocity-runner
 Rscript sc-rna-velocity-runner.R
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
+```r
+install.packages('Seurat')  # 或 BiocManager::install('Seurat')
 ```
-Seurat
-velocyto.R
-```
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

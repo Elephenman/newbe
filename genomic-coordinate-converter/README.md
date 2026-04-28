@@ -1,24 +1,24 @@
-# genomic-coordinate-converter
+# 📝 genomic-coordinate-converter
 
-基因组坐标系统转换(hg19->hg38等,基于chain文件)
+**基因组坐标系统转换(hg19->hg38等,基于chain文件)**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| input_file | 输入坐标BED路径 | coords_hg19.bed |
-| output_file | 输出转换后BED路径 | coords_hg38.bed |
-| from_build | 源基因组版本 | hg19 |
-| to_build | 目标基因组版本 | hg38 |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd genomic-coordinate-converter
 python genomic-coordinate-converter.py
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
-```
-无额外依赖
-```
+无外部依赖，纯Python标准库
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

@@ -1,23 +1,24 @@
-# sequencing-depth-calculator
+# 🧬 sequencing-depth-calculator
 
-根据FASTQ和基因组大小计算测序深度
+**根据FASTQ和基因组大小计算测序深度**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| input_file | 输入FASTQ文件路径 | input.fastq |
-| genome_size | 基因组大小(bp) | 3000000000 |
-| read_length | 平均read长度(bp) | 150 |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd sequencing-depth-calculator
 python sequencing-depth-calculator.py
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
-```
-无额外依赖
-```
+无外部依赖，纯Python标准库
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

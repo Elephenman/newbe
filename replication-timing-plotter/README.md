@@ -1,24 +1,24 @@
-# replication-timing-plotter
+# 🧪 replication-timing-plotter
 
-复制时序(Repli-seq)数据可视化
+**复制时序(Repli-seq)数据可视化**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| input_file | Repli-seq信号文件(CSV: chr,start,end,early,late) | repliseq.csv |
-| output_plot | 输出图片路径 | replication_timing.png |
-| chrom | 指定染色体 | chr1 |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd replication-timing-plotter
 python replication-timing-plotter.py
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
-```
-pandas
-matplotlib
-```
+无外部依赖，纯Python标准库
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

@@ -1,43 +1,42 @@
-# ridgeline-plot-maker
+# 🎨 ridgeline-plot-maker
 
-> Ridgeline山脊图（多组分布对比）
+**Ridgeline山脊图（多组分布对比）**
 
-## 一句话说明
-
-Ridgeline山脊图（多组分布对比） — 针对浙大生信研究生+陆慧智课题组（DNA损伤修复）方向优化。
-
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| input_file | 输入文件路径 | input.txt |
-| output_file | 输出文件路径 | output_ridgeline_plot_maker.txt |
-| param1 | 主参数（阈值/数值） | 0.05 |
-| param2 | 辅参数（模式/格式） | default |
-
-## 使用示例
+## 使用方法
 
 ```bash
-# Python工具
-cd ridgeline-plot-maker
-python ridgeline_plot_maker.R
-
-# R工具
 cd ridgeline-plot-maker
 Rscript ridgeline_plot_maker.R
 ```
 
-所有参数通过交互式 `input()` 输入，带默认值可直接回车跳过。
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
 
-## 输出格式
+### 参数说明
 
-- TSV表格文件，带注释行
-- 包含处理统计摘要
+| # | 参数 | 默认值 |
+|---|------|--------|
+| 1 | `Input file path` | `input.txt` |
+| 2 | `Output file path` | `output_ridgeline_plot_maker.txt` |
+| 3 | `Main parameter (threshold)` | `0.05` |
+| 4 | `Secondary parameter (mode)` | `default` |
+
+### 交互式输入示例
+
+```
+Input file path [默认: input.txt]: 
+Output file path [默认: output_ridgeline_plot_maker.txt]: 
+Main parameter (threshold) [默认: 0.05]: 
+Secondary parameter (mode) [默认: default]: 
+```
 
 ## 依赖
 
-见 [requirements.txt](./requirements.txt)
+请参考脚本中的 library() 调用
 
-## 许可
+## 输出
 
-MIT License — [Newbe](https://github.com/Elephenman/newbe)
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

@@ -1,24 +1,24 @@
-# rna-editing-site-finder
+# 🧬 rna-editing-site-finder
 
-从RNA-seq VCF中筛选候选RNA编辑位点(A>I/G等)
+**从RNA-seq VCF中筛选候选RNA编辑位点(A>I/G等)**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| input_vcf | RNA-seq变异VCF路径 | rna_variants.vcf |
-| output_file | 候选编辑位点输出 | rna_editing.tsv |
-| min_alt_freq | 最低变异频率 | 0.1 |
-| min_depth | 最低测序深度 | 10 |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd rna-editing-site-finder
 python rna-editing-site-finder.py
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
-```
-无额外依赖
-```
+无外部依赖，纯Python标准库
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

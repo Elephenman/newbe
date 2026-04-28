@@ -1,24 +1,24 @@
-# dna-damage-hotspot-finder
+# 🧪 dna-damage-hotspot-finder
 
-DNA损伤修复热点区域识别(DDR相关)
+**DNA损伤修复热点区域识别(DDR相关)**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| input_file | DNA损伤信号文件BED路径 | damage_peaks.bed |
-| gene_file | 基因注释GTF路径 | genes.gtf |
-| output_file | 输出热点区域路径 | damage_hotspots.tsv |
-| merge_distance | 合并距离(bp) | 500 |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd dna-damage-hotspot-finder
 python dna-damage-hotspot-finder.py
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
-```
-无额外依赖
-```
+无外部依赖，纯Python标准库
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

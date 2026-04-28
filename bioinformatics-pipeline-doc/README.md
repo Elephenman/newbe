@@ -1,23 +1,24 @@
-# bioinformatics-pipeline-doc
+# 📝 bioinformatics-pipeline-doc
 
-生信分析流程文档自动生成器
+**生信分析流程文档自动生成器**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| input_file | 流程脚本路径(.py/.R/.sh) | pipeline.py |
-| output_file | 输出文档路径 | pipeline_doc.md |
-| title | 文档标题 | Analysis Pipeline |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd bioinformatics-pipeline-doc
 python bioinformatics-pipeline-doc.py
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
-```
-无额外依赖
-```
+无外部依赖，纯Python标准库
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

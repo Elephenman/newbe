@@ -1,25 +1,24 @@
-# fastq-quality-trimmer
+# 🧬 fastq-quality-trimmer
 
-根据质量值对FASTQ reads进行3'/5'端截尾修剪
+**根据质量值对FASTQ reads进行3'/5'端截尾修剪**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| input_file | 输入FASTQ文件路径 | input.fastq |
-| output_file | 输出FASTQ文件路径 | trimmed.fastq |
-| min_quality | 最低质量阈值(Phred33) | 20 |
-| min_length | 修剪后最短read长度 | 30 |
-| trim_end | 修剪方向(3prime/5prime/both) | 3prime |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd fastq-quality-trimmer
 python fastq-quality-trimmer.py
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
-```
-biopython
-```
+无外部依赖，纯Python标准库
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

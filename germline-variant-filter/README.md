@@ -1,25 +1,24 @@
-# germline-variant-filter
+# 🧪 germline-variant-filter
 
-胚系变异过滤与分类(Pathogenic/Likely Pathogenic/Benign等)
+**胚系变异过滤与分类(Pathogenic/Likely Pathogenic/Benign等)**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| input_vcf | 输入VCF文件路径 | germline.vcf |
-| output_file | 过滤后VCF输出路径 | filtered_germline.vcf |
-| min_qual | 最低QUAL值 | 30 |
-| min_depth | 最低DP | 10 |
-| af_threshold | 等位基因频率阈值(0=不过滤) | 0 |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd germline-variant-filter
 python germline-variant-filter.py
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
-```
-无额外依赖
-```
+无外部依赖，纯Python标准库
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

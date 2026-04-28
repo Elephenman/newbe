@@ -1,23 +1,24 @@
-# heatmap-annotation-builder
+# 📊 heatmap-annotation-builder
 
-热图行列注释文件构建器
+**热图行列注释文件构建器**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| sample_file | 样本信息CSV(样本,组,批次等) | samples.csv |
-| output_file | 输出注释文件路径 | heatmap_anno.csv |
-| color_scheme | 配色方案(set1/set2/dark2) | set1 |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd heatmap-annotation-builder
 python heatmap-annotation-builder.py
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
-```
-无额外依赖
-```
+无外部依赖，纯Python标准库
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

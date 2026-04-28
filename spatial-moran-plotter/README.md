@@ -1,24 +1,27 @@
-# spatial-moran-plotter
+# 🔬 spatial-moran-plotter
 
-计算空间基因表达的Moran's I自相关统计量
+**计算空间基因表达的Moran's I自相关统计量**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| rds_file | Seurat空间对象RDS路径 | spatial.rds |
-| genes | 目标基因(逗号分隔) |  |
-| output_file | 输出CSV路径 | moran_results.csv |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd spatial-moran-plotter
 Rscript spatial-moran-plotter.R
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
+```r
+install.packages('Seurat')  # 或 BiocManager::install('Seurat')
+install.packages('spdep')  # 或 BiocManager::install('spdep')
 ```
-Seurat
-spdep
-```
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

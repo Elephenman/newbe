@@ -1,24 +1,24 @@
-# bed-fasta-extractor
+# 🧬 bed-fasta-extractor
 
-根据BED坐标从基因组FASTA中提取对应序列
+**根据BED坐标从基因组FASTA中提取对应序列**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| bed_file | 输入BED文件路径 | regions.bed |
-| fasta_file | 基因组FASTA路径 | genome.fa |
-| output_file | 输出FASTA路径 | extracted.fa |
-| flank | 两侧扩展碱基数 | 0 |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd bed-fasta-extractor
 python bed-fasta-extractor.py
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
-```
-无额外依赖
-```
+无外部依赖，纯Python标准库
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

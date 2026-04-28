@@ -1,26 +1,24 @@
-# bam-coverage-plotter
+# 🧬 bam-coverage-plotter
 
-从BAM文件计算并绘制基因组覆盖度分布图
+**从BAM文件计算并绘制基因组覆盖度分布图**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| input_bam | 输入BAM文件路径 | input.bam |
-| output_plot | 输出图片路径 | coverage.png |
-| bin_size | 窗口大小(bp) | 1000 |
-| chrom | 指定染色体(留空=全部) |  |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd bam-coverage-plotter
 python bam-coverage-plotter.py
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
-```
-pysam
-matplotlib
-numpy
-```
+无外部依赖，纯Python标准库
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

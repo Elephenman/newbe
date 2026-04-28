@@ -1,26 +1,26 @@
-# deg-pathway-annotator
+# 📊 deg-pathway-annotator
 
-将DEG结果自动注释到KEGG/GO通路并生成富集报告
+**将DEG结果自动注释到KEGG/GO通路并生成富集报告**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| deg_file | DEG结果CSV路径(含gene/log2FC/padj) | deg_results.csv |
-| organism | 物种(hsa/mmu) | hsa |
-| pvalue_cutoff | P值阈值 | 0.05 |
-| qvalue_cutoff | q值阈值 | 0.2 |
-| output_dir | 输出目录 | pathway_results |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd deg-pathway-annotator
 Rscript deg-pathway-annotator.R
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
+```r
+install.packages('clusterProfiler')  # 或 BiocManager::install('clusterProfiler')
 ```
-clusterProfiler
-org.Hs.eg.db
-```
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

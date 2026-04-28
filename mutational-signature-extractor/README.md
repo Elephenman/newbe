@@ -1,24 +1,24 @@
-# mutational-signature-extractor
+# 🧬 mutational-signature-extractor
 
-从VCF提取突变特征(SBS96谱)并可视化
+**从VCF提取突变特征(SBS96谱)并可视化**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| input_vcf | 输入VCF文件路径 | somatic.vcf |
-| output_plot | 输出SBS96谱图片路径 | sbs96.png |
-| output_file | 输出SBS96计数CSV | sbs96_counts.csv |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd mutational-signature-extractor
 python mutational-signature-extractor.py
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
-```
-matplotlib
-numpy
-```
+无外部依赖，纯Python标准库
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

@@ -1,24 +1,27 @@
-# spatial-deconvolution-wrapper
+# 🔬 spatial-deconvolution-wrapper
 
-空间转录组细胞类型反卷积(SPOTlight)
+**空间转录组细胞类型反卷积(SPOTlight)**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| spatial_rds | 空间Seurat对象RDS | spatial.rds |
-| sc_rds | 单细胞参考Seurat对象RDS | reference.rds |
-| output_rds | 反卷积结果RDS路径 | deconv.rds |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd spatial-deconvolution-wrapper
 Rscript spatial-deconvolution-wrapper.R
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
+```r
+install.packages('SPOTlight')  # 或 BiocManager::install('SPOTlight')
+install.packages('Seurat')  # 或 BiocManager::install('Seurat')
 ```
-Seurat
-SPOTlight
-```
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

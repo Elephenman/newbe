@@ -1,25 +1,24 @@
-# bam-filter-by-flag
+# 🧬 bam-filter-by-flag
 
-根据SAM flag过滤BAM文件中的reads
+**根据SAM flag过滤BAM文件中的reads**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| input_bam | 输入BAM文件路径 | input.bam |
-| output_bam | 输出BAM文件路径 | filtered.bam |
-| exclude_flags | 排除flag值(如1024=PCR重复) | 1024 |
-| require_flags | 要求flag值 | 0 |
-| min_mapq | 最低MAPQ | 0 |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd bam-filter-by-flag
 python bam-filter-by-flag.py
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
-```
-pysam
-```
+无外部依赖，纯Python标准库
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

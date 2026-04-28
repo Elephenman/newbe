@@ -1,25 +1,27 @@
-# expression-violin-plotter
+# 📊 expression-violin-plotter
 
-绘制多基因/多样本表达量小提琴图
+**绘制多基因/多样本表达量小提琴图**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| expression_file | 表达矩阵CSV | expression.csv |
-| genes | 目标基因(逗号分隔) |  |
-| output_plot | 输出图片路径 | violin_plot.png |
-| group_file | 分组CSV(样本,组) |  |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd expression-violin-plotter
 Rscript expression-violin-plotter.R
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
+```r
+install.packages('ggplot2')  # 或 BiocManager::install('ggplot2')
+install.packages('reshape2')  # 或 BiocManager::install('reshape2')
 ```
-ggplot2
-reshape2
-```
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

@@ -1,25 +1,26 @@
-# wgcna-module-extractor
+# 📊 wgcna-module-extractor
 
-WGCNA共表达网络模块识别与可视化
+**WGCNA共表达网络模块识别与可视化**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| expr_file | 表达矩阵CSV(行=基因,列=样本) | expression.csv |
-| soft_power | 软阈值幂次(0=自动) | 0 |
-| min_module_size | 最小模块大小 | 30 |
-| output_dir | 输出目录 | wgcna_results |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd wgcna-module-extractor
 Rscript wgcna-module-extractor.R
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
+```r
+install.packages('WGCNA')  # 或 BiocManager::install('WGCNA')
 ```
-WGCNA
-dynamicTreeCut
-```
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

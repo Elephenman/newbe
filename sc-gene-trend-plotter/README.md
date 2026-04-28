@@ -1,25 +1,27 @@
-# sc-gene-trend-plotter
+# 🔬 sc-gene-trend-plotter
 
-单细胞基因沿伪时间趋势图
+**单细胞基因沿伪时间趋势图**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| rds_file | Seurat对象RDS路径(含伪时间) | seurat_obj.rds |
-| genes | 目标基因(逗号分隔) |  |
-| pseudotime_col | 伪时间列名 | pseudotime |
-| output_plot | 输出图片路径 | gene_trend.png |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd sc-gene-trend-plotter
 Rscript sc-gene-trend-plotter.R
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
+```r
+install.packages('Seurat')  # 或 BiocManager::install('Seurat')
+install.packages('ggplot2')  # 或 BiocManager::install('ggplot2')
 ```
-Seurat
-ggplot2
-```
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

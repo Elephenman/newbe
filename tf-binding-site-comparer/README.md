@@ -1,23 +1,24 @@
-# tf-binding-site-comparer
+# 🧪 tf-binding-site-comparer
 
-比较两个条件下的TF结合位点差异
+**比较两个条件下的TF结合位点差异**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| peak_file1 | 条件1 peak文件BED路径 | cond1_peaks.bed |
-| peak_file2 | 条件2 peak文件BED路径 | cond2_peaks.bed |
-| output_file | 输出差异peak路径 | diff_peaks.tsv |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd tf-binding-site-comparer
 python tf-binding-site-comparer.py
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
-```
-无额外依赖
-```
+无外部依赖，纯Python标准库
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

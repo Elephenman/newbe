@@ -1,24 +1,24 @@
-# deg-venn-plotter
+# 📊 deg-venn-plotter
 
-对多组DEG结果绘制韦恩图，展示共有/特有基因
+**对多组DEG结果绘制韦恩图，展示共有/特有基因**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| deg_files | DEG基因列表文件(逗号分隔) | deg1.txt,deg2.txt,deg3.txt |
-| output_plot | 输出图片路径 | deg_venn.png |
-| labels | 组标签(逗号分隔) | G1,G2,G3 |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd deg-venn-plotter
 python deg-venn-plotter.py
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
-```
-matplotlib
-matplotlib-venn
-```
+无外部依赖，纯Python标准库
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

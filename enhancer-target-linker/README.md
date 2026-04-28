@@ -1,24 +1,24 @@
-# enhancer-target-linker
+# 🧪 enhancer-target-linker
 
-基于Hi-C/ChIA-PET数据关联增强子与靶基因
+**基于Hi-C/ChIA-PET数据关联增强子与靶基因**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| interaction_file | 交互文件BEDPE路径 | interactions.bedpe |
-| gene_file | 基因注释GTF路径 | genes.gtf |
-| output_file | 输出增强子-基因关联路径 | enhancer_gene.tsv |
-| max_distance | 最大关联距离(bp) | 1000000 |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd enhancer-target-linker
 python enhancer-target-linker.py
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
-```
-无额外依赖
-```
+无外部依赖，纯Python标准库
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

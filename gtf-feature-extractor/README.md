@@ -1,11 +1,42 @@
 # 🧬 gtf-feature-extractor
-**从GTF/GFF提取指定特征到表格** — 正则解析属性字段
 
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| GTF/GFF文件路径 | 输入文件 | annotation.gtf |
-| 提取类型 | gene/exon/CDS/transcript | gene |
-| 是否过滤非标准染色体 | yes/no | yes |
-| 输出格式 | csv/tsv | csv |
+**从GTF/GFF提取指定特征到表格**
 
-MIT License
+## 使用方法
+
+```bash
+cd gtf-feature-extractor
+python gtf_feature_extractor.py
+```
+
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
+### 参数说明
+
+| # | 参数 | 默认值 |
+|---|------|--------|
+| 1 | `输入GTF/GFF文件路径` | `annotation.gtf` |
+| 2 | `提取类型(gene/exon/CDS/transcript)` | `gene` |
+| 3 | `是否过滤非标准染色体(yes/no)` | `yes` |
+| 4 | `输出格式(csv/tsv)` | `csv` |
+
+### 交互式输入示例
+
+```
+输入GTF/GFF文件路径 [默认: annotation.gtf]: 
+提取类型(gene/exon/CDS/transcript) [默认: gene]: 
+是否过滤非标准染色体(yes/no) [默认: yes]: 
+输出格式(csv/tsv) [默认: csv]: 
+```
+
+## 依赖
+
+无外部依赖，纯Python标准库
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

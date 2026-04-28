@@ -1,24 +1,24 @@
-# multi-fasta-concatenator
+# 🧬 multi-fasta-concatenator
 
-将多个FASTA文件合并为一个，添加文件名前缀避免ID冲突
+**将多个FASTA文件合并为一个，添加文件名前缀避免ID冲突**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| input_dir | 输入FASTA目录 | . |
-| output_file | 合并输出FASTA路径 | concatenated.fa |
-| add_prefix | 添加文件名前缀(yes/no) | yes |
-| pattern | 文件匹配模式 | *.fasta |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd multi-fasta-concatenator
 python multi-fasta-concatenator.py
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
-```
-无额外依赖
-```
+无外部依赖，纯Python标准库
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

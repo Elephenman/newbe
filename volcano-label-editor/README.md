@@ -1,26 +1,24 @@
-# volcano-label-editor
+# 📊 volcano-label-editor
 
-火山图标签编辑器(添加/修改/删除基因标签)
+**火山图标签编辑器(添加/修改/删除基因标签)**
 
-## 参数说明
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| input_file | DEG结果CSV(基因,log2FC,padj) | deg_results.csv |
-| output_plot | 输出火山图路径 | volcano_labeled.png |
-| label_genes | 标注基因(逗号分隔) | TP53,BRCA1,MYC |
-| log2fc_threshold | log2FC阈值 | 1 |
-| padj_threshold | padj阈值 | 0.05 |
-
-## 使用示例
+## 使用方法
 
 ```bash
+cd volcano-label-editor
 python volcano-label-editor.py
 ```
 
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
 ## 依赖
 
-```
-pandas
-matplotlib
-```
+无外部依赖，纯Python标准库
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT

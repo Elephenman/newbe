@@ -1,14 +1,44 @@
-# 🎯 pca-tsne-umap-plotter
-**表达矩阵降维可视化三合一** — PCA/tSNE/UMAP
+# 📊 pca-tsne-umap-plotter
 
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| 表达矩阵CSV路径 | 行=基因,列=样本 | expression.csv |
-| 分组标签文件 | 样本名+分组(TSV) | 留空=无分组 |
-| 降维方法 | PCA/tSNE/UMAP/all | all |
-| 是否标注样本名 | yes/no | no |
-| 配色方案 | default/Set2/tab10 | default |
+**表达矩阵降维可视化三合一**
 
-依赖: numpy, matplotlib, scikit-learn, umap-learn(可选)
+## 使用方法
 
-MIT License
+```bash
+cd pca-tsne-umap-plotter
+python pca_tsne_umap_plotter.py
+```
+
+运行后按提示依次输入参数，所有参数均有默认值，直接回车即可使用默认值。
+
+### 参数说明
+
+| # | 参数 | 默认值 |
+|---|------|--------|
+| 1 | `表达矩阵CSV路径` | `expression.csv` |
+| 2 | `分组标签文件路径(留空=无分组)` | `` |
+| 3 | `降维方法(PCA/tSNE/UMAP/all)` | `all` |
+| 4 | `是否标注样本名(yes/no)` | `no` |
+| 5 | `配色方案(default/Set2/tab10)` | `default` |
+
+### 交互式输入示例
+
+```
+表达矩阵CSV路径 [默认: expression.csv]: 
+分组标签文件路径(留空=无分组) [默认: ]: 
+降维方法(PCA/tSNE/UMAP/all) [默认: all]: 
+是否标注样本名(yes/no) [默认: no]: 
+配色方案(default/Set2/tab10) [默认: default]: 
+```
+
+## 依赖
+
+无外部依赖，纯Python标准库
+
+## 输出
+
+脚本运行后会在当前目录生成结果文件，具体文件名见运行提示。
+
+## License
+
+MIT
