@@ -88,7 +88,9 @@ Rscript seurat_qc_pipeline.R
 
 ## 📋 工具目录
 
-### 🧬 测序数据处理 (1-10)
+### 🧬 测序数据处理（30个）
+
+FASTQ/BAM/SAM/VCF/GTF/BED/FASTA 格式的质控、过滤、转换、统计工具。
 
 | # | 工具 | 语言 | 说明 |
 |---|------|------|------|
@@ -102,11 +104,6 @@ Rscript seurat_qc_pipeline.R
 | 8 | [sequence-stat-visualizer](./sequence-stat-visualizer/) | Python | 多序列统计+可视化（长度/GC/氨基酸） |
 | 9 | [kmer-counter](./kmer-counter/) | Python | K-mer频次统计与差异比较 |
 | 10 | [bed-merge-annotate](./bed-merge-annotate/) | Python | BED文件合并+GTF基因注释 |
-
-### 🧬 测序数据处理扩展 (51-60)
-
-| # | 工具 | 语言 | 说明 |
-|---|------|------|------|
 | 51 | [sam-to-fastq-converter](./sam-to-fastq-converter/) | Python | SAM/BAM转FASTQ+可选拆分paired-end |
 | 52 | [read-duplication-calculator](./read-duplication-calculator/) | Python | 测序reads重复率统计+分布可视化 |
 | 53 | [adapter-trimmer-wrapper](./adapter-trimmer-wrapper/) | Python | FASTQ adapter序列检测+修剪报告 |
@@ -117,8 +114,20 @@ Rscript seurat_qc_pipeline.R
 | 58 | [genome-size-estimator](./genome-size-estimator/) | Python | K-mer频率估算基因组大小+杂合度 |
 | 59 | [fastq-duplicate-remover](./fastq-duplicate-remover/) | Python | FASTQ精确重复reads去重+统计 |
 | 60 | [gff3-to-gtf-converter](./gff3-to-gtf-converter/) | Python | GFF3→GTF格式转换+属性保留 |
+| 111 | [fastq-quality-trimmer](./fastq-quality-trimmer/) | Python | 根据质量值对FASTQ reads进行3'/5'端截尾修剪 |
+| 112 | [bam-coverage-plotter](./bam-coverage-plotter/) | Python | 从BAM文件计算并绘制基因组覆盖度分布图 |
+| 113 | [vcf-concordance-checker](./vcf-concordance-checker/) | Python | 比较两个VCF文件的变异一致性 |
+| 114 | [fasta-stats-reporter](./fasta-stats-reporter/) | Python | 统计FASTA文件长度/GC/N含量等 |
+| 115 | [sequencing-depth-calculator](./sequencing-depth-calculator/) | Python | 根据FASTQ和基因组大小计算测序深度 |
+| 116 | [fastq-subset-sampler](./fastq-subset-sampler/) | Python | 从FASTQ中随机采样指定数量或比例的reads |
+| 117 | [bam-filter-by-flag](./bam-filter-by-flag/) | Python | 根据SAM flag过滤BAM reads |
+| 118 | [vcf-genotype-extractor](./vcf-genotype-extractor/) | Python | 从VCF提取指定样本的基因型矩阵 |
+| 119 | [bed-fasta-extractor](./bed-fasta-extractor/) | Python | 根据BED坐标从FASTA中提取序列 |
+| 120 | [multi-fasta-concatenator](./multi-fasta-concatenator/) | Python | 多FASTA合并+文件名前缀避免ID冲突 |
 
-### 📊 转录组/表达分析 (11-20)
+### 📊 转录组/表达分析（30个）
+
+DESeq2/富集分析/GSEA/WGCNA/生存分析/标准化/差异表达工具。
 
 | # | 工具 | 语言 | 说明 |
 |---|------|------|------|
@@ -132,11 +141,6 @@ Rscript seurat_qc_pipeline.R
 | 18 | [co-expression-network](./co-expression-network/) | R | WGCNA简化版一键网络构建 |
 | 19 | [survival-expression-correlator](./survival-expression-correlator/) | R | 基因表达与生存关联分析+KM曲线 |
 | 20 | [batch-effect-inspector](./batch-effect-inspector/) | Python | 批次效应检测+PCA可视化 |
-
-### 📊 转录组/表达分析扩展 (61-70)
-
-| # | 工具 | 语言 | 说明 |
-|---|------|------|------|
 | 61 | [volcano-plot-enhancer](./volcano-plot-enhancer/) | Python | 火山图增强版（标注+配色+阈值线） |
 | 62 | [pathway-heatmap-builder](./pathway-heatmap-builder/) | R | 通路基因集表达热图+分层聚类 |
 | 63 | [gene-length-normalizer](./gene-length-normalizer/) | Python | 基因长度偏差校正（RPKM/TPM/GC） |
@@ -147,136 +151,6 @@ Rscript seurat_qc_pipeline.R
 | 68 | [alternative-splicing-detector](./alternative-splicing-detector/) | R | 可变剪接事件检测+可视化 |
 | 69 | [gene-set-enrichment-visualizer](./gene-set-enrichment-visualizer/) | R | 富集结果多维度可视化（气泡/条形/网络） |
 | 70 | [expression-correlation-matrix](./expression-correlation-matrix/) | Python | 基因表达相关性矩阵+热图 |
-
-### 🔬 单细胞/空间组学 (21-28)
-
-| # | 工具 | 语言 | 说明 |
-|---|------|------|------|
-| 21 | [seurat-qc-pipeline](./seurat-qc-pipeline/) | R | Seurat质控一键流水线 |
-| 22 | [cell-type-annotator](./cell-type-annotator/) | R | 单细胞自动注释辅助（marker匹配） |
-| 23 | [umap-batch-plotter](./umap-batch-plotter/) | R | UMAP按多维度批量分色绘图 |
-| 24 | [pseudotime-setup](./pseudotime-setup/) | R | 拟时序分析启动器（Monocle3/Slingshot） |
-| 25 | [cellchat-interaction-parser](./cellchat-interaction-parser/) | R | CellChat细胞通讯一键分析 |
-| 26 | [doublet-detector-wrapper](./doublet-detector-wrapper/) | R | 单细胞doublet检测+过滤 |
-| 27 | [spatial-spot-annotator](./spatial-spot-annotator/) | R | 空间转录组spot自动注释 |
-| 28 | [sc-marker-finder](./sc-marker-finder/) | R | 单细胞marker基因批量查找 |
-
-### 🔬 单细胞/空间组学扩展 (71-80)
-
-| # | 工具 | 语言 | 说明 |
-|---|------|------|------|
-| 71 | [seurat-integration-helper](./seurat-integration-helper/) | R | Seurat多样本整合辅助+批次校正评估 |
-| 72 | [sc-trajectory-comparer](./sc-trajectory-comparer/) | R | 多拟时序方法结果对比+一致性评估 |
-| 73 | [cell-proportion-analyzer](./cell-proportion-analyzer/) | R | 细胞类型比例变化分析+堆叠条形图 |
-| 74 | [sc-cluster-stability-checker](./sc-cluster-stability-checker/) | R | 单细胞聚类稳定性评估+分辨率优化 |
-| 75 | [spatial-deg-finder](./spatial-deg-finder/) | R | 空间转录组差异表达基因发现 |
-| 76 | [sc-gene-module-extractor](./sc-gene-module-extractor/) | R | 单细胞基因模块提取+活性评分 |
-| 77 | [neighborhood-enrichment-calculator](./neighborhood-enrichment-calculator/) | R | 细胞邻域富集分析（空间邻近偏好） |
-| 78 | [sc-vega-pathway-plotter](./sc-vega-pathway-plotter/) | R | 单细胞通路活性小提琴图+统计 |
-| 79 | [spatial-variability-mapper](./spatial-variability-mapper/) | R | 空间基因表达变异度可视化 |
-| 80 | [cell-cycle-scorer](./cell-cycle-scorer/) | R | 单细胞周期评分+G1/S/G2M分类 |
-
-### 🧪 基因组/变异/调控 (29-35)
-
-| # | 工具 | 语言 | 说明 |
-|---|------|------|------|
-| 29 | [snp-stats-reporter](./snp-stats-reporter/) | Python | SNP/InDel变异统计报告+MAF分布 |
-| 30 | [motif-scanner](./motif-scanner/) | Python | DNA序列motif扫描（JASPAR库） |
-| 31 | [genome-density-plotter](./genome-density-plotter/) | Python | 染色体密度图（circos/线性） |
-| 32 | [ld-decay-calculator](./ld-decay-calculator/) | Python | LD衰减曲线计算与绘图 |
-| 33 | [promoter-extractor](./promoter-extractor/) | Python | 批量提取启动子序列+TSS注释 |
-| 34 | [cnv-segment-plotter](./cnv-segment-plotter/) | Python | CNV分段结果可视化 |
-| 35 | [dna-damage-gene-collector](./dna-damage-gene-collector/) | Python | 🔥DNA损伤修复基因集（对口陆慧智课题组） |
-
-### 🧪 基因组/变异/调控扩展 (81-90)
-
-| # | 工具 | 语言 | 说明 |
-|---|------|------|------|
-| 81 | [somatic-mutation-filter](./somatic-mutation-filter/) | Python | 体细胞变异过滤（肿瘤/正常配对） |
-| 82 | [structural-variant-summarizer](./structural-variant-summarizer/) | Python | 结构变异(SV)类型统计+环形图 |
-| 83 | [hi-c-contact-mapper](./hi-c-contact-mapper/) | Python | Hi-C接触矩阵可视化+TAD标注 |
-| 84 | [atac-peak-annotator](./atac-peak-annotator/) | Python | ATAC-seq peak最近基因+调控元件注释 |
-| 85 | [chip-seq-peak-merger](./chip-seq-peak-merger/) | Python | ChIP-seq peak合并+共有peak提取 |
-| 86 | [repeat-region-masker](./repeat-region-masker/) | Python | 基因组重复序列标注+mask文件生成 |
-| 87 | [codon-usage-analyzer](./codon-usage-analyzer/) | Python | 密码子使用偏性分析+RSCU/CAI计算 |
-| 88 | [protein-domain-mapper](./protein-domain-mapper/) | Python | 蛋白质结构域注释+可视化分布 |
-| 89 | [gene-ortholog-finder](./gene-ortholog-finder/) | Python | 跨物种同源基因查找+进化树构建 |
-| 90 | [variant-effect-predictor-wrapper](./variant-effect-predictor-wrapper/) | Python | VEP/SnpEff结果解析+报告生成 |
-
-### 📖 文献/学术工具 (36-43)
-
-| # | 工具 | 语言 | 说明 |
-|---|------|------|------|
-| 36 | [pubmed-batch-searcher](./pubmed-batch-searcher/) | Python | PubMed批量检索+结果导出 |
-| 37 | [doi-to-citation](./doi-to-citation/) | Python | DOI→APA/MLA/GB-T/BibTeX引用 |
-| 38 | [paper-pdf-meta-extractor](./paper-pdf-meta-extractor/) | Python | PDF论文元数据自动提取 |
-| 39 | [keyword-network-builder](./keyword-network-builder/) | Python | 文献关键词共现网络构建 |
-| 40 | [literature-review-matrix](./literature-review-matrix/) | Python | 文献综述矩阵自动生成 |
-| 41 | [citation-tracker](./citation-tracker/) | Python | 论文被引追踪+趋势图 |
-| 42 | [reference-cleaner](./reference-cleaner/) | Python | 参考文献格式统一清洗+DOI验证 |
-| 43 | [obsidian-paper-note-generator](./obsidian-paper-note-generator/) | Python | 论文→Obsidian笔记模板（精简/详细/组会） |
-
-### 📖 文献/学术工具扩展 (91-100)
-
-| # | 工具 | 语言 | 说明 |
-|---|------|------|------|
-| 91 | [manuscript-word-counter](./manuscript-word-counter/) | Python | 论文逐章节字数统计+合规检查 |
-| 92 | [figure-caption-extractor](./figure-caption-extractor/) | Python | 论文图表标题批量提取+编号校验 |
-| 93 | [supplementary-file-organizer](./supplementary-file-organizer/) | Python | 附件材料整理+编号重排+目录生成 |
-| 94 | [grant-budget-calculator](./grant-budget-calculator/) | Python | 基金预算自动计算+分项汇总 |
-| 95 | [experiment-timer-tracker](./experiment-timer-tracker/) | Python | 实验时间记录+耗时统计+效率报告 |
-| 96 | [lab-reagent-inventory](./lab-reagent-inventory/) | Python | 实验室试剂库存管理+过期预警 |
-| 97 | [conference-abstract-formatter](./conference-abstract-formatter/) | Python | 会议摘要格式化+字数合规检查 |
-| 98 | [research-diary-generator](./research-diary-generator/) | Python | 科研日记模板生成+Markdown格式 |
-| 99 | [thesis-chapter-outline](./thesis-chapter-outline/) | Python | 学位论文章节大纲生成+进度追踪 |
-| 100 | [lab-meeting-minute-generator](./lab-meeting-minute-generator/) | Python | 组会纪要模板生成+待办追踪 |
-
-### 🎨 绘图/数据/流程工具 (44-50)
-
-| # | 工具 | 语言 | 说明 |
-|---|------|------|------|
-| 44 | [sci-color-palette](./sci-color-palette/) | Python | 科研配色方案生成器（Nature/Cell配色库） |
-| 45 | [figure-size-checker](./figure-size-checker/) | Python | 论文图片合规检查（DPI/尺寸/格式） |
-| 46 | [multi-panel-composer](./multi-panel-composer/) | Python | 多子图组合排版（ABCD标签） |
-| 47 | [project-dir-initializer](./project-dir-initializer/) | Python | 科研项目目录一键初始化+git init |
-| 48 | [sample-sheet-validator](./sample-sheet-validator/) | Python | 实验样本表格式校验 |
-| 49 | [conda-env-checker](./conda-env-checker/) | Python | 项目环境依赖一致性检查 |
-| 50 | [pipeline-log-parser](./pipeline-log-parser/) | Python | 分析流程日志解析+耗时统计 |
-
-### 🎨 绘图/数据/流程工具扩展 (101-110)
-
-| # | 工具 | 语言 | 说明 |
-|---|------|------|------|
-| 101 | [circos-plot-builder](./circos-plot-builder/) | Python | Circos环形图数据准备+配置生成 |
-| 102 | [sankey-flow-visualizer](./sankey-flow-visualizer/) | Python | Sankey流向图（数据通路/样本流转） |
-| 103 | [ridgeline-plot-maker](./ridgeline-plot-maker/) | R | Ridgeline山脊图（多组分布对比） |
-| 104 | [correlation-scatter-matrix](./correlation-scatter-matrix/) | Python | 相关性散点矩阵图+回归线 |
-| 105 | [timeline-gantt-plotter](./timeline-gantt-plotter/) | Python | 项目时间线甘特图+里程碑标注 |
-| 106 | [stats-summary-table-maker](./stats-summary-table-maker/) | Python | 统计摘要表一键生成（均值/SD/检验） |
-| 107 | [data-type-converter](./data-type-converter/) | Python | CSV↔TSV↔JSON↔Excel格式互转 |
-| 108 | [markdown-to-slides-converter](./markdown-to-slides-converter/) | Python | Markdown→reveal.js幻灯片转换 |
-| 109 | [notebook-cell-extractor](./notebook-cell-extractor/) | Python | Jupyter notebook指定cell提取+导出 |
-| 110 | [result-file-aggregator](./result-file-aggregator/) | Python | 分析结果文件自动汇总+索引生成 |
-
-### 🧬 测序数据处理进阶 (111-120)
-
-| # | 工具 | 语言 | 说明 |
-|---|------|------|------|
-| 111 | [fastq-quality-trimmer](./fastq-quality-trimmer/) | Python | 根据质量值对FASTQ reads进行3'/5'端截尾修剪 |
-| 112 | [bam-coverage-plotter](./bam-coverage-plotter/) | Python | 从BAM文件计算并绘制基因组覆盖度分布图 |
-| 113 | [vcf-concordance-checker](./vcf-concordance-checker/) | Python | 比较两个VCF文件的变异一致性 |
-| 114 | [fasta-stats-reporter](./fasta-stats-reporter/) | Python | 统计FASTA文件长度/GC/N含量等 |
-| 115 | [sequencing-depth-calculator](./sequencing-depth-calculator/) | Python | 根据FASTQ和基因组大小计算测序深度 |
-| 116 | [fastq-subset-sampler](./fastq-subset-sampler/) | Python | 从FASTQ中随机采样指定数量或比例的reads |
-| 117 | [bam-filter-by-flag](./bam-filter-by-flag/) | Python | 根据SAM flag过滤BAM reads |
-| 118 | [vcf-genotype-extractor](./vcf-genotype-extractor/) | Python | 从VCF提取指定样本的基因型矩阵 |
-| 119 | [bed-fasta-extractor](./bed-fasta-extractor/) | Python | 根据BED坐标从FASTA中提取序列 |
-| 120 | [multi-fasta-concatenator](./multi-fasta-concatenator/) | Python | 多FASTA合并+文件名前缀避免ID冲突 |
-
-### 📊 转录组/表达分析进阶 (121-130)
-
-| # | 工具 | 语言 | 说明 |
-|---|------|------|------|
 | 121 | [deg-pathway-annotator](./deg-pathway-annotator/) | R | DEG结果自动注释到KEGG/GO通路 |
 | 122 | [wgcna-module-extractor](./wgcna-module-extractor/) | R | WGCNA共表达网络模块识别 |
 | 123 | [rna-seq-normalizer](./rna-seq-normalizer/) | Python | RNA-seq计数TPM/FPKM/RPKM/CPM标准化 |
@@ -288,10 +162,30 @@ Rscript seurat_qc_pipeline.R
 | 129 | [splice-junction-counter](./splice-junction-counter/) | Python | STAR SJ.out.tab剪接junction统计 |
 | 130 | [gene-id-version-normalizer](./gene-id-version-normalizer/) | Python | 基因ID格式统一(去版本号等) |
 
-### 🔬 单细胞/空间组学进阶 (131-140)
+### 🔬 单细胞/空间组学（28个）
+
+Seurat质控/注释/整合/拟时序/CellChat/空间转录组/双重细胞工具。
 
 | # | 工具 | 语言 | 说明 |
 |---|------|------|------|
+| 21 | [seurat-qc-pipeline](./seurat-qc-pipeline/) | R | Seurat质控一键流水线 |
+| 22 | [cell-type-annotator](./cell-type-annotator/) | R | 单细胞自动注释辅助（marker匹配） |
+| 23 | [umap-batch-plotter](./umap-batch-plotter/) | R | UMAP按多维度批量分色绘图 |
+| 24 | [pseudotime-setup](./pseudotime-setup/) | R | 拟时序分析启动器（Monocle3/Slingshot） |
+| 25 | [cellchat-interaction-parser](./cellchat-interaction-parser/) | R | CellChat细胞通讯一键分析 |
+| 26 | [doublet-detector-wrapper](./doublet-detector-wrapper/) | R | 单细胞doublet检测+过滤 |
+| 27 | [spatial-spot-annotator](./spatial-spot-annotator/) | R | 空间转录组spot自动注释 |
+| 28 | [sc-marker-finder](./sc-marker-finder/) | R | 单细胞marker基因批量查找 |
+| 71 | [seurat-integration-helper](./seurat-integration-helper/) | R | Seurat多样本整合辅助+批次校正评估 |
+| 72 | [sc-trajectory-comparer](./sc-trajectory-comparer/) | R | 多拟时序方法结果对比+一致性评估 |
+| 73 | [cell-proportion-analyzer](./cell-proportion-analyzer/) | R | 细胞类型比例变化分析+堆叠条形图 |
+| 74 | [sc-cluster-stability-checker](./sc-cluster-stability-checker/) | R | 单细胞聚类稳定性评估+分辨率优化 |
+| 75 | [spatial-deg-finder](./spatial-deg-finder/) | R | 空间转录组差异表达基因发现 |
+| 76 | [sc-gene-module-extractor](./sc-gene-module-extractor/) | R | 单细胞基因模块提取+活性评分 |
+| 77 | [neighborhood-enrichment-calculator](./neighborhood-enrichment-calculator/) | R | 细胞邻域富集分析（空间邻近偏好） |
+| 78 | [sc-vega-pathway-plotter](./sc-vega-pathway-plotter/) | R | 单细胞通路活性小提琴图+统计 |
+| 79 | [spatial-variability-mapper](./spatial-variability-mapper/) | R | 空间基因表达变异度可视化 |
+| 80 | [cell-cycle-scorer](./cell-cycle-scorer/) | R | 单细胞周期评分+G1/S/G2M分类 |
 | 131 | [sc-mitochondria-filter](./sc-mitochondria-filter/) | R | 线粒体基因比例过滤低质量细胞 |
 | 132 | [sc-doublet-visualizer](./sc-doublet-visualizer/) | R | 双细胞检测结果UMAP可视化 |
 | 133 | [spatial-niche-detector](./spatial-niche-detector/) | R | 空间转录组生态位检测 |
@@ -303,10 +197,29 @@ Rscript seurat_qc_pipeline.R
 | 139 | [sc-gene-trend-plotter](./sc-gene-trend-plotter/) | R | 基因沿伪时间趋势图 |
 | 140 | [spatial-neighbor-graph](./spatial-neighbor-graph/) | R | 空间邻域图构建与可视化 |
 
-### 🧪 基因组/变异/调控进阶 (141-150)
+### 🧪 基因组/变异/调控（22个）
+
+SNP/InDel/CNV/SV/甲基化/Hi-C/ATAC-seq/ChIP-seq/DNA损伤修复工具。
 
 | # | 工具 | 语言 | 说明 |
 |---|------|------|------|
+| 29 | [snp-stats-reporter](./snp-stats-reporter/) | Python | SNP/InDel变异统计报告+MAF分布 |
+| 30 | [motif-scanner](./motif-scanner/) | Python | DNA序列motif扫描（JASPAR库） |
+| 31 | [genome-density-plotter](./genome-density-plotter/) | Python | 染色体密度图（circos/线性） |
+| 32 | [ld-decay-calculator](./ld-decay-calculator/) | Python | LD衰减曲线计算与绘图 |
+| 33 | [promoter-extractor](./promoter-extractor/) | Python | 批量提取启动子序列+TSS注释 |
+| 34 | [cnv-segment-plotter](./cnv-segment-plotter/) | Python | CNV分段结果可视化 |
+| 35 | [dna-damage-gene-collector](./dna-damage-gene-collector/) | Python | 🔥DNA损伤修复基因集（对口陆慧智课题组） |
+| 81 | [somatic-mutation-filter](./somatic-mutation-filter/) | Python | 体细胞变异过滤（肿瘤/正常配对） |
+| 82 | [structural-variant-summarizer](./structural-variant-summarizer/) | Python | 结构变异(SV)类型统计+环形图 |
+| 83 | [hi-c-contact-mapper](./hi-c-contact-mapper/) | Python | Hi-C接触矩阵可视化+TAD标注 |
+| 84 | [atac-peak-annotator](./atac-peak-annotator/) | Python | ATAC-seq peak最近基因+调控元件注释 |
+| 85 | [chip-seq-peak-merger](./chip-seq-peak-merger/) | Python | ChIP-seq peak合并+共有peak提取 |
+| 86 | [repeat-region-masker](./repeat-region-masker/) | Python | 基因组重复序列标注+mask文件生成 |
+| 87 | [codon-usage-analyzer](./codon-usage-analyzer/) | Python | 密码子使用偏性分析+RSCU/CAI计算 |
+| 88 | [protein-domain-mapper](./protein-domain-mapper/) | Python | 蛋白质结构域注释+可视化分布 |
+| 89 | [gene-ortholog-finder](./gene-ortholog-finder/) | Python | 跨物种同源基因查找+进化树构建 |
+| 90 | [variant-effect-predictor-wrapper](./variant-effect-predictor-wrapper/) | Python | VEP/SnpEff结果解析+报告生成 |
 | 141 | [germline-variant-filter](./germline-variant-filter/) | Python | 胚系变异过滤与分类 |
 | 142 | [mutational-signature-extractor](./mutational-signature-extractor/) | Python | 突变特征SBS96谱提取与可视化 |
 | 143 | [enhancer-target-linker](./enhancer-target-linker/) | Python | 基于Hi-C数据关联增强子与靶基因 |
@@ -318,10 +231,54 @@ Rscript seurat_qc_pipeline.R
 | 149 | [snp-ld-block-extractor](./snp-ld-block-extractor/) | Python | LD block提取与tag SNP识别 |
 | 150 | [chromatin-state-annotator](./chromatin-state-annotator/) | Python | ChromHMM染色质状态注释 |
 
-### 🎨 文献/学术/绘图/流程进阶 (151-160)
+### 📖 文献/学术工具（18个）
+
+PubMed/DOI/引用/笔记/论文/基金/实验室管理工具。
 
 | # | 工具 | 语言 | 说明 |
 |---|------|------|------|
+| 36 | [pubmed-batch-searcher](./pubmed-batch-searcher/) | Python | PubMed批量检索+结果导出 |
+| 37 | [doi-to-citation](./doi-to-citation/) | Python | DOI→APA/MLA/GB-T/BibTeX引用 |
+| 38 | [paper-pdf-meta-extractor](./paper-pdf-meta-extractor/) | Python | PDF论文元数据自动提取 |
+| 39 | [keyword-network-builder](./keyword-network-builder/) | Python | 文献关键词共现网络构建 |
+| 40 | [literature-review-matrix](./literature-review-matrix/) | Python | 文献综述矩阵自动生成 |
+| 41 | [citation-tracker](./citation-tracker/) | Python | 论文被引追踪+趋势图 |
+| 42 | [reference-cleaner](./reference-cleaner/) | Python | 参考文献格式统一清洗+DOI验证 |
+| 43 | [obsidian-paper-note-generator](./obsidian-paper-note-generator/) | Python | 论文→Obsidian笔记模板（精简/详细/组会） |
+| 91 | [manuscript-word-counter](./manuscript-word-counter/) | Python | 论文逐章节字数统计+合规检查 |
+| 92 | [figure-caption-extractor](./figure-caption-extractor/) | Python | 论文图表标题批量提取+编号校验 |
+| 93 | [supplementary-file-organizer](./supplementary-file-organizer/) | Python | 附件材料整理+编号重排+目录生成 |
+| 94 | [grant-budget-calculator](./grant-budget-calculator/) | Python | 基金预算自动计算+分项汇总 |
+| 95 | [experiment-timer-tracker](./experiment-timer-tracker/) | Python | 实验时间记录+耗时统计+效率报告 |
+| 96 | [lab-reagent-inventory](./lab-reagent-inventory/) | Python | 实验室试剂库存管理+过期预警 |
+| 97 | [conference-abstract-formatter](./conference-abstract-formatter/) | Python | 会议摘要格式化+字数合规检查 |
+| 98 | [research-diary-generator](./research-diary-generator/) | Python | 科研日记模板生成+Markdown格式 |
+| 99 | [thesis-chapter-outline](./thesis-chapter-outline/) | Python | 学位论文章节大纲生成+进度追踪 |
+| 100 | [lab-meeting-minute-generator](./lab-meeting-minute-generator/) | Python | 组会纪要模板生成+待办追踪 |
+
+### 🎨 绘图/数据/流程工具（32个）
+
+配色/出图/排版/项目管理/数据转换/可视化/文档生成工具。
+
+| # | 工具 | 语言 | 说明 |
+|---|------|------|------|
+| 44 | [sci-color-palette](./sci-color-palette/) | Python | 科研配色方案生成器（Nature/Cell配色库） |
+| 45 | [figure-size-checker](./figure-size-checker/) | Python | 论文图片合规检查（DPI/尺寸/格式） |
+| 46 | [multi-panel-composer](./multi-panel-composer/) | Python | 多子图组合排版（ABCD标签） |
+| 47 | [project-dir-initializer](./project-dir-initializer/) | Python | 科研项目目录一键初始化+git init |
+| 48 | [sample-sheet-validator](./sample-sheet-validator/) | Python | 实验样本表格式校验 |
+| 49 | [conda-env-checker](./conda-env-checker/) | Python | 项目环境依赖一致性检查 |
+| 50 | [pipeline-log-parser](./pipeline-log-parser/) | Python | 分析流程日志解析+耗时统计 |
+| 101 | [circos-plot-builder](./circos-plot-builder/) | Python | Circos环形图数据准备+配置生成 |
+| 102 | [sankey-flow-visualizer](./sankey-flow-visualizer/) | Python | Sankey流向图（数据通路/样本流转） |
+| 103 | [ridgeline-plot-maker](./ridgeline-plot-maker/) | R | Ridgeline山脊图（多组分布对比） |
+| 104 | [correlation-scatter-matrix](./correlation-scatter-matrix/) | Python | 相关性散点矩阵图+回归线 |
+| 105 | [timeline-gantt-plotter](./timeline-gantt-plotter/) | Python | 项目时间线甘特图+里程碑标注 |
+| 106 | [stats-summary-table-maker](./stats-summary-table-maker/) | Python | 统计摘要表一键生成（均值/SD/检验） |
+| 107 | [data-type-converter](./data-type-converter/) | Python | CSV↔TSV↔JSON↔Excel格式互转 |
+| 108 | [markdown-to-slides-converter](./markdown-to-slides-converter/) | Python | Markdown→reveal.js幻灯片转换 |
+| 109 | [notebook-cell-extractor](./notebook-cell-extractor/) | Python | Jupyter notebook指定cell提取+导出 |
+| 110 | [result-file-aggregator](./result-file-aggregator/) | Python | 分析结果文件自动汇总+索引生成 |
 | 151 | [paper-figure-organizer](./paper-figure-organizer/) | Python | 论文图片按Figure编号自动整理 |
 | 152 | [experiment-design-checker](./experiment-design-checker/) | Python | 实验设计检查(重复/对照/平衡) |
 | 153 | [bioinformatics-pipeline-doc](./bioinformatics-pipeline-doc/) | Python | 生信流程文档自动生成 |
