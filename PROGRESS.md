@@ -1,4 +1,4 @@
-# Newbe 100+工具开发进度追踪
+# Newbe 160工具开发进度追踪
 
 > 自动化循环：每3小时执行一次，每次脑暴50个新工具+开发+审核+推送+压缩上下文
 
@@ -6,7 +6,7 @@
 
 | 状态 | 数量 |
 |------|------|
-| ✅ 已完成 | 110 |
+| ✅ 已完成 | 160 |
 | 🔨 开发中 | 0 |
 | 🔍 审核中 | 0 |
 | ⏳ 待开发 | 0 |
@@ -149,3 +149,63 @@
 - 完整版：包含完整核心逻辑、交互输入、输出保存
 - 骨架版：包含get_input框架+函数骨架，后续3小时循环会逐步完善
 - 交互版：包含完整交互逻辑（get_input+阈值过滤+输出保存+摘要报告），但核心领域逻辑为通用骨架
+
+## Batch 13 - 测序数据处理进阶 (已完成 ✅)
+- [x] #111 fastq-quality-trimmer ✅ (交互版)
+- [x] #112 bam-coverage-plotter ✅ (交互版)
+- [x] #113 vcf-concordance-checker ✅ (交互版)
+- [x] #114 fasta-stats-reporter ✅ (交互版)
+- [x] #115 sequencing-depth-calculator ✅ (交互版)
+- [x] #116 fastq-subset-sampler ✅ (交互版)
+- [x] #117 bam-filter-by-flag ✅ (交互版)
+- [x] #118 vcf-genotype-extractor ✅ (交互版)
+- [x] #119 bed-fasta-extractor ✅ (交互版)
+- [x] #120 multi-fasta-concatenator ✅ (交互版)
+
+## Batch 14 - 转录组/表达分析进阶 (已完成 ✅)
+- [x] #121 deg-pathway-annotator ✅ (交互版R)
+- [x] #122 wgcna-module-extractor ✅ (交互版R)
+- [x] #123 rna-seq-normalizer ✅ (交互版)
+- [x] #124 gene-fusion-detector ✅ (交互版)
+- [x] #125 isoform-expression-comparer ✅ (交互版R)
+- [x] #126 deg-venn-plotter ✅ (交互版)
+- [x] #127 expression-violin-plotter ✅ (交互版R)
+- [x] #128 rna-editing-site-finder ✅ (交互版)
+- [x] #129 splice-junction-counter ✅ (交互版)
+- [x] #130 gene-id-version-normalizer ✅ (交互版)
+
+## Batch 15 - 单细胞/空间组学进阶 (已完成 ✅)
+- [x] #131 sc-mitochondria-filter ✅ (交互版R)
+- [x] #132 sc-doublet-visualizer ✅ (交互版R)
+- [x] #133 spatial-niche-detector ✅ (交互版R)
+- [x] #134 sc-rna-velocity-runner ✅ (交互版R)
+- [x] #135 spatial-deconvolution-wrapper ✅ (交互版R)
+- [x] #136 sc-subset-extractor ✅ (交互版R)
+- [x] #137 sc-differential-abundance ✅ (交互版R)
+- [x] #138 spatial-moran-plotter ✅ (交互版R)
+- [x] #139 sc-gene-trend-plotter ✅ (交互版R)
+- [x] #140 spatial-neighbor-graph ✅ (交互版R)
+
+## Batch 16 - 基因组/变异/调控进阶 (已完成 ✅)
+- [x] #141 germline-variant-filter ✅ (交互版)
+- [x] #142 mutational-signature-extractor ✅ (交互版)
+- [x] #143 enhancer-target-linker ✅ (交互版)
+- [x] #144 replication-timing-plotter ✅ (交互版)
+- [x] #145 dna-damage-hotspot-finder ✅ (交互版)
+- [x] #146 copy-number-segment-annotator ✅ (交互版)
+- [x] #147 methylation-beta-calculator ✅ (交互版)
+- [x] #148 tf-binding-site-comparer ✅ (交互版)
+- [x] #149 snp-ld-block-extractor ✅ (交互版)
+- [x] #150 chromatin-state-annotator ✅ (交互版)
+
+## Batch 17 - 文献/学术/绘图/流程进阶 (已完成 ✅)
+- [x] #151 paper-figure-organizer ✅ (交互版)
+- [x] #152 experiment-design-checker ✅ (交互版)
+- [x] #153 bioinformatics-pipeline-doc ✅ (交互版)
+- [x] #154 genomic-coordinate-converter ✅ (交互版)
+- [x] #155 heatmap-annotation-builder ✅ (交互版)
+- [x] #156 volcano-label-editor ✅ (交互版)
+- [x] #157 colorblind-safe-palette-generator ✅ (交互版)
+- [x] #158 boxplot-outlier-detector ✅ (交互版)
+- [x] #159 multi-omics-integration-helper ✅ (交互版)
+- [x] #160 benchmark-result-comparator ✅ (交互版)
