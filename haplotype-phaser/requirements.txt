@@ -1,0 +1,2 @@
+# requirements for haplotype-phaser
+pysam>=0.20.0

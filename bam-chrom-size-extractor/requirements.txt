@@ -1,0 +1,2 @@
+# requirements for bam-chrom-size-extractor
+pysam>=0.20.0

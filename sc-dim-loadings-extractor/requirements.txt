@@ -1,0 +1,2 @@
+# requirements for sc-dim-loadings-extractor
+# 仅使用Python标准库

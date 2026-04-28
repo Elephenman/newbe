@@ -1,0 +1,2 @@
+# requirements for workflow-dependency-visualizer
+matplotlib>=3.5.0

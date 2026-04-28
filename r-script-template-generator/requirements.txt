@@ -1,0 +1,2 @@
+# requirements for r-script-template-generator
+# 仅使用Python标准库

@@ -1,0 +1,2 @@
+# requirements for variant-zygosity-analyzer
+pysam>=0.20.0

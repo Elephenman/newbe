@@ -1,0 +1,2 @@
+# requirements for dpi-converter
+Pillow>=9.0.0

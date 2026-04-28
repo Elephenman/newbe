@@ -1,0 +1,4 @@
+# requirements for venn-diagram-generator
+matplotlib>=3.5.0
+matplotlib-venn
+numpy>=1.20.0

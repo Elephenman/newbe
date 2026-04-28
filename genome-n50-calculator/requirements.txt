@@ -1,0 +1,2 @@
+# requirements for genome-n50-calculator
+# 仅使用Python标准库

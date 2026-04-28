@@ -1,0 +1,2 @@
+# requirements for cell-contact-rank-calculator
+# 仅使用Python标准库

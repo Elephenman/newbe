@@ -1,0 +1,2 @@
+# requirements for bed-coverage-interpolator
+pysam>=0.20.0

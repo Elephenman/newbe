@@ -1,0 +1,2 @@
+# requirements for figure-format-migrator
+Pillow>=9.0.0

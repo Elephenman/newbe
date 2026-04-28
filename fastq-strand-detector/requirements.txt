@@ -1,0 +1,2 @@
+# requirements for fastq-strand-detector
+pysam>=0.20.0

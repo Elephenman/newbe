@@ -1,0 +1,2 @@
+# requirements for ddr-gene-mutationality-scorer
+pysam>=0.20.0

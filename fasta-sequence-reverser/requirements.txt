@@ -1,0 +1,2 @@
+# requirements for fasta-sequence-reverser
+# 无需额外依赖，仅使用Python标准库

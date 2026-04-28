@@ -1,0 +1,2 @@
+# requirements for sc-label-transfer-validator
+numpy>=1.20.0

@@ -1,0 +1,2 @@
+# requirements for journal-impact-factor-checker
+# 仅使用Python标准库

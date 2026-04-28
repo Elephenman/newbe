@@ -1,0 +1,2 @@
+# requirements for arxiv-paper-downloader
+requests>=2.28.0
