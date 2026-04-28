@@ -2,13 +2,13 @@
 
 # 🛠️ Newbe
 
-**面向生信研究者的开源工具箱 — 210+ 交互式小工具，开箱即用**
+**面向生信研究者的开源工具箱 — 260+ 交互式小工具，开箱即用**
 
 [![GitHub](https://img.shields.io/badge/GitHub-Elephenman/newbe-blue?logo=github)](https://github.com/Elephenman/newbe)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.8+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![R](https://img.shields.io/badge/R-4.0+-276DC3?logo=r&logoColor=white)](https://cran.r-project.org/)
-[![Tools](https://img.shields.io/badge/Tools-210+-orange)](https://github.com/Elephenman/newbe)
+[![Tools](https://img.shields.io/badge/Tools-260+-orange)](https://github.com/Elephenman/newbe)
 
 </div>
 
@@ -16,7 +16,7 @@
 
 ## 🌟 Newbe 是什么？
 
-**Newbe** 是一个面向生物信息学研究者的开源工具集合，涵盖从测序数据质控、转录组分析、单细胞处理、基因组变异注释，到文献管理、学术写作、科研可视化的 **210+ 个交互式小工具**。
+**Newbe** 是一个面向生物信息学研究者的开源工具集合，涵盖从测序数据质控、转录组分析、单细胞处理、基因组变异注释，到文献管理、学术写作、科研可视化的 **260+ 个交互式小工具**。
 
 每个工具都是**独立可运行**的——无需安装复杂依赖，无需配置环境文件，直接运行脚本，按提示输入参数即可。所有参数均提供合理默认值，回车即可使用。
 
@@ -360,6 +360,7 @@ PubMed/DOI/引用/笔记/论文/基金/实验室管理工具。
 
 | 日期 | 更新内容 |
 |------|---------|
+| 2026-04-28 | Batch 5: 50 new bioinformatics tools added (#211-#260, 50 Python, DDR scores, arXiv downloader, manuscript tools) |
 | 2026-04-28 | Batch 4: 50 new bioinformatics tools added (#161-#210, 36 Python + 14 R, DDR pathway mapper, Forest plot, Harmony wrapper) |
 | 2026-04-28 | Batch 3: 50 new bioinformatics tools added (#111-#160, 36 Python + 14 R, DNA damage hotspot finder for LU lab) |
 | 2026-04-28 | Batch 2: 60 new bioinformatics tools added (#51-#110, interactive input, 45 Python + 15 R) |
@@ -374,6 +375,7 @@ PubMed/DOI/引用/笔记/论文/基金/实验室管理工具。
 - [x] 60 new bioinformatics tools (#51-#110, all interactive)
 - [x] 50 new bioinformatics tools (#111-#160, 36 Python + 14 R)
 - [x] 50 new bioinformatics tools (#161-#210, 36 Python + 14 R, DDR/Spatial/Harmony)
+- [x] 50 new bioinformatics tools (#211-#260, 50 Python, DDR/Manuscript/Literature)
 - [x] FASTQ/BAM/VCF/GTF/BED processing tools
 - [x] DESeq2/enrichment/WGCNA/survival analysis pipelines
 - [x] Seurat/CellChat/pseudotime/single-cell QC
@@ -390,6 +392,9 @@ PubMed/DOI/引用/笔记/论文/基金/实验室管理工具。
 - [x] Harmony batch correction/Forest plot/Dot plot stacked bar
 - [x] Insert size/barcode splitter/mate-pair resolver tools
 - [x] Ancestry inference/QC aggregator/Gene panel designer
+- [x] DDR gene mutationality scorer + damage signal correlator
+- [x] arXiv paper downloader + manuscript readability checker
+- [x] Conference deadline tracker + bibliography graph builder
 - [ ] Auto-expand: more tools every 3 hours via automation
 
 ---
