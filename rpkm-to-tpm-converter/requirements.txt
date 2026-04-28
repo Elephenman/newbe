@@ -1,0 +1,2 @@
+# requirements for rpkm-to-tpm-converter
+pandas>=1.3.0
