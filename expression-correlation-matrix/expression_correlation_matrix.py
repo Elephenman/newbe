@@ -1,93 +1,110 @@
 #!/usr/bin/env python3
-"""基因表达相关性矩阵+热图"""
+"""Gene expression correlation matrix + heatmap"""
 
 import os
 import sys
 
 
-def get_input(prompt, default=""):
-    val = input(f"{prompt} [{default}]: ").strip()
-    return val if val else default
+def get_input(prompt, default="", dtype=str):
+    val = input(prompt + (" [" + str(default) + "]" if default else "") + ": ")
+    if not val.strip():
+        return default
+    return dtype(val)
+
+
+def create_correlation_matrix(input_file, output_file, method="pearson", top_n=50):
+    """Create gene expression correlation matrix and heatmap."""
+    try:
+        import pandas as pd
+        import numpy as np
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
+    except ImportError:
+        print("[ERROR] pandas, numpy, matplotlib required: pip install pandas numpy matplotlib")
+        sys.exit(1)
+
+    # Read expression matrix (rows=genes, columns=samples)
+    df = pd.read_csv(input_file, index_col=0)
+
+    # Take top N most variable genes
+    gene_vars = df.var(axis=1)
+    top_genes = gene_vars.nlargest(min(top_n, len(df))).index
+    df_sub = df.loc[top_genes]
+
+    # Compute gene-gene correlation matrix
+    corr_matrix = df_sub.T.corr(method=method)
+
+    # Plot heatmap
+    fig, ax = plt.subplots(figsize=(12, 10))
+    cax = ax.imshow(corr_matrix.values, cmap='RdBu_r', vmin=-1, vmax=1, aspect='auto')
+
+    # Add colorbar
+    plt.colorbar(cax, label=f'{method.capitalize()} correlation')
+
+    # Labels
+    tick_labels = [g[:15] for g in corr_matrix.columns]
+    ax.set_xticks(range(len(tick_labels)))
+    ax.set_yticks(range(len(tick_labels)))
+    if len(tick_labels) <= 30:
+        ax.set_xticklabels(tick_labels, rotation=90, fontsize=6)
+        ax.set_yticklabels(tick_labels, fontsize=6)
+
+    ax.set_title(f'Gene Expression Correlation Matrix ({method}, top {len(top_genes)} variable genes)')
+    plt.tight_layout()
+    plt.savefig(output_file, dpi=150)
+    plt.close()
+
+    # Save correlation matrix
+    corr_file = output_file.rsplit('.', 1)[0] + '_matrix.csv'
+    corr_matrix.to_csv(corr_file)
+
+    # Compute stats
+    upper_tri = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))
+    high_corr = (upper_tri.abs() > 0.8).sum().sum()
+    total_pairs = upper_tri.count().sum()
+
+    return {
+        "n_genes": len(top_genes),
+        "n_samples": df.shape[1],
+        "method": method,
+        "high_corr_pairs": high_corr,
+        "total_pairs": total_pairs,
+        "corr_file": corr_file,
+    }
 
 
 def main():
     print("=" * 60)
-    print("  基因表达相关性矩阵+热图")
+    print("  Gene Expression Correlation Matrix + Heatmap")
     print("=" * 60)
     print()
 
-    # === Input Parameters ===
-    input_file = get_input("Input file path", "input.txt")
-    output_file = get_input("Output file path", "output_expression_correlation_matrix.txt")
-    param1 = get_input("Main parameter (threshold)", "0.05")
-    param2 = get_input("Secondary parameter (mode)", "default")
+    input_file = get_input("Expression matrix CSV (rows=genes, cols=samples)", "expression.csv")
+    output_file = get_input("Output heatmap path", "correlation_heatmap.png")
+    method = get_input("Correlation method (pearson/spearman)", "pearson")
+    top_n = get_input("Top N variable genes", "50", int)
 
-    print()
-    print(f"Input:  {input_file}")
-    print(f"Output: {output_file}")
-    print(f"Param1: {param1}")
-    print(f"Param2: {param2}")
-    print()
-
-    # === Validate Input ===
     if not os.path.exists(input_file):
         print(f"[ERROR] Input file not found: {input_file}")
-        print("Creating demo input for testing...")
-        with open(input_file, "w") as f:
-            f.write("# Demo input file for expression_correlation_matrix\n")
-            f.write("gene1\t100\t0.5\n")
-            f.write("gene2\t200\t0.8\n")
-            f.write("gene3\t150\t0.3\n")
-        print(f"Demo file created: {input_file}")
-
-    # === Core Logic ===
-    print("[Processing] Reading input file...")
-    results = []
-    try:
-        with open(input_file, "r") as f:
-            header = f.readline()
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith("#"):
-                    continue
-                fields = line.split("\t") if "\t" in line else line.split(",")
-                try:
-                    score = float(fields[-1]) if len(fields) > 1 else 0
-                except ValueError:
-                    score = 0
-                if score < float(param1):
-                    continue
-                results.append(fields)
-    except Exception as e:
-        print(f"[ERROR] Failed to read input: {e}")
         sys.exit(1)
 
-    print(f"[Processing] {len(results)} records passed threshold {param1}")
+    stats = create_correlation_matrix(input_file, output_file, method, top_n)
 
-    # === Generate Output ===
-    print("[Processing] Writing output file...")
-    try:
-        with open(output_file, "w") as f:
-            f.write("# expression_correlation_matrix output\n")
-            f.write(f"# Input: {input_file}, Threshold: {param1}\n")
-            for r in results:
-                f.write("\t".join(r) + "\n")
-    except Exception as e:
-        print(f"[ERROR] Failed to write output: {e}")
-        sys.exit(1)
-
-    # === Summary Report ===
     print()
     print("=" * 60)
     print("  RESULTS SUMMARY")
     print("=" * 60)
-    print(f"  Input records:    {len(results)}")
-    print(f"  Threshold used:   {param1}")
+    print(f"  Genes analyzed:   {stats['n_genes']}")
+    print(f"  Samples:          {stats['n_samples']}")
+    print(f"  Method:           {stats['method']}")
+    print(f"  High corr pairs:  {stats['high_corr_pairs']} (|r|>0.8)")
+    print(f"  Total pairs:      {stats['total_pairs']}")
     print(f"  Output saved to:  {output_file}")
-    print(f"  Mode:             {param2}")
+    print(f"  Matrix CSV:       {stats['corr_file']}")
     print("=" * 60)
     print()
-    print("[Done] expression_correlation_matrix completed successfully!")
+    print("[Done] Correlation matrix completed successfully!")
 
 
 if __name__ == "__main__":

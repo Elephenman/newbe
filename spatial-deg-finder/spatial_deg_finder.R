@@ -1,64 +1,95 @@
 # 空间转录组差异表达基因发现
-# Interactive R script - all parameters via readline()
+# 使用Seurat的FindSpatialVariableFeatures或DE分析
 
 cat("=", rep("-", 59), "\n", sep="")
 cat("  空间转录组差异表达基因发现\n")
 cat("=", rep("-", 59), "\n", sep="")
 cat("\n")
 
-# === Input Parameters ===
 get_input <- function(prompt, default) {
   val <- readline(prompt = paste0(prompt, " [", default, "]: "))
   if (val == "") return(default) else return(val)
 }
 
-input_file    <- get_input("Input file path", "input.txt")
-output_file   <- get_input("Output file path", "output_spatial_deg_finder.txt")
-param1        <- get_input("Main parameter (threshold)", "0.05")
-param2        <- get_input("Secondary parameter (mode)", "default")
+spatial_rds  <- get_input("空间Seurat对象RDS路径", "spatial.rds")
+method       <- get_input("方法(SpatialDE/FindMarkers/FindSpatialVariableFeatures)", "FindSpatialVariableFeatures")
+group_col    <- get_input("分组列名(用于FindMarkers)", "region")
+group1       <- get_input("组1", "region1")
+group2       <- get_input("组2", "region2")
+output_csv   <- get_input("输出CSV路径", "spatial_deg.csv")
+output_plot  <- get_input("输出图片路径", "spatial_deg_volcano.png")
 
-cat("\nInput:  ", input_file, "\n")
-cat("Output: ", output_file, "\n")
-cat("Param1: ", param1, "\n")
-cat("Param2: ", param2, "\n\n")
+cat("\nRDS:    ", spatial_rds, "\n")
+cat("Method: ", method, "\n")
+cat("Output: ", output_csv, "\n\n")
 
-# === Validate Input ===
-if (!file.exists(input_file)) {
-  cat("[WARN] Input file not found, creating demo...\n")
-  demo_data <- data.frame(
-    gene = c("gene1", "gene2", "gene3"),
-    value = c(100, 200, 150),
-    score = c(0.5, 0.8, 0.3)
+if (!requireNamespace("Seurat", quietly=TRUE)) { cat("需要Seurat\n"); quit(status=1) }
+library(Seurat)
+library(ggplot2)
+
+if (!file.exists(spatial_rds)) { cat("[ERROR] RDS文件不存在\n"); quit(status=1) }
+
+obj <- readRDS(spatial_rds)
+cat("[Processing] 加载对象:", ncol(obj), "spots\n")
+
+if (method == "FindSpatialVariableFeatures") {
+  cat("[Processing] 寻找空间变异基因...\n")
+  obj <- FindSpatialVariableFeatures(obj, selection.method="moransi")
+  svf <- SpatialVariability(obj)[1:min(100, nrow(SpatialVariability(obj))), ]
+  results <- data.frame(
+    Gene=rownames(svf),
+    SpatialVariability=svf[,1]
   )
-  write.table(demo_data, input_file, sep="\t", row.names=FALSE, quote=FALSE)
-  cat("Demo file created:", input_file, "\n")
+  results <- results[order(-results$SpatialVariability), ]
+
+} else if (method == "FindMarkers") {
+  cat("[Processing] 差异分析:", group1, "vs", group2, "\n")
+  if (!(group_col %in% colnames(obj@meta.data))) {
+    cat("[ERROR] 分组列不存在:", group_col, "\n"); quit(status=1)
+  }
+  Idents(obj) <- group_col
+  markers <- FindMarkers(obj, ident.1=group1, ident.2=group2,
+                          min.pct=0.1, logfc.threshold=0.25)
+  results <- data.frame(
+    Gene=rownames(markers),
+    avg_log2FC=markers$avg_log2FC,
+    p_val=markers$p_val,
+    p_val_adj=markers$p_val_adj,
+    pct.1=markers$pct.1,
+    pct.2=markers$pct.2
+  )
+  results <- results[order(results$p_val_adj), ]
+
+} else if (method == "SpatialDE") {
+  if (!requireNamespace("SpatialDE", quietly=TRUE)) {
+    cat("[ERROR] SpatialDE未安装\n"); quit(status=1)
+  }
+  cat("[Processing] SpatialDE分析...\n")
+  coords <- GetTissueCoordinates(obj)
+  expr <- as.matrix(GetAssayData(obj, slot="data"))
+  results <- SpatialDE::run(expr, as.data.frame(coords))
+  results <- results[order(results$qvalue), ]
 }
 
-# === Core Logic ===
-cat("[Processing] Reading input...\n")
-data <- read.table(input_file, header=TRUE, sep="\t", stringsAsFactors=FALSE)
-cat("[Processing]", nrow(data), "records loaded\n")
+write.csv(results, output_csv, row.names=FALSE)
 
-# Apply threshold filter
-threshold <- as.numeric(param1)
-if ("score" %in% colnames(data)) {
-  filtered <- data[data$score >= threshold, ]
-} else {
-  filtered <- data
+# Volcano plot for FindMarkers
+if (method == "FindMarkers" && nrow(results) > 0) {
+  results$significance <- ifelse(results$p_val_adj < 0.05 & abs(results$avg_log2FC) > 0.5,
+                                  "Significant", "NS")
+  p <- ggplot(results, aes(x=avg_log2FC, y=-log10(p_val_adj), color=significance)) +
+    geom_point(size=0.5, alpha=0.7) +
+    scale_color_manual(values=c("gray", "red")) +
+    theme_bw() +
+    labs(title="Spatial DEG Volcano", x="avg_log2FC", y="-log10(p_adj)")
+  ggsave(output_plot, p, width=8, height=6, dpi=300)
 }
-cat("[Processing]", nrow(filtered), "records passed threshold", threshold, "\n")
 
-# === Generate Output ===
-cat("[Processing] Writing output...\n")
-write.table(filtered, output_file, sep="\t", row.names=FALSE, quote=FALSE)
-
-# === Summary Report ===
 cat("\n", "=", rep("-", 59), "\n", sep="")
 cat("  RESULTS SUMMARY\n")
 cat("=", rep("-", 59), "\n", sep="")
-cat("  Input records:   ", nrow(data), "\n")
-cat("  Filtered records:", nrow(filtered), "\n")
-cat("  Threshold:       ", threshold, "\n")
-cat("  Output saved to: ", output_file, "\n")
+cat("  Method:     ", method, "\n")
+cat("  DEGs found: ", nrow(results), "\n")
+cat("  Output:     ", output_csv, "\n")
 cat("=", rep("-", 59), "\n\n", sep="")
 cat("[Done] spatial_deg_finder completed!\n")

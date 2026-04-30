@@ -42,9 +42,15 @@ colors <- list(
 pal <- colorRampPalette(colors[[color_scheme]])(100)
 
 out_path <- paste0(tools::file_path_sans_ext(csv_path), "_heatmap.png")
-pheatmap(mat_sub, color = pal, scale = "row",
-         clustering_method = if(cluster_method=="kmeans") "kmeans" else "complete",
-         filename = out_path, width = 12, height = 10, dpi = 300)
+if (cluster_method == "kmeans") {
+  pheatmap(mat_sub, color = pal, scale = "row",
+           kmeans_k = min(10, nrow(mat_sub) %/% 5),
+           filename = out_path, width = 12, height = 10, dpi = 300)
+} else {
+  pheatmap(mat_sub, color = pal, scale = "row",
+           clustering_method = cluster_method,
+           filename = out_path, width = 12, height = 10, dpi = 300)
+}
 
 cat("✅ 热图已保存:", out_path, "\n")
 cat("   基因数:", nrow(mat_sub), "  样本数:", ncol(mat_sub), "\n")

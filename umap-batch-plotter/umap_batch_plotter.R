@@ -19,7 +19,7 @@ for (d in dims_list) {
 }
 if (combo=="yes" && length(dims_list)>1) {
   plots <- lapply(dims_list, function(d) DimPlot(obj, group.by=d)+NoLegend())
-  combined <- CombinePlots(plots, ncol=2)
+  combined <- patchwork::wrap_plots(plots, ncol=2)
   ggsave("UMAP_combined.png", combined, width=14, height=10, dpi=300)
-  cat("✅ 组合图: UMAP_combined.png\n")
+  cat("Combined: UMAP_combined.png\n")
 }

@@ -4,6 +4,13 @@
 # TF motif富集统计检验
 from collections import Counter
 
+def get_input(prompt, default="", dtype=str):
+    val = input(prompt + (" [" + str(default) + "]" if default else "") + ": ")
+    if not val.strip():
+        return default
+    return dtype(val)
+
+
 print("=" * 60)
 print("  🧪 TF Motif富集检验器")
 print("=" * 60)

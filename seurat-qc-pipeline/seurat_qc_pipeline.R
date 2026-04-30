@@ -47,9 +47,10 @@ if (make_plots == "yes") {
   p1 <- VlnPlot(seurat, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
   p2 <- FeatureScatter(seurat, feature1 = "nCount_RNA", feature2 = "percent.mt")
   p3 <- FeatureScatter(seurat, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
-  
+
   ggsave("seurat_qc_violin.png", p1, width = 12, height = 6, dpi = 300)
-  ggsave("seurat_qc_scatter.png", CombinePlots(list(p2, p3)), width = 10, height = 5, dpi = 300)
+  combined_scatter <- p2 + p3
+  ggsave("seurat_qc_scatter.png", combined_scatter, width = 10, height = 5, dpi = 300)
   cat("✅ QC图已保存\n")
 }
 

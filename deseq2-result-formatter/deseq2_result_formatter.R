@@ -161,7 +161,7 @@ if (make_volcano == "yes" || make_volcano == "y") {
   top_genes_down <- head(plot_data[plot_data$category == "Down", ][order(plot_data$category == "Down" & plot_data$neg_log10_padj, decreasing = TRUE), ], top_n)
   
   # 简化版：按绝对值排序取top
-  top_up <- plot_data %>>% 
+  top_up <- plot_data %>%
     filter(category == "Up") %>%
     arrange(desc(neg_log10_padj)) %>%
     head(top_n)

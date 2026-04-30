@@ -27,7 +27,7 @@ def main():
             rest = p[3:] if len(p) > 3 else []
             new_start = lo.convert_coordinate(chrom, start)
             new_end = lo.convert_coordinate(chrom, end)
-            if new_start and new_end:
+            if new_start and new_end and len(new_start) > 0 and len(new_end) > 0:
                 results.append([new_start[0][0], new_start[0][1], new_end[0][1]] + rest)
                 converted += 1
             else: failed += 1

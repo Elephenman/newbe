@@ -1,94 +1,113 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """实验室试剂库存管理+过期预警"""
-
-import os
-import sys
-
+import os, sys, csv
+from datetime import datetime, timedelta
 
 def get_input(prompt, default=""):
     val = input(f"{prompt} [{default}]: ").strip()
     return val if val else default
 
+def manage_reagent_inventory(inventory_file, output_file=None, warn_days=30):
+    """管理试剂库存，检查过期预警
+
+    输入CSV格式: name,catalog,lot_number,expiry_date,quantity,unit,location,notes
+    """
+    reagents = []
+    today = datetime.now()
+    warn_date = today + timedelta(days=warn_days)
+
+    with open(inventory_file, 'r', encoding='utf-8') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            reagents.append(row)
+
+    if not reagents:
+        print("[ERROR] No reagent data found. Expected CSV with columns: name,catalog,lot_number,expiry_date,quantity,unit,location,notes")
+        return
+
+    # 分析库存状态
+    expired = []
+    expiring_soon = []
+    low_stock = []
+    active = []
+
+    for r in reagents:
+        name = r.get('name', r.get('Name', 'Unknown'))
+        expiry_str = r.get('expiry_date', r.get('Expiry', r.get('expiry', '')))
+
+        status = "active"
+        if expiry_str:
+            try:
+                expiry = datetime.strptime(expiry_str.strip(), '%Y-%m-%d')
+                if expiry < today:
+                    status = "expired"
+                    expired.append(r)
+                elif expiry < warn_date:
+                    status = "expiring_soon"
+                    expiring_soon.append(r)
+            except ValueError:
+                pass
+
+        # 检查低库存
+        try:
+            quantity = float(r.get('quantity', r.get('Quantity', '0')))
+            if quantity <= 0:
+                status = "low_stock"
+                low_stock.append(r)
+        except ValueError:
+            pass
+
+        r['status'] = status
+        if status == "active":
+            active.append(r)
+
+    # 输出
+    out_path = output_file or os.path.splitext(inventory_file)[0] + "_report.tsv"
+
+    with open(out_path, 'w', encoding='utf-8') as out:
+        out.write("name\tcatalog\tlot_number\texpiry_date\tquantity\tunit\tlocation\tstatus\tnotes\n")
+        for r in reagents:
+            out.write("\t".join([
+                r.get('name', ''),
+                r.get('catalog', ''),
+                r.get('lot_number', ''),
+                r.get('expiry_date', ''),
+                r.get('quantity', ''),
+                r.get('unit', ''),
+                r.get('location', ''),
+                r.get('status', ''),
+                r.get('notes', '')
+            ]) + "\n")
+
+    # 报告
+    print(f"Reagent inventory report")
+    print(f"  Total reagents: {len(reagents)}")
+    print(f"  Active: {len(active)}")
+    print(f"  Expired: {len(expired)}")
+    print(f"  Expiring soon (<{warn_days}d): {len(expiring_soon)}")
+    print(f"  Low stock: {len(low_stock)}")
+
+    if expired:
+        print(f"\n  [EXPIRED] Reagents:")
+        for r in expired[:10]:
+            print(f"    - {r.get('name', '?')} (expired: {r.get('expiry_date', '?')})")
+
+    if expiring_soon:
+        print(f"\n  [EXPIRING SOON] Reagents:")
+        for r in expiring_soon[:10]:
+            print(f"    - {r.get('name', '?')} (expires: {r.get('expiry_date', '?')})")
+
+    print(f"\n  Report: {out_path}")
 
 def main():
     print("=" * 60)
     print("  实验室试剂库存管理+过期预警")
     print("=" * 60)
-    print()
-
-    # === Input Parameters ===
-    input_file = get_input("Input file path", "input.txt")
-    output_file = get_input("Output file path", "output_lab_reagent_inventory.txt")
-    param1 = get_input("Main parameter (threshold)", "0.05")
-    param2 = get_input("Secondary parameter (mode)", "default")
-
-    print()
-    print(f"Input:  {input_file}")
-    print(f"Output: {output_file}")
-    print(f"Param1: {param1}")
-    print(f"Param2: {param2}")
-    print()
-
-    # === Validate Input ===
-    if not os.path.exists(input_file):
-        print(f"[ERROR] Input file not found: {input_file}")
-        print("Creating demo input for testing...")
-        with open(input_file, "w") as f:
-            f.write("# Demo input file for lab_reagent_inventory\n")
-            f.write("gene1\t100\t0.5\n")
-            f.write("gene2\t200\t0.8\n")
-            f.write("gene3\t150\t0.3\n")
-        print(f"Demo file created: {input_file}")
-
-    # === Core Logic ===
-    print("[Processing] Reading input file...")
-    results = []
-    try:
-        with open(input_file, "r") as f:
-            header = f.readline()
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith("#"):
-                    continue
-                fields = line.split("\t") if "\t" in line else line.split(",")
-                try:
-                    score = float(fields[-1]) if len(fields) > 1 else 0
-                except ValueError:
-                    score = 0
-                if score < float(param1):
-                    continue
-                results.append(fields)
-    except Exception as e:
-        print(f"[ERROR] Failed to read input: {e}")
-        sys.exit(1)
-
-    print(f"[Processing] {len(results)} records passed threshold {param1}")
-
-    # === Generate Output ===
-    print("[Processing] Writing output file...")
-    try:
-        with open(output_file, "w") as f:
-            f.write("# lab_reagent_inventory output\n")
-            f.write(f"# Input: {input_file}, Threshold: {param1}\n")
-            for r in results:
-                f.write("\t".join(r) + "\n")
-    except Exception as e:
-        print(f"[ERROR] Failed to write output: {e}")
-        sys.exit(1)
-
-    # === Summary Report ===
-    print()
-    print("=" * 60)
-    print("  RESULTS SUMMARY")
-    print("=" * 60)
-    print(f"  Input records:    {len(results)}")
-    print(f"  Threshold used:   {param1}")
-    print(f"  Output saved to:  {output_file}")
-    print(f"  Mode:             {param2}")
-    print("=" * 60)
-    print()
-    print("[Done] lab_reagent_inventory completed successfully!")
-
+    inventory_file = get_input("试剂库存CSV路径", "inventory.csv")
+    output = get_input("输出报告路径", "")
+    warn = get_input("过期预警天数", "30")
+    manage_reagent_inventory(inventory_file, output or None, int(warn))
 
 if __name__ == "__main__":
     main()

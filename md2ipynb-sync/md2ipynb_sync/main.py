@@ -98,7 +98,7 @@ def _gui_mode(args):
 
     # 自动操作
     if args.watch and config.source_dir and config.output_dir:
-        import QTimer
+        from PyQt5.QtCore import QTimer
         # 延迟启动监控
         QTimer.singleShot(2000, window._toggle_watch)
 

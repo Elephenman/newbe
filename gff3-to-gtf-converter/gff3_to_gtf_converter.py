@@ -1,94 +1,96 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """GFF3到GTF格式转换+属性保留"""
-
-import os
-import sys
-
+import os, sys, re
 
 def get_input(prompt, default=""):
     val = input(f"{prompt} [{default}]: ").strip()
     return val if val else default
 
+def gff3_to_gtf(gff3_path, output_file=None, source_name="gff3_converter"):
+    """将GFF3格式转换为GTF格式，保留关键属性"""
+    out_path = output_file or gff3_path.replace('.gff3', '').replace('.gff', '') + '.gtf'
+
+    converted = 0; skipped = 0
+
+    with open(gff3_path, 'r') as fin, open(out_path, 'w') as fout:
+        for line in fin:
+            # 保留注释行
+            if line.startswith('#'):
+                fout.write(line)
+                continue
+
+            line = line.strip()
+            if not line:
+                continue
+
+            fields = line.split('\t')
+            if len(fields) < 9:
+                skipped += 1
+                continue
+
+            seqid, source, ftype, start, end, score, strand, phase, attributes = fields
+
+            # GTF只保留gene/transcript/exon/CDS/UTR/start_codon/stop_codon等
+            gtf_features = {'gene', 'transcript', 'exon', 'CDS', 'five_prime_utr',
+                           'three_prime_utr', 'start_codon', 'stop_codon',
+                           'UTR', '5UTR', '3UTR', 'mRNA', 'ncRNA', 'rRNA', 'tRNA', 'miRNA'}
+
+            if ftype not in gtf_features:
+                # 尝试映射
+                type_map = {'mRNA': 'transcript', 'primary_transcript': 'transcript',
+                           'five_prime_UTR': 'five_prime_utr', 'three_prime_UTR': 'three_prime_utr'}
+                if ftype in type_map:
+                    ftype = type_map[ftype]
+                else:
+                    skipped += 1
+                    continue
+
+            # 解析GFF3属性 (key=value;key=value)
+            attrs = {}
+            for attr in attributes.split(';'):
+                attr = attr.strip()
+                if '=' in attr:
+                    key, val = attr.split('=', 1)
+                    attrs[key.strip()] = val.strip()
+
+            # 构建GTF属性 (gene_id "xxx"; transcript_id "xxx"; ...)
+            gene_id = attrs.get('gene_id', attrs.get('gene', attrs.get('Parent', attrs.get('ID', 'unknown'))))
+            transcript_id = attrs.get('transcript_id', attrs.get('transcript', attrs.get('ID', '')))
+
+            # Clean gene_id: if it's a comma-separated list, take first
+            if ',' in gene_id:
+                gene_id = gene_id.split(',')[0]
+
+            # Build GTF attribute string
+            gtf_attrs = f'gene_id "{gene_id}";'
+
+            if transcript_id and transcript_id != gene_id:
+                gtf_attrs += f' transcript_id "{transcript_id}";'
+
+            # Preserve additional attributes as GTF format
+            for key in ['gene_name', 'gene_biotype', 'gene_type', 'exon_number', 'protein_id']:
+                if key in attrs:
+                    gtf_attrs += f' {key} "{attrs[key]}";'
+
+            # GTF coordinates: same as GFF3 (1-based, inclusive for features)
+            # But CDS phase is kept
+            fout.write(f"{seqid}\t{source_name}\t{ftype}\t{start}\t{end}\t{score}\t{strand}\t{phase}\t{gtf_attrs}\n")
+            converted += 1
+
+    print(f"GFF3 to GTF conversion complete")
+    print(f"  Converted: {converted} features")
+    print(f"  Skipped: {skipped} features (unsupported types)")
+    print(f"  Output: {out_path}")
 
 def main():
     print("=" * 60)
     print("  GFF3到GTF格式转换+属性保留")
     print("=" * 60)
-    print()
-
-    # === Input Parameters ===
-    input_file = get_input("Input file path", "input.txt")
-    output_file = get_input("Output file path", "output_gff3_to_gtf_converter.txt")
-    param1 = get_input("Main parameter (threshold)", "0.05")
-    param2 = get_input("Secondary parameter (mode)", "default")
-
-    print()
-    print(f"Input:  {input_file}")
-    print(f"Output: {output_file}")
-    print(f"Param1: {param1}")
-    print(f"Param2: {param2}")
-    print()
-
-    # === Validate Input ===
-    if not os.path.exists(input_file):
-        print(f"[ERROR] Input file not found: {input_file}")
-        print("Creating demo input for testing...")
-        with open(input_file, "w") as f:
-            f.write("# Demo input file for gff3_to_gtf_converter\n")
-            f.write("gene1\t100\t0.5\n")
-            f.write("gene2\t200\t0.8\n")
-            f.write("gene3\t150\t0.3\n")
-        print(f"Demo file created: {input_file}")
-
-    # === Core Logic ===
-    print("[Processing] Reading input file...")
-    results = []
-    try:
-        with open(input_file, "r") as f:
-            header = f.readline()
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith("#"):
-                    continue
-                fields = line.split("\t") if "\t" in line else line.split(",")
-                try:
-                    score = float(fields[-1]) if len(fields) > 1 else 0
-                except ValueError:
-                    score = 0
-                if score < float(param1):
-                    continue
-                results.append(fields)
-    except Exception as e:
-        print(f"[ERROR] Failed to read input: {e}")
-        sys.exit(1)
-
-    print(f"[Processing] {len(results)} records passed threshold {param1}")
-
-    # === Generate Output ===
-    print("[Processing] Writing output file...")
-    try:
-        with open(output_file, "w") as f:
-            f.write("# gff3_to_gtf_converter output\n")
-            f.write(f"# Input: {input_file}, Threshold: {param1}\n")
-            for r in results:
-                f.write("\t".join(r) + "\n")
-    except Exception as e:
-        print(f"[ERROR] Failed to write output: {e}")
-        sys.exit(1)
-
-    # === Summary Report ===
-    print()
-    print("=" * 60)
-    print("  RESULTS SUMMARY")
-    print("=" * 60)
-    print(f"  Input records:    {len(results)}")
-    print(f"  Threshold used:   {param1}")
-    print(f"  Output saved to:  {output_file}")
-    print(f"  Mode:             {param2}")
-    print("=" * 60)
-    print()
-    print("[Done] gff3_to_gtf_converter completed successfully!")
-
+    gff3_file = get_input("GFF3文件路径", "annotation.gff3")
+    output = get_input("输出GTF文件路径", "")
+    source = get_input("GTF source名称", "gff3_converter")
+    gff3_to_gtf(gff3_file, output or None, source)
 
 if __name__ == "__main__":
     main()

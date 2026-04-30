@@ -23,10 +23,18 @@ spatial <- readRDS(spatial_path)
 ref <- readRDS(ref_path)
 
 if (method == "transfer") {
-  # TransferData注释
+  # TransferData annotation
+  # Use appropriate reduction: check for PCA in spatial object
+  reduction_method <- "rpca"
+  if (!"pca" %in% names(spatial@reductions)) {
+    cat("[WARN] spatial对象无PCA，运行PCA...\n")
+    spatial <- ScaleData(spatial, verbose=FALSE)
+    spatial <- RunPCA(spatial, verbose=FALSE)
+  }
+
   anchors <- FindTransferAnchors(reference = ref, query = spatial,
                                   features = VariableFeatures(ref),
-                                  reduction.method = "rpca")
+                                  reduction.method = reduction_method)
   predictions <- TransferData(anchorset = anchors, refdata = ref$celltype,
                                weight.reduction = spatial[["pca"]])
   spatial <- AddMetaData(spatial, metadata = predictions)

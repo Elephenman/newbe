@@ -6,6 +6,13 @@ import pysam
 import matplotlib.pyplot as plt
 import numpy as np
 
+def get_input(prompt, default="", dtype=str):
+    val = input(prompt + (" [" + str(default) + "]" if default else "") + ": ")
+    if not val.strip():
+        return default
+    return dtype(val)
+
+
 print("=" * 60)
 print("  🧬 BAM插入片段大小统计")
 print("=" * 60)

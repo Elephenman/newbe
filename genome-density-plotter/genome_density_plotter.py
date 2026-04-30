@@ -45,7 +45,7 @@ def plot_genome_density(filepath, bin_size=100000, circos_style=False, img_forma
         # 简化circos风格(线性排列多染色体)
         fig, axes = plt.subplots(len(chrs), 1, figsize=(14, len(chrs)*1.2), sharex=False)
         if len(chrs) == 1: axes = [axes]
-        colors = plt.cm.Set2(len(chrs))
+        colors = plt.cm.Set2(np.linspace(0, 1, len(chrs)))
         for i, chrom in enumerate(chrs):
             d = chr_density[chrom]
             x = np.arange(len(d)) * bin_size / 1e6

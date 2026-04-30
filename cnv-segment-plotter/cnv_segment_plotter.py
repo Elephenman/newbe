@@ -49,7 +49,20 @@ def plot_cnv(filepath, annotate_regions=True, make_heatmap=False, img_format="pn
     chr_segments = defaultdict(list)
     for s in segments: chr_segments[s["chr"]].append(s)
     
-    chrs = sorted(chr_segments.keys())
+    # Sort chromosomes naturally (chr1, chr2, ..., chr10, chr11, ..., chrX, chrY)
+    def chrom_sort_key(c):
+        c_clean = c.replace('chr', '').replace('CHR', '').replace('Chr', '')
+        if c_clean.isdigit():
+            return (0, int(c_clean))
+        elif c_clean in ('X', 'x'):
+            return (1, 0)
+        elif c_clean in ('Y', 'y'):
+            return (1, 1)
+        elif c_clean in ('M', 'MT', 'm', 'mt'):
+            return (2, 0)
+        else:
+            return (3, 0)
+    chrs = sorted(chr_segments.keys(), key=chrom_sort_key)
     fig, ax = plt.subplots(figsize=(14, 6))
     
     colors = {"gain": "#E64B35", "loss": "#4DBBD5", "neutral": "#AAAAAA"}

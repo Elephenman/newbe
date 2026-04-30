@@ -61,7 +61,11 @@ def compare_deg(files, mode="Venn", gene_id_col="gene"):
         for name, inter in intersections.items():
             out.write(f"{name},{len(inter)},{'|'.join(list(inter)[:100])}\n")
     for name in gene_sets:
-        unique = gene_sets[name] - all_genes - gene_sets[name]  # 简化
+        other_genes = set()
+        for other_name, other_set in gene_sets.items():
+            if other_name != name:
+                other_genes.update(other_set)
+        unique = gene_sets[name] - other_genes
         with open(f"deg_{name}_specific.csv", 'w') as out:
             for g in gene_sets[name]: out.write(g + '\n')
     print(f"✅ DEG交叉对比完成: {len(files)}组")

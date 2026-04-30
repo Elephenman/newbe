@@ -34,7 +34,10 @@ if (method == "FindAllMarkers") {
 }
 
 # 每cluster取topN
-top_markers <- markers %>% group_by(cluster) %>% top_n(top_n, avg_log2FC)
+# Handle Seurat v4 (avg_log2FC) and v5 (avg_log2FC) column names
+fc_col <- intersect(c("avg_log2FC", "avg_log", "logFC"), colnames(markers))[1]
+if (is.na(fc_col)) fc_col <- colnames(markers)[3]  # fallback to 3rd column
+top_markers <- markers %>% group_by(cluster) %>% slice_max(order_by = !!sym(fc_col), n = top_n)
 
 # 保存
 write.csv(markers, "all_markers.csv", row.names = FALSE)

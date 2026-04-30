@@ -6,6 +6,13 @@ print("=" * 60)
 print("  🧪 复制起始点预测器")
 print("=" * 60)
 
+
+def get_input(prompt, default="", dtype=str):
+    val = input(prompt + (" [" + str(default) + "]" if default else "") + ": ")
+    if not val.strip():
+        return default
+    return dtype(val)
+
 input_fa = get_input("基因组FASTA路径", "genome.fa")
 data_file = get_input("Repli-seq/ori数据路径(NA=纯序列预测)", "NA")
 window = int(get_input("搜索窗口大小(bp)", "1000"))

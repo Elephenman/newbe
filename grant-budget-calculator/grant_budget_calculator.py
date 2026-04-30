@@ -1,94 +1,81 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """基金预算自动计算+分项汇总"""
-
-import os
-import sys
-
+import os, sys, csv
 
 def get_input(prompt, default=""):
     val = input(f"{prompt} [{default}]: ").strip()
     return val if val else default
 
+def calculate_grant_budget(budget_file, output_file=None):
+    """从预算表CSV自动计算分项汇总和总预算
+
+    输入格式: category,item,unit_price,quantity,notes
+    """
+    categories = {}
+    items = []
+    total = 0
+
+    with open(budget_file, 'r', encoding='utf-8') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            category = row.get('category', row.get('Category', 'Other'))
+            item = row.get('item', row.get('Item', ''))
+            try:
+                unit_price = float(row.get('unit_price', row.get('UnitPrice', 0)))
+                quantity = float(row.get('quantity', row.get('Quantity', 1)))
+            except ValueError:
+                continue
+            notes = row.get('notes', row.get('Notes', ''))
+
+            subtotal = unit_price * quantity
+            total += subtotal
+
+            categories.setdefault(category, 0)
+            categories[category] += subtotal
+
+            items.append({
+                'category': category,
+                'item': item,
+                'unit_price': unit_price,
+                'quantity': quantity,
+                'subtotal': subtotal,
+                'notes': notes
+            })
+
+    # 输出
+    out_path = output_file or os.path.splitext(budget_file)[0] + "_summary.tsv"
+
+    with open(out_path, 'w', encoding='utf-8') as out:
+        out.write("=== 基金预算分项汇总 ===\n\n")
+        out.write("## 分项汇总\n")
+        out.write("Category\tAmount\tPercentage\n")
+        for cat, amount in sorted(categories.items(), key=lambda x: -x[1]):
+            pct = amount / total * 100 if total > 0 else 0
+            out.write(f"{cat}\t{amount:.2f}\t{pct:.1f}%\n")
+        out.write(f"TOTAL\t{total:.2f}\t100.0%\n")
+
+        out.write(f"\n## 详细明细\n")
+        out.write("Category\tItem\tUnitPrice\tQuantity\tSubtotal\tNotes\n")
+        for item in items:
+            out.write(f"{item['category']}\t{item['item']}\t{item['unit_price']:.2f}\t{item['quantity']}\t{item['subtotal']:.2f}\t{item['notes']}\n")
+
+    print(f"Grant budget calculation complete")
+    print(f"  Items: {len(items)}")
+    print(f"  Categories: {len(categories)}")
+    print(f"  Total budget: {total:.2f}")
+    for cat, amount in sorted(categories.items(), key=lambda x: -x[1]):
+        pct = amount / total * 100 if total > 0 else 0
+        print(f"    {cat}: {amount:.2f} ({pct:.1f}%)")
+    print(f"  Output: {out_path}")
 
 def main():
     print("=" * 60)
     print("  基金预算自动计算+分项汇总")
     print("=" * 60)
-    print()
-
-    # === Input Parameters ===
-    input_file = get_input("Input file path", "input.txt")
-    output_file = get_input("Output file path", "output_grant_budget_calculator.txt")
-    param1 = get_input("Main parameter (threshold)", "0.05")
-    param2 = get_input("Secondary parameter (mode)", "default")
-
-    print()
-    print(f"Input:  {input_file}")
-    print(f"Output: {output_file}")
-    print(f"Param1: {param1}")
-    print(f"Param2: {param2}")
-    print()
-
-    # === Validate Input ===
-    if not os.path.exists(input_file):
-        print(f"[ERROR] Input file not found: {input_file}")
-        print("Creating demo input for testing...")
-        with open(input_file, "w") as f:
-            f.write("# Demo input file for grant_budget_calculator\n")
-            f.write("gene1\t100\t0.5\n")
-            f.write("gene2\t200\t0.8\n")
-            f.write("gene3\t150\t0.3\n")
-        print(f"Demo file created: {input_file}")
-
-    # === Core Logic ===
-    print("[Processing] Reading input file...")
-    results = []
-    try:
-        with open(input_file, "r") as f:
-            header = f.readline()
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith("#"):
-                    continue
-                fields = line.split("\t") if "\t" in line else line.split(",")
-                try:
-                    score = float(fields[-1]) if len(fields) > 1 else 0
-                except ValueError:
-                    score = 0
-                if score < float(param1):
-                    continue
-                results.append(fields)
-    except Exception as e:
-        print(f"[ERROR] Failed to read input: {e}")
-        sys.exit(1)
-
-    print(f"[Processing] {len(results)} records passed threshold {param1}")
-
-    # === Generate Output ===
-    print("[Processing] Writing output file...")
-    try:
-        with open(output_file, "w") as f:
-            f.write("# grant_budget_calculator output\n")
-            f.write(f"# Input: {input_file}, Threshold: {param1}\n")
-            for r in results:
-                f.write("\t".join(r) + "\n")
-    except Exception as e:
-        print(f"[ERROR] Failed to write output: {e}")
-        sys.exit(1)
-
-    # === Summary Report ===
-    print()
-    print("=" * 60)
-    print("  RESULTS SUMMARY")
-    print("=" * 60)
-    print(f"  Input records:    {len(results)}")
-    print(f"  Threshold used:   {param1}")
-    print(f"  Output saved to:  {output_file}")
-    print(f"  Mode:             {param2}")
-    print("=" * 60)
-    print()
-    print("[Done] grant_budget_calculator completed successfully!")
-
+    budget_file = get_input("预算表CSV路径(category/item/unit_price/quantity/notes)", "budget.csv")
+    output = get_input("输出文件路径", "")
+    calculate_grant_budget(budget_file, output or None)
 
 if __name__ == "__main__":
     main()

@@ -1,93 +1,109 @@
 #!/usr/bin/env python3
-"""FASTQ精确重复reads去重+统计"""
+"""FASTQ exact duplicate reads removal + statistics"""
 
 import os
 import sys
+from collections import defaultdict
 
 
-def get_input(prompt, default=""):
-    val = input(f"{prompt} [{default}]: ").strip()
-    return val if val else default
+def get_input(prompt, default="", dtype=str):
+    val = input(prompt + (" [" + str(default) + "]" if default else "") + ": ")
+    if not val.strip():
+        return default
+    return dtype(val)
+
+
+def remove_duplicates(input_fastq, output_fastq, dedup_mode="sequence"):
+    """Remove duplicate reads from FASTQ file.
+
+    Args:
+        input_fastq: Input FASTQ file path
+        output_fastq: Output FASTQ file path
+        dedup_mode: 'sequence' (dedup by sequence), 'header' (dedup by header),
+                    'both' (dedup by sequence+quality)
+    """
+    seen = set()
+    total = 0
+    kept = 0
+    dup_counts = defaultdict(int)  # track duplication levels
+
+    with open(input_fastq) as fin, open(output_fastq, "w") as fout:
+        while True:
+            header = fin.readline().strip()
+            if not header:
+                break
+            seq = fin.readline().strip()
+            plus = fin.readline().strip()
+            qual = fin.readline().strip()
+            total += 1
+
+            # Determine dedup key based on mode
+            if dedup_mode == "sequence":
+                key = seq
+            elif dedup_mode == "header":
+                key = header
+            else:  # both
+                key = seq + qual
+
+            if key in seen:
+                dup_counts[key] = dup_counts.get(key, 0) + 1
+                continue
+            seen.add(key)
+            kept += 1
+            fout.write(f"{header}\n{seq}\n{plus}\n{qual}\n")
+
+    # Calculate stats
+    removed = total - kept
+    dup_rate = removed / total * 100 if total > 0 else 0
+
+    # Duplication level distribution
+    level_counts = defaultdict(int)
+    for key, count in dup_counts.items():
+        level = min(count + 1, 10)  # cap at 10+
+        level_counts[level] += 1
+
+    return {
+        "total": total,
+        "kept": kept,
+        "removed": removed,
+        "dup_rate": round(dup_rate, 2),
+        "level_counts": dict(level_counts),
+    }
 
 
 def main():
     print("=" * 60)
-    print("  FASTQ精确重复reads去重+统计")
+    print("  FASTQ Exact Duplicate Reads Removal + Statistics")
     print("=" * 60)
     print()
 
-    # === Input Parameters ===
-    input_file = get_input("Input file path", "input.txt")
-    output_file = get_input("Output file path", "output_fastq_duplicate_remover.txt")
-    param1 = get_input("Main parameter (threshold)", "0.05")
-    param2 = get_input("Secondary parameter (mode)", "default")
+    input_file = get_input("Input FASTQ file path", "input.fastq")
+    output_file = get_input("Output FASTQ path", "deduped.fastq")
+    dedup_mode = get_input("Dedup mode (sequence/header/both)", "sequence")
 
-    print()
-    print(f"Input:  {input_file}")
-    print(f"Output: {output_file}")
-    print(f"Param1: {param1}")
-    print(f"Param2: {param2}")
-    print()
-
-    # === Validate Input ===
     if not os.path.exists(input_file):
         print(f"[ERROR] Input file not found: {input_file}")
-        print("Creating demo input for testing...")
-        with open(input_file, "w") as f:
-            f.write("# Demo input file for fastq_duplicate_remover\n")
-            f.write("gene1\t100\t0.5\n")
-            f.write("gene2\t200\t0.8\n")
-            f.write("gene3\t150\t0.3\n")
-        print(f"Demo file created: {input_file}")
-
-    # === Core Logic ===
-    print("[Processing] Reading input file...")
-    results = []
-    try:
-        with open(input_file, "r") as f:
-            header = f.readline()
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith("#"):
-                    continue
-                fields = line.split("\t") if "\t" in line else line.split(",")
-                try:
-                    score = float(fields[-1]) if len(fields) > 1 else 0
-                except ValueError:
-                    score = 0
-                if score < float(param1):
-                    continue
-                results.append(fields)
-    except Exception as e:
-        print(f"[ERROR] Failed to read input: {e}")
         sys.exit(1)
 
-    print(f"[Processing] {len(results)} records passed threshold {param1}")
+    stats = remove_duplicates(input_file, output_file, dedup_mode)
 
-    # === Generate Output ===
-    print("[Processing] Writing output file...")
-    try:
-        with open(output_file, "w") as f:
-            f.write("# fastq_duplicate_remover output\n")
-            f.write(f"# Input: {input_file}, Threshold: {param1}\n")
-            for r in results:
-                f.write("\t".join(r) + "\n")
-    except Exception as e:
-        print(f"[ERROR] Failed to write output: {e}")
-        sys.exit(1)
-
-    # === Summary Report ===
     print()
     print("=" * 60)
     print("  RESULTS SUMMARY")
     print("=" * 60)
-    print(f"  Input records:    {len(results)}")
-    print(f"  Threshold used:   {param1}")
+    print(f"  Total reads:      {stats['total']}")
+    print(f"  Kept reads:       {stats['kept']}")
+    print(f"  Removed dups:     {stats['removed']}")
+    print(f"  Duplication rate: {stats['dup_rate']}%")
+    if stats['level_counts']:
+        print(f"  Duplication levels:")
+        for level in sorted(stats['level_counts'].keys()):
+            label = f"{level}+" if level >= 10 else str(level)
+            print(f"    {label} copies: {stats['level_counts'][level]} reads")
     print(f"  Output saved to:  {output_file}")
-    print(f"  Mode:             {param2}")
     print("=" * 60)
     print()
-    print("[Done] fastq_duplicate_remover completed successfully!")
+    print("[Done] FASTQ deduplication completed successfully!")
 
 
 if __name__ == "__main__":

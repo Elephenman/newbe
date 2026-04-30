@@ -1,93 +1,142 @@
 #!/usr/bin/env python3
-"""交互式火山图（Plotly点击查看基因）"""
+"""Interactive volcano plot (Plotly click-to-view gene info)"""
 
 import os
 import sys
 
 
-def get_input(prompt, default=""):
-    val = input(f"{prompt} [{default}]: ").strip()
-    return val if val else default
+def get_input(prompt, default="", dtype=str):
+    val = input(prompt + (" [" + str(default) + "]" if default else "") + ": ")
+    if not val.strip():
+        return default
+    return dtype(val)
+
+
+def create_interactive_volcano(deg_file, output_file, log2fc_col="log2FoldChange",
+                                padj_col="padj", gene_col="gene",
+                                log2fc_threshold=1.0, padj_threshold=0.05):
+    """Create an interactive volcano plot using Plotly."""
+    try:
+        import pandas as pd
+        import plotly.express as px
+    except ImportError:
+        print("[ERROR] pandas and plotly are required: pip install pandas plotly")
+        sys.exit(1)
+
+    # Read DEG results
+    df = pd.read_csv(deg_file)
+
+    # Resolve column names with common aliases
+    col_aliases = {
+        log2fc_col: ["log2FoldChange", "logFC", "log2FC", "FC"],
+        padj_col: ["padj", "p_adj", "adj.P.Val", "FDR", "padjust"],
+        gene_col: ["gene", "gene_id", "symbol", "rowname", "Gene"],
+    }
+
+    resolved = {}
+    for target, aliases in col_aliases.items():
+        for alias in aliases:
+            if alias in df.columns:
+                resolved[target] = alias
+                break
+
+    log2fc_col = resolved.get(log2fc_col, log2fc_col)
+    padj_col = resolved.get(padj_col, padj_col)
+    gene_col = resolved.get(gene_col, gene_col)
+
+    # If gene column is rowname, create it from index
+    if gene_col not in df.columns:
+        df[gene_col] = df.index.astype(str)
+
+    # Validate required columns
+    for col_name, col_key in [("log2FoldChange", log2fc_col), ("padj", padj_col)]:
+        if col_key not in df.columns:
+            print(f"[ERROR] Column '{col_key}' not found. Available: {list(df.columns)}")
+            sys.exit(1)
+
+    # Classify genes
+    df["neg_log10_padj"] = -df[padj_col].apply(lambda x: -1 if x <= 0 else __import__('math').log10(x) * -1 if x > 0 else 0)
+    # More robust: handle edge cases
+    import math
+    df["neg_log10_padj"] = df[padj_col].apply(
+        lambda x: -math.log10(x) if x > 0 else 300
+    )
+
+    df["category"] = "Not Significant"
+    df.loc[(df[log2fc_col] >= log2fc_threshold) & (df[padj_col] < padj_threshold), "category"] = "Up"
+    df.loc[(df[log2fc_col] <= -log2fc_threshold) & (df[padj_col] < padj_threshold), "category"] = "Down"
+
+    up_count = (df["category"] == "Up").sum()
+    down_count = (df["category"] == "Down").sum()
+    ns_count = (df["category"] == "Not Significant").sum()
+
+    # Create interactive plot
+    color_map = {"Up": "#E64B35", "Down": "#4DBBD5", "Not Significant": "#AAAAAA"}
+
+    fig = px.scatter(
+        df, x=log2fc_col, y="neg_log10_padj",
+        color="category", color_discrete_map=color_map,
+        hover_name=gene_col,
+        hover_data={gene_col: True, log2fc_col: ":.3f", padj_col: ":.2e"},
+        title=f"Volcano Plot (Up: {up_count}, Down: {down_count})",
+        labels={log2fc_col: "log2(Fold Change)", "neg_log10_padj": "-log10(adj p-value)"},
+        opacity=0.6,
+    )
+
+    # Add threshold lines
+    fig.add_hline(y=-math.log10(padj_threshold), line_dash="dash", line_color="grey",
+                  annotation_text=f"padj={padj_threshold}")
+    fig.add_vline(x=log2fc_threshold, line_dash="dash", line_color="grey",
+                  annotation_text=f"log2FC={log2fc_threshold}")
+    fig.add_vline(x=-log2fc_threshold, line_dash="dash", line_color="grey",
+                  annotation_text=f"log2FC=-{log2fc_threshold}")
+
+    fig.update_layout(width=1000, height=700)
+
+    # Save as HTML
+    fig.write_html(output_file)
+
+    return {
+        "up": up_count,
+        "down": down_count,
+        "not_sig": ns_count,
+    }
 
 
 def main():
     print("=" * 60)
-    print("  交互式火山图（Plotly点击查看基因）")
+    print("  Interactive Volcano Plot (Plotly)")
     print("=" * 60)
     print()
 
-    # === Input Parameters ===
-    input_file = get_input("Input file path", "input.txt")
-    output_file = get_input("Output file path", "output_deg_volcano_interactive.txt")
-    param1 = get_input("Main parameter (threshold)", "0.05")
-    param2 = get_input("Secondary parameter (mode)", "default")
+    input_file = get_input("DEG results CSV path", "deg_results.csv")
+    output_file = get_input("Output HTML path", "volcano_interactive.html")
+    log2fc_thresh = get_input("log2FC threshold", "1.0", float)
+    padj_thresh = get_input("padj threshold", "0.05", float)
+    gene_col = get_input("Gene column name", "gene")
 
-    print()
-    print(f"Input:  {input_file}")
-    print(f"Output: {output_file}")
-    print(f"Param1: {param1}")
-    print(f"Param2: {param2}")
-    print()
-
-    # === Validate Input ===
     if not os.path.exists(input_file):
         print(f"[ERROR] Input file not found: {input_file}")
-        print("Creating demo input for testing...")
-        with open(input_file, "w") as f:
-            f.write("# Demo input file for deg_volcano_interactive\n")
-            f.write("gene1\t100\t0.5\n")
-            f.write("gene2\t200\t0.8\n")
-            f.write("gene3\t150\t0.3\n")
-        print(f"Demo file created: {input_file}")
-
-    # === Core Logic ===
-    print("[Processing] Reading input file...")
-    results = []
-    try:
-        with open(input_file, "r") as f:
-            header = f.readline()
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith("#"):
-                    continue
-                fields = line.split("\t") if "\t" in line else line.split(",")
-                try:
-                    score = float(fields[-1]) if len(fields) > 1 else 0
-                except ValueError:
-                    score = 0
-                if score < float(param1):
-                    continue
-                results.append(fields)
-    except Exception as e:
-        print(f"[ERROR] Failed to read input: {e}")
         sys.exit(1)
 
-    print(f"[Processing] {len(results)} records passed threshold {param1}")
+    stats = create_interactive_volcano(
+        input_file, output_file,
+        log2fc_threshold=log2fc_thresh,
+        padj_threshold=padj_thresh,
+        gene_col=gene_col,
+    )
 
-    # === Generate Output ===
-    print("[Processing] Writing output file...")
-    try:
-        with open(output_file, "w") as f:
-            f.write("# deg_volcano_interactive output\n")
-            f.write(f"# Input: {input_file}, Threshold: {param1}\n")
-            for r in results:
-                f.write("\t".join(r) + "\n")
-    except Exception as e:
-        print(f"[ERROR] Failed to write output: {e}")
-        sys.exit(1)
-
-    # === Summary Report ===
     print()
     print("=" * 60)
     print("  RESULTS SUMMARY")
     print("=" * 60)
-    print(f"  Input records:    {len(results)}")
-    print(f"  Threshold used:   {param1}")
+    print(f"  Up-regulated:     {stats['up']}")
+    print(f"  Down-regulated:   {stats['down']}")
+    print(f"  Not significant:  {stats['not_sig']}")
     print(f"  Output saved to:  {output_file}")
-    print(f"  Mode:             {param2}")
     print("=" * 60)
     print()
-    print("[Done] deg_volcano_interactive completed successfully!")
+    print("[Done] Interactive volcano plot created successfully!")
 
 
 if __name__ == "__main__":

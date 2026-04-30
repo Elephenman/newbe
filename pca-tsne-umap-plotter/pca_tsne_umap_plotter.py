@@ -38,7 +38,10 @@ def run_dimred(filepath, group_file, methods="all", label_samples=False, color_s
     
     # 配色
     unique_groups = list(set(group_labels))
-    cmap = plt.cm.get_cmap('Set2' if color_scheme == 'default' else color_scheme, len(unique_groups))
+    try:
+        cmap = plt.colormaps['Set2' if color_scheme == 'default' else color_scheme]
+    except AttributeError:
+        cmap = plt.cm.get_cmap('Set2' if color_scheme == 'default' else color_scheme, len(unique_groups))
     colors = [cmap(unique_groups.index(g)) for g in group_labels]
     
     base = os.path.splitext(os.path.basename(filepath))[0]

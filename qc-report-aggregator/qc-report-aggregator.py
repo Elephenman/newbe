@@ -5,6 +5,13 @@
 import os
 import pandas as pd
 
+def get_input(prompt, default="", dtype=str):
+    val = input(prompt + (" [" + str(default) + "]" if default else "") + ": ")
+    if not val.strip():
+        return default
+    return dtype(val)
+
+
 print("=" * 60)
 print("  🧪 QC报告汇总器")
 print("=" * 60)

@@ -39,7 +39,7 @@ cat("模块数:", length(unique(colors)), "\n")
 for (c in unique(colors)) cat("  ", c, ": ", sum(colors == c), " genes\n")
 
 # 保存结果
-out_path <- paste0(tools::file_path_syn_ext(mat_path), "_wgcna_modules.csv")
+out_path <- paste0(tools::file_path_sans_ext(mat_path), "_wgcna_modules.csv")
 module_df <- data.frame(gene = rownames(mat), module = colors)
 write.csv(module_df, out_path, row.names = FALSE)
 cat("✅ 模块结果:", out_path, "\n")

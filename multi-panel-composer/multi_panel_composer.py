@@ -42,7 +42,11 @@ def compose_panels(file_list, layout="2x2", unify_font=True, spacing=0.05, outpu
         if row >= rows: break
         
         # 缩放图片到cell尺寸
-        img_resized = img.resize((cell_w - int(spacing*cell_w), cell_h - int(spacing*cell_h)), Image.LANCZOS)
+        try:
+            resample = Image.Resampling.LANCZOS
+        except AttributeError:
+            resample = Image.LANCZOS
+        img_resized = img.resize((cell_w - int(spacing*cell_w), cell_h - int(spacing*cell_h)), resample)
         
         x = col * cell_w + int(spacing * cell_w // 2)
         y = row * cell_h + int(spacing * cell_h // 2)

@@ -1,93 +1,142 @@
 #!/usr/bin/env python3
-"""碱基质量值逐位置分布图"""
+"""Base quality per-position distribution plot"""
 
 import os
 import sys
 
 
-def get_input(prompt, default=""):
-    val = input(f"{prompt} [{default}]: ").strip()
-    return val if val else default
+def get_input(prompt, default="", dtype=str):
+    val = input(prompt + (" [" + str(default) + "]" if default else "") + ": ")
+    if not val.strip():
+        return default
+    return dtype(val)
+
+
+def plot_base_quality(fastq_file, output_plot, max_reads=100000):
+    """Parse FASTQ and generate per-position base quality box plot."""
+    try:
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
+    except ImportError:
+        print("[ERROR] matplotlib is required: pip install matplotlib")
+        sys.exit(1)
+
+    # Parse FASTQ quality scores per position
+    position_quals = {}
+    total_reads = 0
+
+    with open(fastq_file) as f:
+        line_count = 0
+        for line in f:
+            line_count += 1
+            if line_count % 4 == 0:  # Quality line
+                qual_str = line.strip()
+                for pos, char in enumerate(qual_str):
+                    qval = ord(char) - 33  # Phred+33
+                    if pos not in position_quals:
+                        position_quals[pos] = []
+                    position_quals[pos].append(qval)
+                total_reads += 1
+                if total_reads >= max_reads:
+                    break
+
+    if not position_quals:
+        print("[ERROR] No quality data parsed from FASTQ file")
+        sys.exit(1)
+
+    # Compute statistics per position
+    positions = sorted(position_quals.keys())
+    max_pos = positions[-1] + 1
+
+    means = []
+    q25s = []
+    q50s = []
+    q75s = []
+
+    for pos in range(max_pos):
+        quals = position_quals.get(pos, [])
+        if quals:
+            sorted_q = sorted(quals)
+            n = len(sorted_q)
+            means.append(sum(sorted_q) / n)
+            q25s.append(sorted_q[int(n * 0.25)])
+            q50s.append(sorted_q[int(n * 0.50)])
+            q75s.append(sorted_q[int(n * 0.75)])
+        else:
+            means.append(0)
+            q25s.append(0)
+            q50s.append(0)
+            q75s.append(0)
+
+    # Plot
+    fig, ax = plt.subplots(figsize=(12, 6))
+    x = list(range(max_pos))
+
+    # IQR band
+    ax.fill_between(x, q25s, q75s, alpha=0.3, color='#4DBBD5', label='IQR (Q25-Q75)')
+    # Median line
+    ax.plot(x, q50s, color='#E64B35', linewidth=2, label='Median')
+    # Mean line
+    ax.plot(x, means, color='#3C5488', linewidth=1.5, linestyle='--', label='Mean')
+
+    ax.axhline(y=20, color='grey', linestyle=':', alpha=0.7, label='Q20')
+    ax.axhline(y=30, color='green', linestyle=':', alpha=0.7, label='Q30')
+
+    ax.set_xlabel('Position in Read')
+    ax.set_ylabel('Quality Score (Phred+33)')
+    ax.set_title(f'Per-Position Base Quality Distribution ({total_reads} reads)')
+    ax.legend()
+    plt.tight_layout()
+    plt.savefig(output_plot, dpi=150)
+    plt.close()
+
+    # Compute overall stats
+    all_quals = []
+    for quals in position_quals.values():
+        all_quals.extend(quals)
+    avg_q = sum(all_quals) / len(all_quals) if all_quals else 0
+    q20_pct = sum(1 for q in all_quals if q >= 20) / len(all_quals) * 100 if all_quals else 0
+    q30_pct = sum(1 for q in all_quals if q >= 30) / len(all_quals) * 100 if all_quals else 0
+
+    return {
+        "total_reads": total_reads,
+        "read_length": max_pos,
+        "avg_quality": round(avg_q, 1),
+        "q20_pct": round(q20_pct, 1),
+        "q30_pct": round(q30_pct, 1),
+    }
 
 
 def main():
     print("=" * 60)
-    print("  碱基质量值逐位置分布图")
+    print("  Base Quality Per-Position Distribution Plot")
     print("=" * 60)
     print()
 
-    # === Input Parameters ===
-    input_file = get_input("Input file path", "input.txt")
-    output_file = get_input("Output file path", "output_base_quality_plotter.txt")
-    param1 = get_input("Main parameter (threshold)", "0.05")
-    param2 = get_input("Secondary parameter (mode)", "default")
+    input_file = get_input("Input FASTQ file path", "input.fastq")
+    output_plot = get_input("Output plot path", "base_quality.png")
+    max_reads = get_input("Max reads to sample", "100000", int)
 
-    print()
-    print(f"Input:  {input_file}")
-    print(f"Output: {output_file}")
-    print(f"Param1: {param1}")
-    print(f"Param2: {param2}")
-    print()
-
-    # === Validate Input ===
     if not os.path.exists(input_file):
         print(f"[ERROR] Input file not found: {input_file}")
-        print("Creating demo input for testing...")
-        with open(input_file, "w") as f:
-            f.write("# Demo input file for base_quality_plotter\n")
-            f.write("gene1\t100\t0.5\n")
-            f.write("gene2\t200\t0.8\n")
-            f.write("gene3\t150\t0.3\n")
-        print(f"Demo file created: {input_file}")
-
-    # === Core Logic ===
-    print("[Processing] Reading input file...")
-    results = []
-    try:
-        with open(input_file, "r") as f:
-            header = f.readline()
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith("#"):
-                    continue
-                fields = line.split("\t") if "\t" in line else line.split(",")
-                try:
-                    score = float(fields[-1]) if len(fields) > 1 else 0
-                except ValueError:
-                    score = 0
-                if score < float(param1):
-                    continue
-                results.append(fields)
-    except Exception as e:
-        print(f"[ERROR] Failed to read input: {e}")
         sys.exit(1)
 
-    print(f"[Processing] {len(results)} records passed threshold {param1}")
+    stats = plot_base_quality(input_file, output_plot, max_reads)
 
-    # === Generate Output ===
-    print("[Processing] Writing output file...")
-    try:
-        with open(output_file, "w") as f:
-            f.write("# base_quality_plotter output\n")
-            f.write(f"# Input: {input_file}, Threshold: {param1}\n")
-            for r in results:
-                f.write("\t".join(r) + "\n")
-    except Exception as e:
-        print(f"[ERROR] Failed to write output: {e}")
-        sys.exit(1)
-
-    # === Summary Report ===
     print()
     print("=" * 60)
     print("  RESULTS SUMMARY")
     print("=" * 60)
-    print(f"  Input records:    {len(results)}")
-    print(f"  Threshold used:   {param1}")
-    print(f"  Output saved to:  {output_file}")
-    print(f"  Mode:             {param2}")
+    print(f"  Total reads sampled: {stats['total_reads']}")
+    print(f"  Max read length:     {stats['read_length']}")
+    print(f"  Average quality:     {stats['avg_quality']}")
+    print(f"  Q20%:                {stats['q20_pct']}%")
+    print(f"  Q30%:                {stats['q30_pct']}%")
+    print(f"  Output saved to:     {output_plot}")
     print("=" * 60)
     print()
-    print("[Done] base_quality_plotter completed successfully!")
+    print("[Done] Base quality plot completed successfully!")
 
 
 if __name__ == "__main__":

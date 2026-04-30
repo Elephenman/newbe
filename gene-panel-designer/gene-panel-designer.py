@@ -6,6 +6,13 @@ print("=" * 60)
 print("  🧪 基因Panel设计器(靶向测序)")
 print("=" * 60)
 
+
+def get_input(prompt, default="", dtype=str):
+    val = input(prompt + (" [" + str(default) + "]" if default else "") + ": ")
+    if not val.strip():
+        return default
+    return dtype(val)
+
 input_genes = get_input("目标基因列表文件路径", "target_genes.txt")
 input_gtf = get_input("GTF注释路径", "annotation.gtf")
 flank = int(get_input("侧翼区域大小(bp)", "50"))

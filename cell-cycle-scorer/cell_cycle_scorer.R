@@ -1,8 +1,8 @@
-# 单细胞周期评分+G1/S/G2M分类
+# Single-cell cycle scoring + G1/S/G2M classification
 # Interactive R script - all parameters via readline()
 
 cat("=", rep("-", 59), "\n", sep="")
-cat("  单细胞周期评分+G1/S/G2M分类\n")
+cat("  Single-cell cycle scoring + G1/S/G2M classification\n")
 cat("=", rep("-", 59), "\n", sep="")
 cat("\n")
 
@@ -12,53 +12,92 @@ get_input <- function(prompt, default) {
   if (val == "") return(default) else return(val)
 }
 
-input_file    <- get_input("Input file path", "input.txt")
-output_file   <- get_input("Output file path", "output_cell_cycle_scorer.txt")
-param1        <- get_input("Main parameter (threshold)", "0.05")
-param2        <- get_input("Secondary parameter (mode)", "default")
+obj_path <- get_input("Seurat object path (rds)", "seurat.rds")
+s_genes <- get_input("S-phase genes file (one per line, or 'default')", "default")
+g2m_genes <- get_input("G2M-phase genes file (one per line, or 'default')", "default")
+output_file <- get_input("Output CSV path", "cell_cycle_scores.csv")
 
-cat("\nInput:  ", input_file, "\n")
-cat("Output: ", output_file, "\n")
-cat("Param1: ", param1, "\n")
-cat("Param2: ", param2, "\n\n")
+cat("\nObject:  ", obj_path, "\n")
+cat("Output:  ", output_file, "\n\n")
 
-# === Validate Input ===
-if (!file.exists(input_file)) {
-  cat("[WARN] Input file not found, creating demo...\n")
-  demo_data <- data.frame(
-    gene = c("gene1", "gene2", "gene3"),
-    value = c(100, 200, 150),
-    score = c(0.5, 0.8, 0.3)
-  )
-  write.table(demo_data, input_file, sep="\t", row.names=FALSE, quote=FALSE)
-  cat("Demo file created:", input_file, "\n")
+# === Load Seurat ===
+suppressPackageStartupMessages({
+  if (!require(Seurat)) { cat("Need Seurat\n"); quit(status=1) }
+})
+
+if (!file.exists(obj_path)) {
+  cat("[ERROR] File not found:", obj_path, "\n")
+  quit(status=1)
 }
 
-# === Core Logic ===
-cat("[Processing] Reading input...\n")
-data <- read.table(input_file, header=TRUE, sep="\t", stringsAsFactors=FALSE)
-cat("[Processing]", nrow(data), "records loaded\n")
+obj <- readRDS(obj_path)
 
-# Apply threshold filter
-threshold <- as.numeric(param1)
-if ("score" %in% colnames(data)) {
-  filtered <- data[data$score >= threshold, ]
+# === Cell cycle scoring ===
+# Default S and G2M gene sets (human)
+if (s_genes == "default") {
+  s_genes_vec <- c("MCM5","PCNA","TYMS","FANCI","MCM2","MCM4","RRM1","UNG","GINS2",
+                   "MCM6","CDCA7","DTL","PRIM1","UHRF1","CENPU","HELLS","RFC2","RPA2",
+                   "NASP","RAD51AP1","GMNN","WDR76","SLBP","CCNE2","UBR7","POLD3",
+                   "MSH2","ATAD2","RAD51","RRM2","CDC45","CDC6","EXO1","TIPIN","DSCC1",
+                   "BLM","CASP8AP2","USP1","CLSPN","POLA1","CHAF1B","BRIP1","E2F8")
 } else {
-  filtered <- data
+  s_genes_vec <- readLines(s_genes)
+  s_genes_vec <- trimws(s_genes_vec[s_genes_vec != ""])
 }
-cat("[Processing]", nrow(filtered), "records passed threshold", threshold, "\n")
+
+if (g2m_genes == "default") {
+  g2m_genes_vec <- c("HMGB2","CDK1","NUSAP1","UICC1","KIF11","CKAP2","CKAP2L",
+                      "GTSE1","TUBB4B","TOP2A","NDC80","KNL1","CKS1B","CENPF",
+                      "ANP32E","SMC4","CCNB2","CKAP5","BIRC5","CDCA3","HJURP",
+                      "ANLN","CCNA2","CDCA2","CDK2","CDC20","KIF23","CTCF",
+                      "AURKB","CENPE","TACC3","G2E3","BUB1","KIF2C","RANGAP1",
+                      "INCENP","CDCA8","HMMR","AURKA","BUB1B","CDC25C","PKMYT1",
+                      "KIF20B","MKI67","TMEM99","MLF1IP","CENPA","DEPDC1")
+} else {
+  g2m_genes_vec <- readLines(g2m_genes)
+  g2m_genes_vec <- trimws(g2m_genes_vec[g2m_genes_vec != ""])
+}
+
+# Ensure normalized data exists
+if (is.null(obj@assays$RNA@data) || sum(obj@assays$RNA@data) == 0) {
+  cat("[Processing] Running normalization...\n")
+  obj <- NormalizeData(obj)
+}
+
+# Run cell cycle scoring
+cat("[Processing] Scoring cell cycle phases...\n")
+obj <- CellCycleScoring(obj, s.features = s_genes_vec, g2m.features = g2m_genes_vec, set.ident = TRUE)
+
+# Summary
+phase_counts <- table(obj$Phase)
+cat("[Processing] Cell cycle scoring complete\n")
+for (phase in names(phase_counts)) {
+  cat("  ", phase, ": ", phase_counts[phase], " cells (", round(phase_counts[phase]/length(obj$Phase)*100, 1), "%)\n", sep="")
+}
 
 # === Generate Output ===
 cat("[Processing] Writing output...\n")
-write.table(filtered, output_file, sep="\t", row.names=FALSE, quote=FALSE)
+cycle_df <- data.frame(
+  cell = colnames(obj),
+  phase = obj$Phase,
+  S_score = obj$S.Score,
+  G2M_score = obj$G2M.Score,
+  stringsAsFactors = FALSE
+)
+write.csv(cycle_df, output_file, row.names = FALSE)
+
+# Save annotated object
+saveRDS(obj, "seurat_cellcycle.rds")
 
 # === Summary Report ===
 cat("\n", "=", rep("-", 59), "\n", sep="")
 cat("  RESULTS SUMMARY\n")
 cat("=", rep("-", 59), "\n", sep="")
-cat("  Input records:   ", nrow(data), "\n")
-cat("  Filtered records:", nrow(filtered), "\n")
-cat("  Threshold:       ", threshold, "\n")
-cat("  Output saved to: ", output_file, "\n")
+cat("  Total cells:     ", ncol(obj), "\n")
+cat("  G1 cells:        ", phase_counts["G1"], "\n")
+cat("  S cells:         ", phase_counts["S"], "\n")
+cat("  G2M cells:       ", phase_counts["G2M"], "\n")
+cat("  Output CSV:      ", output_file, "\n")
+cat("  Seurat object:   seurat_cellcycle.rds\n")
 cat("=", rep("-", 59), "\n\n", sep="")
 cat("[Done] cell_cycle_scorer completed!\n")

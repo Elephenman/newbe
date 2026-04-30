@@ -5,8 +5,12 @@ def main():
     deg_files = input("DEG基因列表文件(逗号分隔) [deg1.txt,deg2.txt,deg3.txt]: ") or "deg1.txt,deg2.txt,deg3.txt"
     output_plot = input("输出图片路径 [deg_venn.png]: ") or "deg_venn.png"
     labels = input("组标签(逗号分隔) [G1,G2,G3]: ") or "G1,G2,G3"
-    import matplotlib.pyplot as plt
-    from matplotlib_venn import venn2, venn3
+    try:
+        import matplotlib.pyplot as plt
+        from matplotlib_venn import venn2, venn3
+    except ImportError:
+        print("[ERROR] matplotlib-venn is required: pip install matplotlib-venn")
+        return
     files = [f.strip() for f in deg_files.split(",")]
     labs = [l.strip() for l in labels.split(",")]
     sets = []

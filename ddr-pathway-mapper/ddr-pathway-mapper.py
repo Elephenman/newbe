@@ -4,6 +4,13 @@
 # DNA损伤修复通路映射
 import matplotlib.pyplot as plt
 
+def get_input(prompt, default="", dtype=str):
+    val = input(prompt + (" [" + str(default) + "]" if default else "") + ": ")
+    if not val.strip():
+        return default
+    return dtype(val)
+
+
 print("=" * 60)
 print("  🔥 DNA损伤修复通路映射器")
 print("=" * 60)

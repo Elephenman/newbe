@@ -1,13 +1,21 @@
 #!/usr/bin/env python3
-"""科研日记模板生成+Markdown格式"""
+"""科研日记模板生成+Markdown格式
+根据输入的实验信息和日期范围，生成结构化的科研日记Markdown文件
+"""
 
 import os
 import sys
+from datetime import datetime, timedelta
 
 
-def get_input(prompt, default=""):
-    val = input(f"{prompt} [{default}]: ").strip()
-    return val if val else default
+def get_input(prompt, default="", dtype=str):
+    val = input(prompt + (" [" + str(default) + "]" if default else "") + ": ")
+    if not val.strip():
+        return default
+    try:
+        return dtype(val)
+    except (ValueError, TypeError):
+        return default
 
 
 def main():
@@ -16,75 +24,97 @@ def main():
     print("=" * 60)
     print()
 
-    # === Input Parameters ===
-    input_file = get_input("Input file path", "input.txt")
-    output_file = get_input("Output file path", "output_research_diary_generator.txt")
-    param1 = get_input("Main parameter (threshold)", "0.05")
-    param2 = get_input("Secondary parameter (mode)", "default")
+    project_name = get_input("项目名称", "MyProject")
+    start_date = get_input("起始日期(YYYY-MM-DD)", datetime.now().strftime("%Y-%m-%d"))
+    num_days = get_input("天数", "7", int)
+    output_file = get_input("输出Markdown路径", "research_diary.md")
+    sections = get_input("日记模块(逗号分隔: aim/method/result/next/issue)", "aim,method,result,next,issue")
 
     print()
-    print(f"Input:  {input_file}")
-    print(f"Output: {output_file}")
-    print(f"Param1: {param1}")
-    print(f"Param2: {param2}")
+    print(f"项目:      {project_name}")
+    print(f"起始日期:  {start_date}")
+    print(f"天数:      {num_days}")
+    print(f"输出:      {output_file}")
     print()
 
-    # === Validate Input ===
-    if not os.path.exists(input_file):
-        print(f"[ERROR] Input file not found: {input_file}")
-        print("Creating demo input for testing...")
-        with open(input_file, "w") as f:
-            f.write("# Demo input file for research_diary_generator\n")
-            f.write("gene1\t100\t0.5\n")
-            f.write("gene2\t200\t0.8\n")
-            f.write("gene3\t150\t0.3\n")
-        print(f"Demo file created: {input_file}")
+    section_labels = {
+        "aim": "Aim / 目标",
+        "method": "Method / 方法",
+        "result": "Result / 结果",
+        "next": "Next steps / 下一步",
+        "issue": "Issues / 问题与思考",
+    }
 
-    # === Core Logic ===
-    print("[Processing] Reading input file...")
-    results = []
+    section_list = [s.strip() for s in sections.split(",") if s.strip()]
+    valid_sections = [s for s in section_list if s in section_labels]
+
+    if not valid_sections:
+        print("[WARN] 无有效模块，使用默认模块")
+        valid_sections = ["aim", "method", "result", "next", "issue"]
+
     try:
-        with open(input_file, "r") as f:
-            header = f.readline()
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith("#"):
-                    continue
-                fields = line.split("\t") if "\t" in line else line.split(",")
-                try:
-                    score = float(fields[-1]) if len(fields) > 1 else 0
-                except ValueError:
-                    score = 0
-                if score < float(param1):
-                    continue
-                results.append(fields)
-    except Exception as e:
-        print(f"[ERROR] Failed to read input: {e}")
+        dt = datetime.strptime(start_date, "%Y-%m-%d")
+    except ValueError:
+        print(f"[ERROR] 日期格式错误: {start_date}, 请使用YYYY-MM-DD")
         sys.exit(1)
 
-    print(f"[Processing] {len(results)} records passed threshold {param1}")
+    # Generate diary
+    lines = []
+    lines.append(f"# Research Diary: {project_name}")
+    lines.append("")
+    lines.append(f"Generated on {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+    lines.append(f"Date range: {start_date} ~ {(dt + timedelta(days=num_days-1)).strftime('%Y-%m-%d')}")
+    lines.append("")
+    lines.append("---")
+    lines.append("")
 
-    # === Generate Output ===
-    print("[Processing] Writing output file...")
+    for i in range(num_days):
+        current = dt + timedelta(days=i)
+        weekday_names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+        weekday = weekday_names[current.weekday()]
+
+        lines.append(f"## {current.strftime('%Y-%m-%d')} ({weekday})")
+        lines.append("")
+
+        for sec in valid_sections:
+            label = section_labels.get(sec, sec)
+            lines.append(f"### {label}")
+            lines.append("")
+            lines.append(f"<!-- Enter {sec} notes here -->")
+            lines.append("")
+
+        lines.append("---")
+        lines.append("")
+
+    # Table of contents
+    toc_lines = [
+        "# Table of Contents",
+        "",
+    ]
+    for i in range(num_days):
+        current = dt + timedelta(days=i)
+        weekday_names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        weekday = weekday_names[current.weekday()]
+        toc_lines.append(f"- [{current.strftime('%Y-%m-%d')} ({weekday})](#{current.strftime('%Y-%m-%d').replace('-', '')}-{weekday.lower()})")
+    toc_lines.append("")
+
+    # Write output
     try:
-        with open(output_file, "w") as f:
-            f.write("# research_diary_generator output\n")
-            f.write(f"# Input: {input_file}, Threshold: {param1}\n")
-            for r in results:
-                f.write("\t".join(r) + "\n")
+        with open(output_file, "w", encoding="utf-8") as f:
+            f.write("\n".join(toc_lines))
+            f.write("\n".join(lines))
     except Exception as e:
-        print(f"[ERROR] Failed to write output: {e}")
+        print(f"[ERROR] 写入失败: {e}")
         sys.exit(1)
 
-    # === Summary Report ===
     print()
     print("=" * 60)
     print("  RESULTS SUMMARY")
     print("=" * 60)
-    print(f"  Input records:    {len(results)}")
-    print(f"  Threshold used:   {param1}")
-    print(f"  Output saved to:  {output_file}")
-    print(f"  Mode:             {param2}")
+    print(f"  项目名称:      {project_name}")
+    print(f"  日记天数:      {num_days}")
+    print(f"  模块:          {', '.join(valid_sections)}")
+    print(f"  输出文件:      {output_file}")
     print("=" * 60)
     print()
     print("[Done] research_diary_generator completed successfully!")

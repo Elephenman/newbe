@@ -6,6 +6,13 @@ import os
 import json
 from datetime import datetime
 
+def get_input(prompt, default="", dtype=str):
+    val = input(prompt + (" [" + str(default) + "]" if default else "") + ": ")
+    if not val.strip():
+        return default
+    return dtype(val)
+
+
 print("=" * 60)
 print("  📖 实验Protocol版本管理器")
 print("=" * 60)

@@ -17,7 +17,7 @@ if (method == "scDblFinder") {
   sce <- scDblFinder(sce, dbr = rate/100)
   obj$doublet <- sce$scDblFinder.class
 } else {
-  suppressPackageSeparatorMessages(if (!require(DoubletFinder)) { cat("需要DoubletFinder\n"); quit(status=1) })
+  suppressPackageStartupMessages(if (!require(DoubletFinder)) { cat("需要DoubletFinder\n"); quit(status=1) })
   obj <- NormalizeData(obj); obj <- FindVariableFeatures(obj); obj <- ScaleData(obj); obj <- RunPCA(obj)
   sweep.res.list <- paramSweep_v3(obj, PCs=1:10, sct=FALSE)
   sweep.stats <- summarizeSweep(sweep.res.list, GT=FALSE)

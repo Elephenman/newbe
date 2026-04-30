@@ -202,8 +202,8 @@ def main():
     if calc_coverage.lower() in ('yes', 'y', 'true', '1'):
         genome_length = get_input("参考基因组总长度(bp)", default=3000000000, type=int)
 
-    save_csv = get_input("是否保存CSV统计表", default="no")
-    export_csv = save_csv.lower() in ('yes', 'y', 'true', '1')
+    save_csv_flag = get_input("是否保存CSV统计表", default="no")
+    export_csv = save_csv_flag.lower() in ('yes', 'y', 'true', '1')
 
     print(f"\n  ⏳ 正在解析BAM文件: {filepath} ...")
 

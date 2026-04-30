@@ -55,15 +55,32 @@ def calc_ld_decay(filepath, max_distance_kb=500, r2_threshold=0.2, make_plot=Tru
                 
                 a1 = group[i]["alleles"]; a2 = group[j]["alleles"]
                 if len(a1) != len(a2) or len(a1) < 2: continue
-                
+
+                # Proper r^2 calculation from genotype dosages
+                # Using dosage (0,1,2) representation for correlation
+                # Each allele list contains 0/1 for each haplotype
+                # Convert to dosage per individual
+                n_hap = len(a1)
+                n_ind = n_hap // 2
+                if n_ind < 2: continue
+
+                # Compute allele frequencies
                 n = len(a1)
-                pA = sum(a1) / (2*n) if n > 0 else 0
-                pB = sum(a2) / (2*n) if n > 0 else 0
-                
-                # 计算r2
-                concordant = sum(1 for k in range(n) if a1[k] == a2[k])
-                pAB = concordant / n if n > 0 else 0
-                
+                pA = sum(a1) / n if n > 0 else 0
+                pB = sum(a2) / n if n > 0 else 0
+
+                if pA == 0 or pA == 1 or pB == 0 or pB == 1:
+                    continue  # Monomorphic site
+
+                # Compute haplotype frequencies
+                n_AB = n_aB = n_Ab = n_ab = 0
+                for k in range(n):
+                    if a1[k] == 1 and a2[k] == 1: n_AB += 1
+                    elif a1[k] == 0 and a2[k] == 1: n_aB += 1
+                    elif a1[k] == 1 and a2[k] == 0: n_Ab += 1
+                    else: n_ab += 1
+
+                pAB = n_AB / n
                 D = pAB - pA * pB
                 denom = pA * (1-pA) * pB * (1-pB)
                 r2 = D*D / denom if denom > 0 else 0

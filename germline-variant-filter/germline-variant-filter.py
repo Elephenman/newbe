@@ -18,7 +18,10 @@ def main():
             try: qual = float(parts[5]) if parts[5] != "." else 0
             except: qual = 0
             info = dict(it.split("=",1) if "=" in it else (it,"T") for it in parts[7].split(";"))
-            dp = int(info.get("DP","0")); af = float(info.get("AF","0"))
+            dp = int(info.get("DP","0"))
+            af_str = info.get("AF", "0")
+            try: af = float(af_str.split(",")[0])
+            except ValueError: af = 0.0
             if qual < min_q or dp < min_dp: continue
             if af_thr > 0 and af > af_thr: continue
             fout.write(line); kept += 1

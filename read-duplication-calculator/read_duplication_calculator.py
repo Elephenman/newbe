@@ -1,94 +1,123 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """测序reads重复率统计+分布可视化"""
-
-import os
-import sys
-
+import os, sys
+from collections import Counter
 
 def get_input(prompt, default=""):
     val = input(f"{prompt} [{default}]: ").strip()
     return val if val else default
 
+def calculate_read_duplication(fastq_path, output_file=None, make_plot=True, max_reads=0):
+    """计算FASTQ文件的reads重复率
+
+    统计相同序列出现的次数，计算重复率和分布
+    """
+    # 读取序列
+    seq_counter = Counter()
+    total = 0
+
+    with open(fastq_path, 'r') as f:
+        while True:
+            header = f.readline()
+            if not header:
+                break
+            seq = f.readline().strip()
+            plus = f.readline()
+            qual = f.readline()
+
+            seq_counter[seq] += 1
+            total += 1
+
+            if max_reads > 0 and total >= max_reads:
+                break
+
+    if total == 0:
+        print("[ERROR] No reads found in FASTQ file")
+        return
+
+    # 计算重复统计
+    unique_seqs = len(seq_counter)
+    duplicate_seqs = sum(1 for s, c in seq_counter.items() if c > 1)
+    duplicate_reads = sum(c - 1 for s, c in seq_counter.items() if c > 1)
+    dup_rate = duplicate_reads / total * 100
+
+    # 重复度分布
+    dup_distribution = Counter()
+    for seq, count in seq_counter.items():
+        dup_distribution[count] += 1
+
+    # 输出
+    out_path = output_file or os.path.splitext(fastq_path)[0] + "_duplication.tsv"
+    with open(out_path, 'w') as out:
+        out.write("# Read Duplication Report\n")
+        out.write(f"# Input: {fastq_path}\n")
+        out.write(f"Total reads\t{total}\n")
+        out.write(f"Unique sequences\t{unique_seqs}\n")
+        out.write(f"Duplicate sequences (count>1)\t{duplicate_seqs}\n")
+        out.write(f"Duplicate reads\t{duplicate_reads}\n")
+        out.write(f"Duplication rate\t{dup_rate:.2f}%\n\n")
+        out.write("Duplication_count\tNumber_of_sequences\tFraction_of_reads\n")
+        for count in sorted(dup_distribution.keys()):
+            n_seqs = dup_distribution[count]
+            fraction = count * n_seqs / total * 100
+            out.write(f"{count}\t{n_seqs}\t{fraction:.2f}%\n")
+
+    # 绘图
+    if make_plot:
+        try:
+            import matplotlib; matplotlib.use('Agg')
+            import matplotlib.pyplot as plt
+
+            # 重复度分布图
+            counts_sorted = sorted(dup_distribution.keys())
+            max_display = min(max(counts_sorted), 50)
+
+            x = list(range(1, max_display + 1))
+            y = [dup_distribution.get(i, 0) for i in x]
+
+            fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
+
+            # Bar plot of duplication count distribution
+            ax1.bar(x, y, color='#2196F3', alpha=0.8)
+            ax1.set_xlabel('Duplication count')
+            ax1.set_ylabel('Number of sequences')
+            ax1.set_title('Sequence duplication distribution')
+            ax1.set_yscale('log')
+
+            # Pie chart of unique vs duplicate
+            labels = ['Unique', 'Duplicated']
+            sizes = [total - duplicate_reads, duplicate_reads]
+            colors = ['#4CAF50', '#F44336']
+            ax2.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90)
+            ax2.set_title(f'Duplication rate: {dup_rate:.1f}%')
+
+            plt.tight_layout()
+            plot_path = os.path.splitext(fastq_path)[0] + "_duplication.png"
+            plt.savefig(plot_path, dpi=200)
+            plt.close()
+            print(f"  Duplication plot: {plot_path}")
+
+        except ImportError:
+            print("  [INFO] matplotlib required for duplication plot")
+
+    print(f"Read duplication calculation complete")
+    print(f"  Total reads: {total:,}")
+    print(f"  Unique sequences: {unique_seqs:,}")
+    print(f"  Duplicate reads: {duplicate_reads:,}")
+    print(f"  Duplication rate: {dup_rate:.2f}%")
+    print(f"  Report: {out_path}")
 
 def main():
     print("=" * 60)
     print("  测序reads重复率统计+分布可视化")
     print("=" * 60)
-    print()
-
-    # === Input Parameters ===
-    input_file = get_input("Input file path", "input.txt")
-    output_file = get_input("Output file path", "output_read_duplication_calculator.txt")
-    param1 = get_input("Main parameter (threshold)", "0.05")
-    param2 = get_input("Secondary parameter (mode)", "default")
-
-    print()
-    print(f"Input:  {input_file}")
-    print(f"Output: {output_file}")
-    print(f"Param1: {param1}")
-    print(f"Param2: {param2}")
-    print()
-
-    # === Validate Input ===
-    if not os.path.exists(input_file):
-        print(f"[ERROR] Input file not found: {input_file}")
-        print("Creating demo input for testing...")
-        with open(input_file, "w") as f:
-            f.write("# Demo input file for read_duplication_calculator\n")
-            f.write("gene1\t100\t0.5\n")
-            f.write("gene2\t200\t0.8\n")
-            f.write("gene3\t150\t0.3\n")
-        print(f"Demo file created: {input_file}")
-
-    # === Core Logic ===
-    print("[Processing] Reading input file...")
-    results = []
-    try:
-        with open(input_file, "r") as f:
-            header = f.readline()
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith("#"):
-                    continue
-                fields = line.split("\t") if "\t" in line else line.split(",")
-                try:
-                    score = float(fields[-1]) if len(fields) > 1 else 0
-                except ValueError:
-                    score = 0
-                if score < float(param1):
-                    continue
-                results.append(fields)
-    except Exception as e:
-        print(f"[ERROR] Failed to read input: {e}")
-        sys.exit(1)
-
-    print(f"[Processing] {len(results)} records passed threshold {param1}")
-
-    # === Generate Output ===
-    print("[Processing] Writing output file...")
-    try:
-        with open(output_file, "w") as f:
-            f.write("# read_duplication_calculator output\n")
-            f.write(f"# Input: {input_file}, Threshold: {param1}\n")
-            for r in results:
-                f.write("\t".join(r) + "\n")
-    except Exception as e:
-        print(f"[ERROR] Failed to write output: {e}")
-        sys.exit(1)
-
-    # === Summary Report ===
-    print()
-    print("=" * 60)
-    print("  RESULTS SUMMARY")
-    print("=" * 60)
-    print(f"  Input records:    {len(results)}")
-    print(f"  Threshold used:   {param1}")
-    print(f"  Output saved to:  {output_file}")
-    print(f"  Mode:             {param2}")
-    print("=" * 60)
-    print()
-    print("[Done] read_duplication_calculator completed successfully!")
-
+    fastq_path = get_input("FASTQ文件路径", "input.fastq")
+    output = get_input("输出文件路径", "")
+    plot = get_input("是否出图(yes/no)", "yes")
+    max_reads = get_input("最大读取reads数(0=全部)", "0")
+    calculate_read_duplication(fastq_path, output or None,
+                               plot.lower() in ('yes', 'y'), int(max_reads))
 
 if __name__ == "__main__":
     main()

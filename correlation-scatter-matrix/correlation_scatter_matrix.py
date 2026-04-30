@@ -1,93 +1,134 @@
 #!/usr/bin/env python3
-"""相关性散点矩阵图+回归线"""
+"""Correlation scatter matrix + regression lines"""
 
 import os
 import sys
 
 
-def get_input(prompt, default=""):
-    val = input(f"{prompt} [{default}]: ").strip()
-    return val if val else default
+def get_input(prompt, default="", dtype=str):
+    val = input(prompt + (" [" + str(default) + "]" if default else "") + ": ")
+    if not val.strip():
+        return default
+    return dtype(val)
+
+
+def create_scatter_matrix(input_file, output_file, method="pearson", max_vars=10):
+    """Create correlation scatter matrix from CSV data."""
+    try:
+        import pandas as pd
+        import numpy as np
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
+    except ImportError:
+        print("[ERROR] pandas, numpy, matplotlib required: pip install pandas numpy matplotlib")
+        sys.exit(1)
+
+    # Read data
+    df = pd.read_csv(input_file)
+
+    # Select numeric columns only
+    numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+    if not numeric_cols:
+        print("[ERROR] No numeric columns found in input file")
+        sys.exit(1)
+
+    # Limit to max_vars
+    if len(numeric_cols) > max_vars:
+        print(f"[INFO] Limiting to top {max_vars} numeric columns (out of {len(numeric_cols)})")
+        numeric_cols = numeric_cols[:max_vars]
+
+    df_sub = df[numeric_cols].dropna()
+
+    # Compute correlation matrix
+    corr_matrix = df_sub.corr(method=method)
+
+    # Create scatter matrix
+    n = len(numeric_cols)
+    fig, axes = plt.subplots(n, n, figsize=(3*n, 3*n))
+
+    for i in range(n):
+        for j in range(n):
+            ax = axes[i][j] if n > 1 else axes
+            if i == j:
+                # Diagonal: histogram
+                ax.hist(df_sub[numeric_cols[i]], bins=30, color='#4DBBD5', alpha=0.7)
+                ax.set_ylabel('Count', fontsize=7)
+            else:
+                # Off-diagonal: scatter with regression line
+                x = df_sub[numeric_cols[j]]
+                y = df_sub[numeric_cols[i]]
+                ax.scatter(x, y, alpha=0.3, s=5, color='#3C5488')
+                # Regression line
+                try:
+                    z = np.polyfit(x, y, 1)
+                    p = np.poly1d(z)
+                    x_sorted = np.sort(x)
+                    ax.plot(x_sorted, p(x_sorted), color='#E64B35', linewidth=1.5)
+                except Exception:
+                    pass
+                # Correlation coefficient
+                r = corr_matrix.iloc[i, j]
+                ax.text(0.05, 0.95, f'r={r:.2f}', transform=ax.transAxes,
+                       fontsize=7, verticalalignment='top',
+                       color='#E64B35' if abs(r) > 0.5 else 'grey')
+
+            if i == n - 1:
+                ax.set_xlabel(numeric_cols[j], fontsize=7)
+            else:
+                ax.set_xticklabels([])
+            if j == 0 and i != j:
+                ax.set_ylabel(numeric_cols[i], fontsize=7)
+            elif j != 0:
+                ax.set_yticklabels([])
+            ax.tick_params(labelsize=6)
+
+    plt.suptitle(f'Correlation Scatter Matrix ({method})', fontsize=12)
+    plt.tight_layout()
+    plt.savefig(output_file, dpi=150)
+    plt.close()
+
+    # Save correlation matrix
+    corr_file = output_file.rsplit('.', 1)[0] + '_correlation.csv'
+    corr_matrix.to_csv(corr_file)
+
+    return {
+        "n_vars": len(numeric_cols),
+        "n_rows": len(df_sub),
+        "method": method,
+        "corr_file": corr_file,
+    }
 
 
 def main():
     print("=" * 60)
-    print("  相关性散点矩阵图+回归线")
+    print("  Correlation Scatter Matrix + Regression Lines")
     print("=" * 60)
     print()
 
-    # === Input Parameters ===
-    input_file = get_input("Input file path", "input.txt")
-    output_file = get_input("Output file path", "output_correlation_scatter_matrix.txt")
-    param1 = get_input("Main parameter (threshold)", "0.05")
-    param2 = get_input("Secondary parameter (mode)", "default")
+    input_file = get_input("Input CSV path", "data.csv")
+    output_file = get_input("Output plot path", "scatter_matrix.png")
+    method = get_input("Correlation method (pearson/spearman)", "pearson")
+    max_vars = get_input("Max variables to plot", "10", int)
 
-    print()
-    print(f"Input:  {input_file}")
-    print(f"Output: {output_file}")
-    print(f"Param1: {param1}")
-    print(f"Param2: {param2}")
-    print()
-
-    # === Validate Input ===
     if not os.path.exists(input_file):
         print(f"[ERROR] Input file not found: {input_file}")
-        print("Creating demo input for testing...")
-        with open(input_file, "w") as f:
-            f.write("# Demo input file for correlation_scatter_matrix\n")
-            f.write("gene1\t100\t0.5\n")
-            f.write("gene2\t200\t0.8\n")
-            f.write("gene3\t150\t0.3\n")
-        print(f"Demo file created: {input_file}")
-
-    # === Core Logic ===
-    print("[Processing] Reading input file...")
-    results = []
-    try:
-        with open(input_file, "r") as f:
-            header = f.readline()
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith("#"):
-                    continue
-                fields = line.split("\t") if "\t" in line else line.split(",")
-                try:
-                    score = float(fields[-1]) if len(fields) > 1 else 0
-                except ValueError:
-                    score = 0
-                if score < float(param1):
-                    continue
-                results.append(fields)
-    except Exception as e:
-        print(f"[ERROR] Failed to read input: {e}")
         sys.exit(1)
 
-    print(f"[Processing] {len(results)} records passed threshold {param1}")
+    stats = create_scatter_matrix(input_file, output_file, method, max_vars)
 
-    # === Generate Output ===
-    print("[Processing] Writing output file...")
-    try:
-        with open(output_file, "w") as f:
-            f.write("# correlation_scatter_matrix output\n")
-            f.write(f"# Input: {input_file}, Threshold: {param1}\n")
-            for r in results:
-                f.write("\t".join(r) + "\n")
-    except Exception as e:
-        print(f"[ERROR] Failed to write output: {e}")
-        sys.exit(1)
-
-    # === Summary Report ===
     print()
     print("=" * 60)
     print("  RESULTS SUMMARY")
     print("=" * 60)
-    print(f"  Input records:    {len(results)}")
-    print(f"  Threshold used:   {param1}")
+    print(f"  Variables:        {stats['n_vars']}")
+    print(f"  Data rows:        {stats['n_rows']}")
+    print(f"  Method:           {stats['method']}")
     print(f"  Output saved to:  {output_file}")
-    print(f"  Mode:             {param2}")
+    print(f"  Correlation CSV:  {stats['corr_file']}")
     print("=" * 60)
     print()
-    print("[Done] correlation_scatter_matrix completed successfully!")
+    print("[Done] Correlation scatter matrix completed successfully!")
 
 
 if __name__ == "__main__":

@@ -34,10 +34,13 @@ def search_pubmed(query, max_results=20, date_range=None, free_fulltext=False, f
     # 获取摘要详情
     handle = Entrez.esummary(db="pubmed", id=id_list, retmode="json")
     summaries = json.loads(handle.read()); handle.close()
-    
+
+    # Parse esummary results - records are under result key
+    summary_result = summaries.get("result", summaries)
+
     rows = []
     for uid in id_list:
-        s = summaries.get(uid, {})
+        s = summary_result.get(uid, {})
         rows.append({
             "pmid": uid, "title": s.get("Title",""), "authors": "; ".join([a.get("Name","") for a in s.get("AuthorList",[])]),
             "doi": s.get("DOI",""), "journal": s.get("FullJournalName",""), "year": s.get("PubDate","").split()[0] if s.get("PubDate") else ""

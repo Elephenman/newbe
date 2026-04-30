@@ -25,11 +25,12 @@ def inspect_batch(mat_path, batch_file, method="PCA"):
     from sklearn.decomposition import PCA
     pca = PCA(n_components=2); coords = pca.fit_transform(mat)
     
-    unique = list(set(labels)); cmap=plt.cm.Set2(len(unique))
+    unique = list(set(labels))
+    cmap = plt.cm.get_cmap('Set2', len(unique))
     plt.figure(figsize=(8,6))
-    for g in unique:
+    for i, g in enumerate(unique):
         idx=[i for i,l in enumerate(labels) if l==g]
-        plt.scatter(coords[idx,0], coords[idx,1], label=g, s=50)
+        plt.scatter(coords[idx,0], coords[idx,1], label=g, s=50, color=cmap(i))
     plt.legend(); plt.title("Batch Effect PCA"); plt.tight_layout()
     plt.savefig("batch_pca.png", dpi=300); plt.close()
     

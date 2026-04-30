@@ -1,64 +1,76 @@
 # 单细胞基因模块提取+活性评分
-# Interactive R script - all parameters via readline()
+# 基于共表达或预定义基因集，计算单细胞模块评分
 
 cat("=", rep("-", 59), "\n", sep="")
 cat("  单细胞基因模块提取+活性评分\n")
 cat("=", rep("-", 59), "\n", sep="")
 cat("\n")
 
-# === Input Parameters ===
 get_input <- function(prompt, default) {
   val <- readline(prompt = paste0(prompt, " [", default, "]: "))
   if (val == "") return(default) else return(val)
 }
 
-input_file    <- get_input("Input file path", "input.txt")
-output_file   <- get_input("Output file path", "output_sc_gene_module_extractor.txt")
-param1        <- get_input("Main parameter (threshold)", "0.05")
-param2        <- get_input("Secondary parameter (mode)", "default")
+rds_file     <- get_input("Seurat对象RDS路径", "seurat.rds")
+module_file  <- get_input("基因模块文件(CSV: module_name,gene1;gene2;...)", "modules.csv")
+output_rds   <- get_input("输出RDS路径", "seurat_scored.rds")
+method       <- get_input("评分方法(AddModuleScore/UCell)", "AddModuleScore")
 
-cat("\nInput:  ", input_file, "\n")
-cat("Output: ", output_file, "\n")
-cat("Param1: ", param1, "\n")
-cat("Param2: ", param2, "\n\n")
+cat("\nRDS:     ", rds_file, "\n")
+cat("Modules: ", module_file, "\n")
+cat("Output:  ", output_rds, "\n")
+cat("Method:  ", method, "\n\n")
 
-# === Validate Input ===
-if (!file.exists(input_file)) {
-  cat("[WARN] Input file not found, creating demo...\n")
-  demo_data <- data.frame(
-    gene = c("gene1", "gene2", "gene3"),
-    value = c(100, 200, 150),
-    score = c(0.5, 0.8, 0.3)
-  )
-  write.table(demo_data, input_file, sep="\t", row.names=FALSE, quote=FALSE)
-  cat("Demo file created:", input_file, "\n")
+if (!requireNamespace("Seurat", quietly=TRUE)) { cat("需要Seurat\n"); quit(status=1) }
+library(Seurat)
+
+if (!file.exists(rds_file)) { cat("[ERROR] RDS文件不存在\n"); quit(status=1) }
+if (!file.exists(module_file)) { cat("[ERROR] 模块文件不存在\n"); quit(status=1) }
+
+obj <- readRDS(rds_file)
+
+# Parse module file
+module_df <- read.csv(module_file, stringsAsFactors=FALSE, header=FALSE)
+colnames(module_df) <- c("module", "genes")
+
+module_list <- list()
+for (i in 1:nrow(module_df)) {
+  mod_name <- module_df$module[i]
+  gene_str <- module_df$genes[i]
+  genes <- unique(strsplit(gene_str, "[;|,]")[[1]])
+  genes <- genes[genes != "" & !is.na(genes)]
+  module_list[[mod_name]] <- genes
+  cat("  Module:", mod_name, "-", length(genes), "genes\n")
 }
 
-# === Core Logic ===
-cat("[Processing] Reading input...\n")
-data <- read.table(input_file, header=TRUE, sep="\t", stringsAsFactors=FALSE)
-cat("[Processing]", nrow(data), "records loaded\n")
+# Calculate module scores
+cat("[Processing] 计算模块评分...\n")
 
-# Apply threshold filter
-threshold <- as.numeric(param1)
-if ("score" %in% colnames(data)) {
-  filtered <- data[data$score >= threshold, ]
+if (method == "UCell" && requireNamespace("UCell", quietly=TRUE)) {
+  obj <- UCell::ScoreSignatures_UCell(obj, features=module_list)
 } else {
-  filtered <- data
+  # Default: AddModuleScore
+  for (mod_name in names(module_list)) {
+    genes <- module_list[[mod_name]]
+    # Filter to genes present in the object
+    genes_present <- genes[genes %in% rownames(obj)]
+    if (length(genes_present) < 3) {
+      cat("  [WARN]", mod_name, "only", length(genes_present), "genes found, skipping\n")
+      next
+    }
+    obj <- AddModuleScore(obj, features=list(genes_present),
+                          name=mod_name, ctrl=min(5, length(genes_present)))
+    cat("  Scored:", mod_name, "(", length(genes_present), "genes matched)\n")
+  }
 }
-cat("[Processing]", nrow(filtered), "records passed threshold", threshold, "\n")
 
-# === Generate Output ===
-cat("[Processing] Writing output...\n")
-write.table(filtered, output_file, sep="\t", row.names=FALSE, quote=FALSE)
+# Save
+saveRDS(obj, output_rds)
 
-# === Summary Report ===
 cat("\n", "=", rep("-", 59), "\n", sep="")
 cat("  RESULTS SUMMARY\n")
 cat("=", rep("-", 59), "\n", sep="")
-cat("  Input records:   ", nrow(data), "\n")
-cat("  Filtered records:", nrow(filtered), "\n")
-cat("  Threshold:       ", threshold, "\n")
-cat("  Output saved to: ", output_file, "\n")
+cat("  Modules scored: ", length(module_list), "\n")
+cat("  Output:         ", output_rds, "\n")
 cat("=", rep("-", 59), "\n\n", sep="")
 cat("[Done] sc_gene_module_extractor completed!\n")

@@ -4,6 +4,13 @@
 # 基因荒漠区分析
 from collections import defaultdict
 
+def get_input(prompt, default="", dtype=str):
+    val = input(prompt + (" [" + str(default) + "]" if default else "") + ": ")
+    if not val.strip():
+        return default
+    return dtype(val)
+
+
 print("=" * 60)
 print("  🧪 基因荒漠区分析器")
 print("=" * 60)

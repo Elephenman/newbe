@@ -1,64 +1,94 @@
 # Seurat多样本整合辅助+批次校正评估
-# Interactive R script - all parameters via readline()
+# 使用CCA/RPCA进行多样本整合，评估批次效应校正效果
 
 cat("=", rep("-", 59), "\n", sep="")
 cat("  Seurat多样本整合辅助+批次校正评估\n")
 cat("=", rep("-", 59), "\n", sep="")
 cat("\n")
 
-# === Input Parameters ===
 get_input <- function(prompt, default) {
   val <- readline(prompt = paste0(prompt, " [", default, "]: "))
   if (val == "") return(default) else return(val)
 }
 
-input_file    <- get_input("Input file path", "input.txt")
-output_file   <- get_input("Output file path", "output_seurat_integration_helper.txt")
-param1        <- get_input("Main parameter (threshold)", "0.05")
-param2        <- get_input("Secondary parameter (mode)", "default")
+input_dir    <- get_input("RDS文件目录(每个样本一个.rds)", "samples/")
+batch_col    <- get_input("批次列名", "sample")
+method       <- get_input("整合方法(CCA/RPCA)", "CCA")
+output_rds   <- get_input("整合后RDS路径", "integrated.rds")
+output_dir   <- get_input("输出目录", "integration_results")
 
-cat("\nInput:  ", input_file, "\n")
-cat("Output: ", output_file, "\n")
-cat("Param1: ", param1, "\n")
-cat("Param2: ", param2, "\n\n")
+cat("\nInput:   ", input_dir, "\n")
+cat("Batch:   ", batch_col, "\n")
+cat("Method:  ", method, "\n")
+cat("Output:  ", output_rds, "\n\n")
 
-# === Validate Input ===
-if (!file.exists(input_file)) {
-  cat("[WARN] Input file not found, creating demo...\n")
-  demo_data <- data.frame(
-    gene = c("gene1", "gene2", "gene3"),
-    value = c(100, 200, 150),
-    score = c(0.5, 0.8, 0.3)
-  )
-  write.table(demo_data, input_file, sep="\t", row.names=FALSE, quote=FALSE)
-  cat("Demo file created:", input_file, "\n")
+if (!requireNamespace("Seurat", quietly=TRUE)) { cat("需要Seurat\n"); quit(status=1) }
+library(Seurat)
+library(ggplot2)
+
+dir.create(output_dir, showWarnings=FALSE, recursive=TRUE)
+
+# Load all RDS files
+rds_files <- list.files(input_dir, pattern="\\.rds$", full.names=TRUE)
+if (length(rds_files) == 0) {
+  cat("[ERROR] 目录中无RDS文件:", input_dir, "\n")
+  quit(status=1)
 }
+cat("[Processing] 找到", length(rds_files), "个样本\n")
 
-# === Core Logic ===
-cat("[Processing] Reading input...\n")
-data <- read.table(input_file, header=TRUE, sep="\t", stringsAsFactors=FALSE)
-cat("[Processing]", nrow(data), "records loaded\n")
+obj_list <- lapply(rds_files, function(f) {
+  obj <- readRDS(f)
+  sample_name <- gsub("\\.rds$", "", basename(f))
+  obj$sample <- sample_name
+  obj <- NormalizeData(obj, verbose=FALSE)
+  obj <- FindVariableFeatures(obj, selection.method="vst", nfeatures=2000, verbose=FALSE)
+  cat("  Loaded:", sample_name, "-", ncol(obj), "cells\n")
+  return(obj)
+})
 
-# Apply threshold filter
-threshold <- as.numeric(param1)
-if ("score" %in% colnames(data)) {
-  filtered <- data[data$score >= threshold, ]
-} else {
-  filtered <- data
-}
-cat("[Processing]", nrow(filtered), "records passed threshold", threshold, "\n")
+# Integration
+cat("[Processing] 整合样本...\n")
+n_anchors <- ifelse(method == "RPCA", 30, 5)
+reduction_method <- ifelse(method == "RPCA", "rpca", "cca")
 
-# === Generate Output ===
-cat("[Processing] Writing output...\n")
-write.table(filtered, output_file, sep="\t", row.names=FALSE, quote=FALSE)
+anchors <- FindIntegrationAnchors(object.list=obj_list,
+                                   anchor.features=2000,
+                                   reduction=reduction_method)
+integrated <- IntegrateData(anchorset=anchors)
 
-# === Summary Report ===
+# Standard workflow
+integrated <- ScaleData(integrated, verbose=FALSE)
+integrated <- RunPCA(integrated, verbose=FALSE)
+integrated <- RunUMAP(integrated, dims=1:30, verbose=FALSE)
+
+# Before/after comparison: run UMAP on unintegrated data too
+DefaultAssay(integrated) <- "RNA"
+integrated <- ScaleData(integrated, verbose=FALSE)
+integrated <- RunPCA(integrated, verbose=FALSE)
+integrated <- RunUMAP(integrated, reduction="pca", dims=1:30,
+                       reduction.name="umap.unintegrated", verbose=FALSE)
+
+# Plot comparison
+p1 <- DimPlot(integrated, group.by=batch_col, reduction="umap.unintegrated") +
+      ggtitle("Before Integration") + NoLegend()
+p2 <- DimPlot(integrated, group.by=batch_col, reduction="umap") +
+      ggtitle("After Integration") + NoLegend()
+
+ggsave(file.path(output_dir, "integration_comparison.png"),
+       p1 + p2, width=14, height=6, dpi=300)
+
+DefaultAssay(integrated) <- "integrated"
+
+# Save
+saveRDS(integrated, output_rds)
+
 cat("\n", "=", rep("-", 59), "\n", sep="")
 cat("  RESULTS SUMMARY\n")
 cat("=", rep("-", 59), "\n", sep="")
-cat("  Input records:   ", nrow(data), "\n")
-cat("  Filtered records:", nrow(filtered), "\n")
-cat("  Threshold:       ", threshold, "\n")
-cat("  Output saved to: ", output_file, "\n")
+cat("  Samples integrated:", length(rds_files), "\n")
+cat("  Method:           ", method, "\n")
+cat("  Total cells:      ", ncol(integrated), "\n")
+cat("  Output RDS:       ", output_rds, "\n")
+cat("  Output dir:       ", output_dir, "\n")
 cat("=", rep("-", 59), "\n\n", sep="")
 cat("[Done] seurat_integration_helper completed!\n")

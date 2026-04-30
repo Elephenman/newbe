@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """论文图片自动重命名与整理(按Figure编号)"""
+import os
 
 def main():
     input_dir = input("图片所在目录 [.]: ") or "."

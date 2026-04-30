@@ -19,7 +19,7 @@ for (i in 1:nrow(markers)) {
   gene_list <- gene_list[gene_list != "" & !is.na(gene_list)]
   matched <- gene_list[gene_list %in% rownames(obj)]
   if (length(matched) >= threshold) {
-    scores <- rowMeans(obj[matched, ]@assays$RNA@data)
+    scores <- rowMeans(GetAssayData(obj[matched, ], slot="data"))
     annotations[scores > 0] <- celltype
   }
   cat(celltype, ": matched", length(matched), "markers\n")

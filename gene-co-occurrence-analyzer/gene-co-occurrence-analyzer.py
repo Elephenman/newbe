@@ -5,6 +5,13 @@
 from collections import defaultdict
 from itertools import combinations
 
+def get_input(prompt, default="", dtype=str):
+    val = input(prompt + (" [" + str(default) + "]" if default else "") + ": ")
+    if not val.strip():
+        return default
+    return dtype(val)
+
+
 print("=" * 60)
 print("  📊 基因共出现频率分析")
 print("=" * 60)

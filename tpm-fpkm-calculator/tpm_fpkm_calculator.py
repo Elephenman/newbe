@@ -46,8 +46,10 @@ def convert_counts(filepath, length_file, convert_type="TPM", log2=False):
         if log2: tpm = np.log2(tpm + 1)
     
     if convert_type == "FPKM" or convert_type == "all":
-        fpkm = mat / np.array([gene_lengths.get(g, 1) for g in genes]).reshape(-1, 1)
-        fpkm = fpkm / mat.sum(axis=0) * 1e9
+        # FPKM = (counts * 1e9) / (length * total_counts)
+        total_counts = mat.sum(axis=0)
+        total_counts[total_counts == 0] = 1  # avoid division by zero
+        fpkm = mat * 1e9 / (np.array([gene_lengths.get(g, 1) for g in genes]).reshape(-1, 1) * total_counts.reshape(1, -1))
         if log2: fpkm = np.log2(fpkm + 1)
     
     # 保存结果

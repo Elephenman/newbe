@@ -1,94 +1,92 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """跨物种同源基因查找+进化树构建"""
-
-import os
-import sys
-
+import os, sys, re
+from collections import defaultdict
 
 def get_input(prompt, default=""):
     val = input(f"{prompt} [{default}]: ").strip()
     return val if val else default
 
+def find_orthologs(gene_file, species_list=None, method="reciprocal_best", output_file=None):
+    """查找同源基因"""
+    if species_list is None:
+        species_list = ["human", "mouse", "rat", "zebrafish", "fruitfly"]
+
+    # 读取基因列表
+    with open(gene_file, 'r') as f:
+        genes = [line.strip() for line in f if line.strip() and not line.startswith('#')]
+
+    if not genes:
+        print("[ERROR] No genes found in input file")
+        return
+
+    # Try using mygene package for ortholog lookup
+    try:
+        import mygene
+        mg = mygene.MyGeneInfo()
+    except ImportError:
+        mg = None
+        print("[INFO] mygene package not installed. Using basic gene ID matching.")
+        print("       For full ortholog lookup: pip install mygene")
+
+    results = []
+    for gene in genes:
+        entry = {"query": gene, "orthologs": {}}
+
+        if mg is not None:
+            try:
+                # Search in each species
+                for sp in species_list:
+                    hits = mg.query(gene, species=sp, fields="symbol,name,ensembl.gene", size=5)
+                    if hits.get("hits"):
+                        best = hits["hits"][0]
+                        entry["orthologs"][sp] = {
+                            "symbol": best.get("symbol", ""),
+                            "name": best.get("name", ""),
+                            "ensembl": best.get("ensembl", {}).get("gene", "") if isinstance(best.get("ensembl"), dict) else ""
+                        }
+            except Exception as e:
+                print(f"  Warning: query failed for {gene}: {e}")
+        else:
+            # Basic: just list the gene with no ortholog mapping
+            entry["orthologs"] = {sp: {"symbol": "", "name": "", "ensembl": ""} for sp in species_list}
+
+        results.append(entry)
+
+    # 输出
+    out_path = output_file or os.path.splitext(gene_file)[0] + "_orthologs.tsv"
+    with open(out_path, 'w') as out:
+        header = ["Query"] + [f"{sp}_symbol" for sp in species_list] + [f"{sp}_ensembl" for sp in species_list]
+        out.write("\t".join(header) + "\n")
+        for r in results:
+            row = [r["query"]]
+            for sp in species_list:
+                orth = r["orthologs"].get(sp, {})
+                row.append(orth.get("symbol", ""))
+            for sp in species_list:
+                orth = r["orthologs"].get(sp, {})
+                row.append(orth.get("ensembl", ""))
+            out.write("\t".join(row) + "\n")
+
+    print(f"Ortholog search complete")
+    print(f"  Query genes: {len(genes)}")
+    print(f"  Species: {', '.join(species_list)}")
+    found_count = sum(1 for r in results if any(v.get("symbol") for v in r["orthologs"].values()))
+    print(f"  Genes with orthologs: {found_count}/{len(genes)}")
+    print(f"  Output: {out_path}")
+    if mg is None:
+        print("  Tip: Install mygene for full ortholog lookup (pip install mygene)")
 
 def main():
     print("=" * 60)
     print("  跨物种同源基因查找+进化树构建")
     print("=" * 60)
-    print()
-
-    # === Input Parameters ===
-    input_file = get_input("Input file path", "input.txt")
-    output_file = get_input("Output file path", "output_gene_ortholog_finder.txt")
-    param1 = get_input("Main parameter (threshold)", "0.05")
-    param2 = get_input("Secondary parameter (mode)", "default")
-
-    print()
-    print(f"Input:  {input_file}")
-    print(f"Output: {output_file}")
-    print(f"Param1: {param1}")
-    print(f"Param2: {param2}")
-    print()
-
-    # === Validate Input ===
-    if not os.path.exists(input_file):
-        print(f"[ERROR] Input file not found: {input_file}")
-        print("Creating demo input for testing...")
-        with open(input_file, "w") as f:
-            f.write("# Demo input file for gene_ortholog_finder\n")
-            f.write("gene1\t100\t0.5\n")
-            f.write("gene2\t200\t0.8\n")
-            f.write("gene3\t150\t0.3\n")
-        print(f"Demo file created: {input_file}")
-
-    # === Core Logic ===
-    print("[Processing] Reading input file...")
-    results = []
-    try:
-        with open(input_file, "r") as f:
-            header = f.readline()
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith("#"):
-                    continue
-                fields = line.split("\t") if "\t" in line else line.split(",")
-                try:
-                    score = float(fields[-1]) if len(fields) > 1 else 0
-                except ValueError:
-                    score = 0
-                if score < float(param1):
-                    continue
-                results.append(fields)
-    except Exception as e:
-        print(f"[ERROR] Failed to read input: {e}")
-        sys.exit(1)
-
-    print(f"[Processing] {len(results)} records passed threshold {param1}")
-
-    # === Generate Output ===
-    print("[Processing] Writing output file...")
-    try:
-        with open(output_file, "w") as f:
-            f.write("# gene_ortholog_finder output\n")
-            f.write(f"# Input: {input_file}, Threshold: {param1}\n")
-            for r in results:
-                f.write("\t".join(r) + "\n")
-    except Exception as e:
-        print(f"[ERROR] Failed to write output: {e}")
-        sys.exit(1)
-
-    # === Summary Report ===
-    print()
-    print("=" * 60)
-    print("  RESULTS SUMMARY")
-    print("=" * 60)
-    print(f"  Input records:    {len(results)}")
-    print(f"  Threshold used:   {param1}")
-    print(f"  Output saved to:  {output_file}")
-    print(f"  Mode:             {param2}")
-    print("=" * 60)
-    print()
-    print("[Done] gene_ortholog_finder completed successfully!")
-
+    gene_file = get_input("基因列表文件路径", "gene_list.txt")
+    species = get_input("物种列表(逗号分隔)", "human,mouse,rat,zebrafish")
+    output = get_input("输出文件路径", "")
+    sp_list = [s.strip() for s in species.split(",") if s.strip()] if species else None
+    find_orthologs(gene_file, sp_list, output=output or None)
 
 if __name__ == "__main__":
     main()

@@ -6,6 +6,13 @@ print("=" * 60)
 print("  📖 论文方法部分模板生成器")
 print("=" * 60)
 
+
+def get_input(prompt, default="", dtype=str):
+    val = input(prompt + (" [" + str(default) + "]" if default else "") + ": ")
+    if not val.strip():
+        return default
+    return dtype(val)
+
 analysis_type = get_input("分析类型(rna-seq/sc-rna-seq/chip-seq/variant)", "rna-seq")
 species = get_input("物种", "human")
 ref_genome = get_input("参考基因组版本", "GRCh38")

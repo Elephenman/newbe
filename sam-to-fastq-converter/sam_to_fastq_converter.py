@@ -1,13 +1,47 @@
 #!/usr/bin/env python3
-"""SAM/BAM转FASTQ+可选拆分paired-end"""
+"""SAM/BAM转FASTQ+可选拆分paired-end
+解析SAM格式文件，提取序列和质量信息，输出FASTQ格式
+支持paired-end拆分为R1/R2
+"""
 
 import os
 import sys
+import gzip
 
 
-def get_input(prompt, default=""):
-    val = input(f"{prompt} [{default}]: ").strip()
-    return val if val else default
+def get_input(prompt, default="", dtype=str):
+    val = input(prompt + (" [" + str(default) + "]" if default else "") + ": ")
+    if not val.strip():
+        return default
+    try:
+        return dtype(val)
+    except (ValueError, TypeError):
+        return default
+
+
+def parse_cigar(cigar):
+    """解析CIGAR字符串，返回参考序列和read的消耗长度"""
+    ref_len = 0
+    read_len = 0
+    num = ''
+    for c in cigar:
+        if c.isdigit():
+            num += c
+        else:
+            n = int(num) if num else 0
+            num = ''
+            if c in 'MND=X':
+                ref_len += n
+            if c in 'MIS=X':
+                read_len += n
+    return ref_len, read_len
+
+
+def reverse_complement(seq):
+    """反向互补"""
+    comp = {'A': 'T', 'T': 'A', 'G': 'C', 'C': 'G', 'N': 'N',
+            'a': 't', 't': 'a', 'g': 'c', 'c': 'g', 'n': 'n'}
+    return ''.join(comp.get(c, 'N') for c in reversed(seq))
 
 
 def main():
@@ -16,75 +50,113 @@ def main():
     print("=" * 60)
     print()
 
-    # === Input Parameters ===
-    input_file = get_input("Input file path", "input.txt")
-    output_file = get_input("Output file path", "output_sam_to_fastq_converter.txt")
-    param1 = get_input("Main parameter (threshold)", "0.05")
-    param2 = get_input("Secondary parameter (mode)", "default")
+    input_file = get_input("输入SAM文件路径", "input.sam")
+    output_prefix = get_input("输出FASTQ前缀", "output")
+    paired = get_input("是否paired-end(yes/no)", "no")
+    filter_mapped = get_input("仅输出mapped reads(yes/no)", "no")
 
     print()
-    print(f"Input:  {input_file}")
-    print(f"Output: {output_file}")
-    print(f"Param1: {param1}")
-    print(f"Param2: {param2}")
+    print(f"输入:      {input_file}")
+    print(f"输出前缀:  {output_prefix}")
+    print(f"Paired:    {paired}")
     print()
 
-    # === Validate Input ===
     if not os.path.exists(input_file):
-        print(f"[ERROR] Input file not found: {input_file}")
-        print("Creating demo input for testing...")
-        with open(input_file, "w") as f:
-            f.write("# Demo input file for sam_to_fastq_converter\n")
-            f.write("gene1\t100\t0.5\n")
-            f.write("gene2\t200\t0.8\n")
-            f.write("gene3\t150\t0.3\n")
-        print(f"Demo file created: {input_file}")
-
-    # === Core Logic ===
-    print("[Processing] Reading input file...")
-    results = []
-    try:
-        with open(input_file, "r") as f:
-            header = f.readline()
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith("#"):
-                    continue
-                fields = line.split("\t") if "\t" in line else line.split(",")
-                try:
-                    score = float(fields[-1]) if len(fields) > 1 else 0
-                except ValueError:
-                    score = 0
-                if score < float(param1):
-                    continue
-                results.append(fields)
-    except Exception as e:
-        print(f"[ERROR] Failed to read input: {e}")
+        print(f"[ERROR] 输入文件不存在: {input_file}")
         sys.exit(1)
 
-    print(f"[Processing] {len(results)} records passed threshold {param1}")
+    is_paired = paired.lower() in ('yes', 'y')
+    filter_map = filter_mapped.lower() in ('yes', 'y')
 
-    # === Generate Output ===
-    print("[Processing] Writing output file...")
-    try:
-        with open(output_file, "w") as f:
-            f.write("# sam_to_fastq_converter output\n")
-            f.write(f"# Input: {input_file}, Threshold: {param1}\n")
-            for r in results:
-                f.write("\t".join(r) + "\n")
-    except Exception as e:
-        print(f"[ERROR] Failed to write output: {e}")
-        sys.exit(1)
+    # Open output files
+    if is_paired:
+        r1_file = output_prefix + "_R1.fastq"
+        r2_file = output_prefix + "_R2.fastq"
+        out_r1 = open(r1_file, 'w')
+        out_r2 = open(r2_file, 'w')
+    else:
+        fq_file = output_prefix + ".fastq"
+        out_r1 = open(fq_file, 'w')
+        out_r2 = None
 
-    # === Summary Report ===
+    # Process SAM
+    print("[Processing] 解析SAM文件...")
+    total_reads = 0
+    written_reads = 0
+    r1_reads = 0
+    r2_reads = 0
+
+    opener = gzip.open if input_file.endswith('.gz') else open
+    mode = 'rt' if input_file.endswith('.gz') else 'r'
+
+    with opener(input_file, mode) as f:
+        for line in f:
+            if line.startswith('@'):
+                continue
+            parts = line.strip().split('\t')
+            if len(parts) < 11:
+                continue
+
+            total_reads += 1
+            qname = parts[0]
+            flag = int(parts[1])
+            seq = parts[9]
+            qual = parts[10]
+
+            # Skip unmapped if filter
+            if filter_map and (flag & 4):
+                continue
+
+            # Skip if sequence is *
+            if seq == '*' or qual == '*':
+                continue
+
+            # Handle reverse strand
+            is_reverse = bool(flag & 16)
+            if is_reverse:
+                seq = reverse_complement(seq)
+                qual = qual[::-1]
+
+            # Determine read number for paired-end
+            is_read1 = bool(flag & 64)
+            is_read2 = bool(flag & 128)
+
+            fastq_entry = f"@{qname}\n{seq}\n+\n{qual}\n"
+
+            if is_paired:
+                if is_read1:
+                    out_r1.write(fastq_entry)
+                    r1_reads += 1
+                elif is_read2:
+                    out_r2.write(fastq_entry)
+                    r2_reads += 1
+                else:
+                    # Unpaired read in paired mode - write to R1
+                    out_r1.write(fastq_entry)
+                    r1_reads += 1
+            else:
+                out_r1.write(fastq_entry)
+
+            written_reads += 1
+
+    out_r1.close()
+    if out_r2:
+        out_r2.close()
+
+    # Summary
     print()
     print("=" * 60)
     print("  RESULTS SUMMARY")
     print("=" * 60)
-    print(f"  Input records:    {len(results)}")
-    print(f"  Threshold used:   {param1}")
-    print(f"  Output saved to:  {output_file}")
-    print(f"  Mode:             {param2}")
+    print(f"  总读取数:       {total_reads}")
+    print(f"  写入reads:      {written_reads}")
+    if is_paired:
+        print(f"  R1 reads:       {r1_reads}")
+        print(f"  R2 reads:       {r2_reads}")
+        print(f"  R1输出:         {r1_file}")
+        print(f"  R2输出:         {r2_file}")
+    else:
+        print(f"  FASTQ输出:      {fq_file}")
     print("=" * 60)
     print()
     print("[Done] sam_to_fastq_converter completed successfully!")

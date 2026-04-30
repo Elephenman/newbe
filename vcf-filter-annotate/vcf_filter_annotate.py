@@ -11,7 +11,7 @@ def get_input(prompt, default=None, type=str):
     except: return default
 
 def filter_vcf(filepath, min_qual=30, min_dp=10, max_missing=0.5, keep_indel=True, output_format="tsv"):
-    stats = {"total":0,"snp":0,"indel":0,"kept":0,"filtered":0,"chr_dist":defaultdict(int)}
+    stats = {"total":0,"snp":0,"indel":0,"kept_snp":0,"kept_indel":0,"kept":0,"filtered":0,"chr_dist":defaultdict(int)}
     out_path = filepath.replace('.vcf','') + f'_filtered.{output_format}'
     
     with open(filepath, 'r') as f, open(out_path, 'w') as out:
@@ -47,6 +47,10 @@ def filter_vcf(filepath, min_qual=30, min_dp=10, max_missing=0.5, keep_indel=Tru
                 continue
             
             stats["kept"] += 1
+            if is_indel:
+                stats["kept_indel"] += 1
+            else:
+                stats["kept_snp"] += 1
             stats["chr_dist"][chrom] += 1
             
             if output_format == 'vcf':
@@ -54,9 +58,9 @@ def filter_vcf(filepath, min_qual=30, min_dp=10, max_missing=0.5, keep_indel=Tru
             else:
                 out.write(f"{chrom}\t{pos}\t{id_}\t{ref}\t{alt}\t{qual}\t{dp_val}\t{'INDEL' if is_indel else 'SNP'}\n")
     
-    print(f"✅ VCF过滤完成: {out_path}")
+    print(f"VCF过滤完成: {out_path}")
     print(f"   总变异数: {stats['total']}")
-    print(f"   保留: {stats['kept']} (SNP:{stats['snp']-stats['filtered']}, INDEL:{stats['indel']})")
+    print(f"   保留: {stats['kept']} (SNP:{stats['kept_snp']}, INDEL:{stats['kept_indel']})")
     print(f"   丢弃: {stats['filtered']}")
 
 def main():

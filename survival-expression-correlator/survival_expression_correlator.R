@@ -37,10 +37,18 @@ for (gene in genes) {
     group <- ifelse(expr_vals > q75, "High", ifelse(expr_vals < q25, "Low", "Mid"))
     group[group == "Mid"] <- NA
   } else {
-    # optimal cutpoint用surv_cutpoint
-    if (require(survminer)) {
-      cut <- surv_cutpoint(clin, time = "OS_time", event = "OS_event", variable = gene)
-      group <- ifelse(expr_vals > cut$cutpoint$cutpoint, "High", "Low")
+    # optimal cutpoint: use surv_cutpoint on combined data
+    if (require(survminer, quietly=TRUE)) {
+      clin_temp <- clin
+      clin_temp[[gene]] <- expr_vals[rownames(clin_temp)]
+      cut <- tryCatch({
+        surv_cutpoint(clin_temp, time = "OS_time", event = "OS_event", variable = gene)
+      }, error = function(e) NULL)
+      if (!is.null(cut)) {
+        group <- ifelse(expr_vals > cut$cutpoint$cutpoint, "High", "Low")
+      } else {
+        group <- ifelse(expr_vals > median(expr_vals), "High", "Low")
+      }
     } else { group <- ifelse(expr_vals > median(expr_vals), "High", "Low") }
   }
   
