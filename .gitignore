@@ -35,5 +35,6 @@ Thumbs.db
 # Obsidian
 .obsidian/
 
-# WorkBuddy
+# WorkBuddy / CodeBuddy
 .workbuddy/
+.codebuddy/
