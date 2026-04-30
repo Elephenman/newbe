@@ -53,24 +53,198 @@ Rscript seurat_qc_pipeline.R    # R 工具
 
 > 点击分类名称查看该分类下所有工具的详细说明。
 
-| 分类 | 工具数 | 说明 |
-|------|:------:|------|
-| [🧬 测序数据质控](./sequencing-qc/) | 18 | FASTQ/BAM质控、过滤、修剪、去重、采样等原始测序数据处理工具 |
-| [🔗 比对/BAM处理](./alignment-bam/) | 8 | BAM/SAM统计、过滤、覆盖度、插入片段等比对结果处理工具 |
-| [🧪 变异/基因组分析](./variant-analysis/) | 28 | VCF/SNP/Indel/CNV/SV/GWAS/单体型/突变特征等变异分析工具 |
-| [📊 转录组/表达分析](./rna-expression/) | 34 | DESeq2/DEG/标准化/火山图/热图/WGCNA等转录组表达分析工具 |
-| [🔬 单细胞分析](./single-cell/) | 36 | Seurat质控/注释/聚类/整合/拟时序/CellChat/双重细胞等单细胞工具 |
-| [🗺️ 空间转录组](./spatial-transcriptomics/) | 13 | 空间spot注释/差异分析/反卷积/Moran/生态位/邻域图等空间组学工具 |
-| [🧫 表观遗传学](./epigenomics/) | 14 | ChIP-seq/ATAC-seq/甲基化/Hi-C/TF motif/增强子/染色质状态等表观遗传工具 |
-| [📖 基因组注释](./genome-annotation/) | 14 | GTF/BED/坐标转换/启动子/内含子/Circos/基因组密度等注释工具 |
-| [🧬 序列分析](./sequence-analysis/) | 15 | FASTA统计/比对/kmer/密码子/基因组N50/同线性等序列分析工具 |
-| [🌐 基因功能/通路](./gene-function/) | 21 | 富集分析/GSEA/通路网络/DDR/共表达/WGCNA模块等基因功能注释工具 |
-| [🎨 可视化/绘图](./visualization/) | 18 | 配色/热图/Venn/Forest/Ridgeline/点图/通用绘图等可视化工具 |
-| [🔄 数据格式转换](./data-format/) | 7 | 格式互转/ID映射/FASTQ转FASTA等数据格式处理工具 |
-| [📋 实验室/项目管理](./lab-project/) | 20 | 环境检查/项目初始化/日志/甘特图/试剂/Protocol等管理工具 |
-| [📝 学术写作/文献](./academic-writing/) | 29 | PubMed/DOI/引用/笔记/论文/会议/基金等学术写作工具 |
+<table>
+<tr>
+<td width="50%">
 
-| **合计** | **275** | **14个分类，覆盖生信全流程** |
+### 🧬 [测序数据质控](./sequencing-qc/) <sup>18</sup>
+
+FASTQ/BAM 质控、过滤、修剪、去重、采样
+
+- Adapter检测修剪 · 碱基质量分布 · Barcode拆分
+- 重复reads去除 · 质量过滤 · 配对一致性检查
+- 长度过滤 · Strand方向检测 · UMI去重统计
+- QC报告汇总 · 测序深度计算 · 样本表校验
+
+</td>
+<td width="50%">
+
+### 🔗 [比对 / BAM处理](./alignment-bam/) <sup>8</sup>
+
+BAM/SAM 统计、过滤、覆盖度、插入片段
+
+- 染色体信息提取 · 覆盖度分布图 · Flag过滤
+- 插入片段统计 · Mate-pair修复 · Readcount汇总
+- BAM关键指标速查 · 覆盖深度统计
+
+</td>
+</tr>
+
+<tr>
+<td width="50%">
+
+### 🧪 [变异 / 基因组分析](./variant-analysis/) <sup>28</sup>
+
+VCF · SNP · CNV · SV · GWAS · 单体型 · 突变特征
+
+- Manhattan/QQ图 · LD衰减 · 单体型定相
+- SBS96突变特征 · CNV分段注释 · SV断点可视化
+- 胚系/体细胞变异过滤 · 临床注释 · 祖源推断
+- VCF过滤/解析/一致性 · MAF分布 · 缺失率检查
+
+</td>
+<td width="50%">
+
+### 📊 [转录组 / 表达分析](./rna-expression/) <sup>34</sup>
+
+DESeq2 · DEG · 标准化 · 火山图 · 热图 · WGCNA
+
+- DESeq2结果格式化 · 多组DEG对比(Venn/UpSet)
+- 火山图(交互式/增强版/标签编辑) · 聚类热图
+- TPM/FPKM/RPKM标准化 · ERCC spike-in · Z-score
+- DEG效应量/FDR校正/元分析 · 批次效应检测
+- 表达箱线图/小提琴图/百分位排名 · 剪接junction
+
+</td>
+</tr>
+
+<tr>
+<td width="50%">
+
+### 🔬 [单细胞分析](./single-cell/) <sup>36</sup>
+
+Seurat · 注释 · 聚类 · 整合 · 拟时序 · CellChat
+
+- Seurat质控/整合 · 自动注释 · Marker发现
+- PCA/t-SNE/UMAP · Harmony批次校正 · UMAP批量绘图
+- 拟时序(Monocle3) · RNA velocity · Doublet检测
+- 细胞周期评分/回归 · 高变基因选择 · JackStraw
+- 细胞比例分析 · 邻域富集 · 基因模块/趋势图
+
+</td>
+<td width="50%">
+
+### 🗺️ [空间转录组](./spatial-transcriptomics/) <sup>13</sup>
+
+Spot注释 · DEG · 反卷积 · Moran · 生态位 · 邻域图
+
+- Spot自动注释/质量过滤 · 空间DEG发现
+- 反卷积(SPOTlight) · Moran's I自相关 · Geary检验
+- 生态位检测 · 邻域图构建 · 区域边界分割
+- 共表达地图 · 距离衰减 · 变异度映射
+
+</td>
+</tr>
+
+<tr>
+<td width="50%">
+
+### 🧫 [表观遗传学](./epigenomics/) <sup>14</sup>
+
+ChIP-seq · ATAC-seq · 甲基化 · Hi-C · TF · 增强子
+
+- ATAC peak注释 · ChIP peak合并 · 染色质状态
+- 甲基化β值 · TF足迹检测 · Motif扫描/富集
+- 增强子信号定量/靶基因关联 · Hi-C接触矩阵
+- CTCF绝缘子 · 复制起始点/时序 · TF结合位点比较
+
+</td>
+<td width="50%">
+
+### 📖 [基因组注释](./genome-annotation/) <sup>14</sup>
+
+GTF · BED · 坐标转换 · 启动子 · 内含子 · Circos
+
+- GTF exon/intron/feature提取 · BED交集/合并/注释
+- 基因组坐标转换(hg19↔hg38) · 启动子提取
+- Circos环形图 · 基因组密度图 · 多轨道叠加
+- 重复序列mask · 基因组bin统计 · 覆盖度插值
+
+</td>
+</tr>
+
+<tr>
+<td width="50%">
+
+### 🧬 [序列分析](./sequence-analysis/) <sup>15</sup>
+
+FASTA · 比对 · k-mer · 密码子 · N50 · 同线性 · 进化树
+
+- FASTA统计/反转/切片 · Needleman-Wunsch比对
+- k-mer频次 · 密码子使用偏性(RSCU/CAI) · N50计算
+- 基因组大小估算 · GC滑动窗口 · 同线性区块
+- 多FASTA合并 · 进化树批量处理 · 组装contig统计
+
+</td>
+<td width="50%">
+
+### 🌐 [基因功能 / 通路](./gene-function/) <sup>21</sup>
+
+富集 · GSEA · 通路网络 · DDR · 共表达 · WGCNA
+
+- GO/KEGG富集流水线 · GSEA运行/rank文件生成
+- WGCNA模块提取 · 共表达网络 · 通路交叉对话
+- DDR通路映射/突变评分/损伤热点/信号关联
+- 基因荒漠 · 同源基因 · 蛋白结构域 · 生存关联
+- Sankey流向图 · 通路热图/网络 · 多组学整合
+
+</td>
+</tr>
+
+<tr>
+<td width="50%">
+
+### 🎨 [可视化 / 绘图](./visualization/) <sup>18</sup>
+
+配色 · 热图 · Venn · Forest · Ridgeline · 点图
+
+- Nature/Cell配色方案 · 色盲友好配色 · R绘图模板库
+- Venn图(2-5组) · Forest图 · Ridgeline山脊图
+- 热图注释/排序 · 增强点图 · 堆叠条形图
+- 相关性矩阵 · 统计摘要表 · 箱线图异常值 · 比较表
+
+</td>
+<td width="50%">
+
+### 🔄 [数据格式转换](./data-format/) <sup>7</sup>
+
+CSV↔TSV↔JSON↔Excel · ID映射 · FASTQ↔FASTA · SAM↔FASTQ
+
+- 通用格式互转 · DPI转换(300/600) · FASTQ→FASTA
+- GFF3→GTF · SAM/BAM→FASTQ · 基因ID版本统一
+- 转录本↔基因ID↔基因名映射
+
+</td>
+</tr>
+
+<tr>
+<td width="50%">
+
+### 📋 [实验室 / 项目管理](./lab-project/) <sup>20</sup>
+
+环境 · 初始化 · 日志 · 甘特图 · 试剂 · Protocol
+
+- Conda环境检查/导出 · 项目目录初始化 · 流程文档生成
+- Pipeline日志解析 · 甘特图+里程碑 · Protocol版本管理
+- 试剂库存+过期预警 · 实验计时器 · 组会纪要
+- 基金预算 · 实验设计检查 · 结果文件汇总 · R模板
+
+</td>
+<td width="50%">
+
+### 📝 [学术写作 / 文献](./academic-writing/) <sup>29</sup>
+
+PubMed · DOI · 引用 · 笔记 · 论文 · 会议 · 基金
+
+- PubMed批量检索 · DOI→引用格式 · 被引追踪+趋势
+- Obsidian笔记模板 · arXiv下载 · BibTeX网络
+- 论文深度解读 · 可读性评分 · 字数/章节统计
+- 图片合规检查/排版/标签 · 参考文献清洗 · 会议摘要
+- 学位论文大纲 · 基金预算 · 关键词提取 · 相似度检测
+
+</td>
+</tr>
+</table>
 
 ---
 
@@ -88,35 +262,6 @@ Rscript seurat_qc_pipeline.R    # R 工具
 
 ---
 
-## 📌 更新日志
-
-| 日期 | 更新内容 |
-|------|---------|
-| 2026-04-30 | 工具分类整理：275个工具按领域归入14个子文件夹 |
-| 2026-04-28 | Batch 5: 50 new tools (#211-#260, DDR scores, arXiv, manuscript) |
-| 2026-04-28 | Batch 4: 50 new tools (#161-#210, DDR pathway, Forest, Harmony) |
-| 2026-04-28 | Batch 3: 50 new tools (#111-#160, DNA damage hotspot) |
-| 2026-04-28 | Batch 2: 60 new tools (#51-#110, 45 Python + 15 R) |
-| 2026-04-28 | Batch 1: 50 bioinformatics tools (interactive input) |
-| 2026-04-27 | Initial release: 5 original sub-projects |
-
----
-
-## 🗺️ Roadmap
-
-- [x] 275 bioinformatics tools across 14 categories
-- [x] Sequencing QC / BAM / VCF / GTF / BED processing
-- [x] DESeq2 / enrichment / WGCNA / survival analysis
-- [x] Seurat / CellChat / pseudotime / single-cell QC
-- [x] Spatial transcriptomics (Moran / deconvolution / niche)
-- [x] Epigenomics (ChIP / ATAC / methylation / Hi-C / TF)
-- [x] DNA damage repair (DDR pathway / hotspot / gene sets)
-- [x] Academic writing (PubMed / DOI / manuscript / thesis)
-- [x] Scientific visualization (palette / Venn / Forest / Circos)
-- [ ] Auto-expand: more tools via automation
-
----
-
 ## 📄 License
 
-[MIT License](./LICENSE) — use freely, modify freely, share freely.
+[MIT License](./LICENSE) — 随意使用、修改、分享。

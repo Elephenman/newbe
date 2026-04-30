@@ -53,24 +53,198 @@ All tools use unified interactive input — each parameter has **prompts** and *
 
 > Click a category to see detailed tool descriptions within that category.
 
-| Category | Tools | Description |
-|----------|:-----:|-------------|
-| [🧬 Sequencing QC](./sequencing-qc/) | 18 | FASTQ/BAM quality control, filtering, trimming, deduplication, sampling tools |
-| [🔗 Alignment & BAM](./alignment-bam/) | 8 | BAM/SAM statistics, filtering, coverage, insert size processing tools |
-| [🧪 Variant & Genomic Analysis](./variant-analysis/) | 28 | VCF/SNP/Indel/CNV/SV/GWAS/haplotype/mutational signature variant analysis tools |
-| [📊 RNA-seq & Expression](./rna-expression/) | 34 | DESeq2/DEG/normalization/volcano/heatmap/WGCNA RNA-seq expression analysis tools |
-| [🔬 Single-Cell Analysis](./single-cell/) | 36 | Seurat QC/annotation/clustering/integration/pseudotime/CellChat/doublet single-cell tools |
-| [🗺️ Spatial Transcriptomics](./spatial-transcriptomics/) | 13 | Spatial spot annotation/DEG/deconvolution/Moran's I/niche/neighbor graph tools |
-| [🧫 Epigenomics](./epigenomics/) | 14 | ChIP-seq/ATAC-seq/methylation/Hi-C/TF motif/enhancer/chromatin state epigenomics tools |
-| [📖 Genome Annotation](./genome-annotation/) | 14 | GTF/BED/coordinate conversion/promoter/intron/Circos/genome density annotation tools |
-| [🧬 Sequence Analysis](./sequence-analysis/) | 15 | FASTA stats/alignment/k-mer/codon/N50/synteny sequence analysis tools |
-| [🌐 Gene Function & Pathway](./gene-function/) | 21 | Enrichment/GSEA/pathway network/DDR/co-expression/WGCNA module gene function tools |
-| [🎨 Visualization & Plotting](./visualization/) | 18 | Color palette/heatmap/Venn/Forest/Ridgeline/dot plot/general visualization tools |
-| [🔄 Data Format Conversion](./data-format/) | 7 | Format conversion/ID mapping/FASTQ-to-FASTA data format processing tools |
-| [📋 Lab & Project Management](./lab-project/) | 20 | Env check/project init/log/Gantt/reagent/protocol management tools |
-| [📝 Academic Writing & Literature](./academic-writing/) | 29 | PubMed/DOI/citation/note/manuscript/conference/grant academic writing tools |
+<table>
+<tr>
+<td width="50%">
 
-| **Total** | **275** | **14 categories covering the full bioinformatics pipeline** |
+### 🧬 [Sequencing QC](./sequencing-qc/) <sup>18</sup>
+
+FASTQ/BAM quality control, filtering, trimming, deduplication, sampling
+
+- Adapter detection & trimming · Base quality distribution · Barcode splitting
+- Duplicate read removal · Quality/length/GC filtering · Paired-end sync check
+- Read length filtering · Strand orientation detection · UMI dedup statistics
+- QC report aggregation · Sequencing depth calculation · Sample sheet validation
+
+</td>
+<td width="50%">
+
+### 🔗 [Alignment & BAM](./alignment-bam/) <sup>8</sup>
+
+BAM/SAM statistics, filtering, coverage, insert size
+
+- Chromosome info extraction · Coverage distribution plot · SAM flag filtering
+- Insert size statistics · Mate-pair resolution · Read count summarization
+- BAM key metrics report · Coverage depth statistics
+
+</td>
+</tr>
+
+<tr>
+<td width="50%">
+
+### 🧪 [Variant & Genomic Analysis](./variant-analysis/) <sup>28</sup>
+
+VCF · SNP · CNV · SV · GWAS · Haplotype · Mutational Signature
+
+- Manhattan & QQ plots · LD decay curve · Haplotype phasing (PS/HP tags)
+- SBS96 signature extraction · CNV segment annotation · SV breakpoint visualization
+- Germline/somatic variant filtering · Clinical annotation · Ancestry inference
+- VCF filtering/parsing/concordance · MAF distribution · Missingness check
+
+</td>
+<td width="50%">
+
+### 📊 [RNA-seq & Expression](./rna-expression/) <sup>34</sup>
+
+DESeq2 · DEG · Normalization · Volcano · Heatmap · WGCNA
+
+- DESeq2 result formatting · Multi-group DEG comparison (Venn/UpSet)
+- Volcano plot (interactive/enhanced/label editor) · Clustered heatmap
+- TPM/FPKM/RPKM normalization · ERCC spike-in · Z-score transformation
+- DEG effect size/FDR correction/meta-analysis · Batch effect inspection
+- Expression boxplot/violin/percentile ranking · Splice junction counting
+
+</td>
+</tr>
+
+<tr>
+<td width="50%">
+
+### 🔬 [Single-Cell Analysis](./single-cell/) <sup>36</sup>
+
+Seurat · Annotation · Clustering · Integration · Pseudotime · CellChat
+
+- Seurat QC pipeline & integration · Auto annotation · Marker gene discovery
+- PCA/t-SNE/UMAP · Harmony batch correction · Batch UMAP coloring
+- Pseudotime (Monocle3) · RNA velocity · Doublet detection & visualization
+- Cell cycle scoring & regression · Variable feature selection · JackStraw test
+- Cell proportion analysis · Neighborhood enrichment · Gene module & trend
+
+</td>
+<td width="50%">
+
+### 🗺️ [Spatial Transcriptomics](./spatial-transcriptomics/) <sup>13</sup>
+
+Spot annotation · DEG · Deconvolution · Moran · Niche · Neighbor graph
+
+- Spot auto annotation & quality filtering · Spatial DEG discovery
+- Deconvolution (SPOTlight) · Moran's I autocorrelation · Geary's test
+- Niche detection · Neighbor graph construction · Zone boundary segmentation
+- Co-expression map · Distance decay · Variability mapping
+
+</td>
+</tr>
+
+<tr>
+<td width="50%">
+
+### 🧫 [Epigenomics](./epigenomics/) <sup>14</sup>
+
+ChIP-seq · ATAC-seq · Methylation · Hi-C · TF · Enhancer
+
+- ATAC peak annotation · ChIP peak merging · Chromatin state annotation
+- Methylation beta value · TF footprint detection · Motif scanning & enrichment
+- Enhancer signal quantification & target linking · Hi-C contact matrix
+- CTCF insulator boundary · Replication origin/timing · TF binding site comparison
+
+</td>
+<td width="50%">
+
+### 📖 [Genome Annotation](./genome-annotation/) <sup>14</sup>
+
+GTF · BED · Coordinate conversion · Promoter · Intron · Circos
+
+- GTF exon/intron/feature extraction · BED intersection/merge/annotation
+- Genome coordinate conversion (hg19↔hg38) · Promoter extraction
+- Circos plot · Genome density plot · Multi-track overlay
+- Repeat region masking · Genome bin statistics · Coverage interpolation
+
+</td>
+</tr>
+
+<tr>
+<td width="50%">
+
+### 🧬 [Sequence Analysis](./sequence-analysis/) <sup>15</sup>
+
+FASTA · Alignment · k-mer · Codon · N50 · Synteny · Phylogenetics
+
+- FASTA stats/reverse/slice · Needleman-Wunsch alignment · K-mer frequency
+- Codon usage bias (RSCU/CAI) · N50/L50 statistics · Genome size estimation
+- GC sliding window · Synteny block detection · Multi-FASTA concatenation
+- Phylogenetic tree batch processing · Contig length distribution
+
+</td>
+<td width="50%">
+
+### 🌐 [Gene Function & Pathway](./gene-function/) <sup>21</sup>
+
+Enrichment · GSEA · Pathway network · DDR · Co-expression · WGCNA
+
+- GO/KEGG enrichment pipeline · GSEA runner & rank file generation
+- WGCNA module extraction · Co-expression network · Pathway cross-talk
+- DDR pathway mapping/mutational scoring/damage hotspot/signal correlation
+- Gene desert · Ortholog finder · Protein domain · Survival correlation
+- Sankey flow diagram · Pathway heatmap/network · Multi-omics integration
+
+</td>
+</tr>
+
+<tr>
+<td width="50%">
+
+### 🎨 [Visualization & Plotting](./visualization/) <sup>18</sup>
+
+Palette · Heatmap · Venn · Forest · Ridgeline · Dot plot
+
+- Nature/Cell color palettes · Colorblind-safe palette · R plot template library
+- Venn diagram (2-5 sets) · Forest plot · Ridgeline plot
+- Heatmap annotation & sorting · Enhanced dot plot · Stacked bar chart
+- Correlation matrix · Stats summary table · Boxplot outlier detection · Comparison table
+
+</td>
+<td width="50%">
+
+### 🔄 [Data Format Conversion](./data-format/) <sup>7</sup>
+
+CSV↔TSV↔JSON↔Excel · ID mapping · FASTQ↔FASTA · SAM↔FASTQ
+
+- Universal format conversion · DPI conversion (300/600) · FASTQ→FASTA
+- GFF3→GTF · SAM/BAM→FASTQ · Gene ID version normalization
+- Transcript ↔ Gene ID ↔ Gene name mapping
+
+</td>
+</tr>
+
+<tr>
+<td width="50%">
+
+### 📋 [Lab & Project Management](./lab-project/) <sup>20</sup>
+
+Environment · Init · Logs · Gantt · Reagents · Protocol
+
+- Conda env check & export · Project directory init · Pipeline documentation
+- Pipeline log parsing · Gantt chart + milestones · Protocol versioning
+- Reagent inventory + expiry alerts · Experiment timer · Meeting minutes
+- Grant budget calculator · Experiment design checker · Result aggregation · R template
+
+</td>
+<td width="50%">
+
+### 📝 [Academic Writing & Literature](./academic-writing/) <sup>29</sup>
+
+PubMed · DOI · Citation · Notes · Manuscript · Conference · Grant
+
+- PubMed batch search · DOI→citation format · Citation tracking & trends
+- Obsidian note template · arXiv downloader · BibTeX network
+- Deep paper reading · Readability score · Word/section count
+- Figure compliance check/layout/labels · Reference cleanup · Conference abstract
+- Thesis outline · Grant budget · Keyword extraction · Plagiarism check
+
+</td>
+</tr>
+</table>
 
 ---
 
@@ -85,35 +259,6 @@ All tools use unified interactive input — each parameter has **prompts** and *
 <td width="20%" align="center"><a href="./lab-project/md2ipynb-sync/"><img src="https://img.shields.io/badge/📝-md2ipynb-FF6F00?style=for-the-badge"/></a><br><br>Obsidian↔Jupyter<br>bidirectional sync<br><sub>MD ↔ IPYNB</sub></td>
 </tr>
 </table>
-
----
-
-## 📌 Changelog
-
-| Date | Update |
-|------|--------|
-| 2026-04-30 | Reorganized 275 tools into 14 categorized subfolders |
-| 2026-04-28 | Batch 5: 50 new tools (#211-#260, DDR scores, arXiv, manuscript) |
-| 2026-04-28 | Batch 4: 50 new tools (#161-#210, DDR pathway, Forest, Harmony) |
-| 2026-04-28 | Batch 3: 50 new tools (#111-#160, DNA damage hotspot) |
-| 2026-04-28 | Batch 2: 60 new tools (#51-#110, 45 Python + 15 R) |
-| 2026-04-28 | Batch 1: 50 bioinformatics tools (interactive input) |
-| 2026-04-27 | Initial release: 5 original sub-projects |
-
----
-
-## 🗺️ Roadmap
-
-- [x] 275 bioinformatics tools across 14 categories
-- [x] Sequencing QC / BAM / VCF / GTF / BED processing
-- [x] DESeq2 / enrichment / WGCNA / survival analysis
-- [x] Seurat / CellChat / pseudotime / single-cell QC
-- [x] Spatial transcriptomics (Moran / deconvolution / niche)
-- [x] Epigenomics (ChIP / ATAC / methylation / Hi-C / TF)
-- [x] DNA damage repair (DDR pathway / hotspot / gene sets)
-- [x] Academic writing (PubMed / DOI / manuscript / thesis)
-- [x] Scientific visualization (palette / Venn / Forest / Circos)
-- [ ] Auto-expand: more tools via automation
 
 ---
 
