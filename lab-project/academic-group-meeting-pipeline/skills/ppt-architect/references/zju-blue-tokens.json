@@ -1,0 +1,242 @@
+{
+  "$schema": "https://raw.githubusercontent.com/alchaincyf/huashu-design/master/references/editable-pptx.md",
+  "meta": {
+    "name": "ZJU Blue Academic Presentation",
+    "version": "1.0.0",
+    "source_template": "A:\\kuake\\文献汇报01-浙大蓝-多篇版.pptx",
+    "measured_date": "2026-05-01",
+    "slide_count_measured": 24,
+    "layout_count_measured": 11,
+    "slide_width_pt": 960,
+    "slide_height_pt": 540,
+    "html2pptx_compatible": {
+      "gradient_found": false,
+      "bg_image_found_as_shape": true,
+      "note": "Images are PICTURE shapes (img tags), not DIV background-image. No CSS gradients. PASS all 4 constraints."
+    }
+  },
+  "colors": {
+    "primary": "#003F88",
+    "primary_name": "浙大蓝",
+    "accent2": "#ED7D31",
+    "accent2_name": "警示橙",
+    "accent5": "#5B9BD5",
+    "accent5_name": "辅助蓝",
+    "accent4": "#FFC000",
+    "accent4_name": "高光金",
+    "accent6": "#70AD47",
+    "accent6_name": "正向绿",
+    "dk2": "#44546A",
+    "dk2_name": "深灰蓝",
+    "warning": "#C00000",
+    "warning_name": "批判红",
+    "white": "#FFFFFF",
+    "light_bg": "#F2F2F2",
+    "text_dark": "#000000",
+    "scheme_colors_note": "Template uses MSO SCHEME colors (accent1-6, dk1-2). Actual RGB values extracted from theme XML."
+  },
+  "grid": {
+    "unit_pt": 36,
+    "slide_width_pt": 960,
+    "slide_height_pt": 540,
+    "margins": {
+      "left_pt": 36,
+      "right_pt": 72,
+      "content_start_left_pt": 29.74,
+      "content_start_top_pt": 103.21
+    },
+    "title_bar": {
+      "height_pt": 49.11,
+      "position": "top of slide",
+      "separator_line": {
+        "y_pt": 49.11,
+        "height_emu": 18001,
+        "type": "horizontal rule"
+      }
+    },
+    "footer": {
+      "y_pt": 500.5,
+      "height_pt": 28.75,
+      "page_number_x_pt": 706,
+      "date_x_pt": 66,
+      "footer_text_x_pt": 318
+    }
+  },
+  "typography": {
+    "cover_title": {
+      "size_pt": 44,
+      "bold": true,
+      "color_type": "SCHEME(2)",
+      "position_note": "Centered, y≈164pt"
+    },
+    "section_number_big": {
+      "size_pt": 66,
+      "bold": true,
+      "color_type": "SCHEME(2)",
+      "position_note": "Right side, y≈10pt"
+    },
+    "section_label": {
+      "size_pt": 14,
+      "bold": false,
+      "color_type": "SCHEME(2)",
+      "position_note": "PART ONE/PART TWO below section number"
+    },
+    "content_heading": {
+      "size_pt": 24,
+      "bold": true,
+      "color_type": "SCHEME(2)",
+      "position_note": "Number+Title format, e.g. '1.1 文献基本信息'"
+    },
+    "content_subtitle": {
+      "size_pt": 22,
+      "bold": true,
+      "color_type": "SCHEME(2)",
+      "position_note": "Subsection title like '研究背景', '研究意义'"
+    },
+    "content_body": {
+      "size_pt": 16,
+      "bold": false,
+      "color_type": "SCHEME(2)",
+      "position_note": "Regular paragraph text"
+    },
+    "caption": {
+      "size_pt": 14,
+      "bold": false,
+      "position_note": "Figure/table captions"
+    },
+    "toc_item": {
+      "size_pt": 20,
+      "bold": true,
+      "position_note": "Table of contents entries"
+    },
+    "toc_number": {
+      "size_pt": 28,
+      "bold": true,
+      "position_note": "01/02/03/04 in rounded rectangle"
+    },
+    "footer_text": {
+      "size_pt": 16,
+      "position_note": "汇报人/汇报时间"
+    }
+  },
+  "layout_types_measured": {
+    "cover": {
+      "slide_index": 1,
+      "description": "封面页：居中标题+文献列表+校徽+汇报人信息",
+      "key_elements": [
+        "GROUP(校徽组合) @ (369.89pt, 57.52pt) size(220.22pt×50.18pt)",
+        "TEXT_BOX(大标题) @ (105.43pt, 164.11pt) size(749.15pt×60.59pt) 44pt bold",
+        "3×圆角矩形(文献标签) @ (180.61pt, 265.8pt/313.8pt/361.8pt) size(86.25pt×29.08pt)",
+        "3×TEXT_BOX(文献标题) @ (271.36pt, 265.8pt/313.8pt/361.8pt) size(583.21pt×29.08pt)",
+        "LINE(分隔线) @ (89.0pt, 234.88pt) width(765.57pt)",
+        "圆角矩形(底部栏) @ (247.0pt, 454.94pt) size(466.0pt×37.94pt)",
+        "PICTURE(校徽图标) @ (278.47pt, 462.57pt) size(22.68pt×22.68pt) PNG 6135bytes",
+        "TEXT_BOX(汇报人) @ (300.9pt, 460.58pt) size(161.34pt×26.66pt) 16pt",
+        "FREEFORM(icon) @ (497.87pt, 462.57pt) size(22.68pt×22.68pt)",
+        "TEXT_BOX(汇报时间) @ (522.18pt, 460.58pt) size(207.57pt×26.66pt) 16pt",
+        "LINE(竖线分隔) @ (472.72pt, 460.58pt) height(26.66pt)"
+      ]
+    },
+    "toc": {
+      "slide_index": 2,
+      "description": "目录页：右上角'目录'标题+编号圆角矩形+论文标题列表",
+      "key_elements": [
+        "矩形(右上标题区) @ (388.52pt, 12.66pt) size(182.95pt×103.81pt)",
+        "TEXT_BOX('目录') @ (432.34pt, 36.69pt) size(101.38pt×55.74pt) 40pt bold",
+        "4×圆角矩形(编号01-04) @ (136.81pt, 各169.53/244.93/320.34/395.74pt) size(52.64pt×50.14pt)",
+        "4×TEXT_BOX(论文标题) @ (195.31pt, 各178.84/254.25/329.65/405.06pt) size(627.89pt×31.5pt)"
+      ]
+    },
+    "section_separator": {
+      "slide_indices": [3, 10, 15, 20],
+      "description": "章节分隔页：右上大字编号(01-04)+PART标签+右侧标题区+左侧编号列表",
+      "key_elements": [
+        "矩形(右上标题区) @ (388.52pt, 12.66pt) size(182.95pt×103.81pt)",
+        "TEXT_BOX(大字编号01-04) @ (428.55pt, 10.55pt) size(102.9pt×87.24pt) 66pt bold",
+        "TEXT_BOX(PART ONE等) @ (427.3pt, 86.78pt) size(105.4pt×24.23pt) 14pt",
+        "编号圆角矩形+标题列表(同目录页布局)"
+      ]
+    },
+    "content_info": {
+      "slide_index": 4,
+      "description": "文献基本信息页：标题栏+左图+右表格+关键词标签+底部内容区",
+      "key_elements": [
+        "LINE(标题栏分隔线) @ (239.5pt, 49.11pt) width(615.92pt)",
+        "TEXT_BOX(1.1编号) @ (29.74pt, 32.35pt) size(51.27pt×36.35pt) 24pt bold",
+        "TEXT_BOX(标题) @ (79.55pt, 32.35pt) size(51.27-185pt×36.35pt) 24pt bold",
+        "PICTURE(论文图) @ (54.77pt, 103.21pt) size(562.26pt×273.08pt)",
+        "TABLE(信息表) @ (638.23pt, 112.21pt) size(258.77pt×144.0pt)",
+        "4×矩形(关键词标签) @ (643.46pt/777.46pt, 各280.82pt/328.04pt) size(124.77pt×32.25pt)",
+        "矩形(底部内容区) @ (54.77pt, 397.38pt) size(867.23pt×101.7pt)",
+        "圆角矩形('主要研究内容'标签) @ (79.55pt, 430.06pt) size(146pt×36.35pt) 20pt bold",
+        "TEXT_BOX(研究内容正文) @ (239.5pt, 403.38pt) size(675.5pt×89.71pt) 16pt"
+      ]
+    },
+    "content_image_text": {
+      "slide_index": 5,
+      "description": "左图右文页：标题栏+左大图+右文字区(研究背景+研究意义)",
+      "key_elements": [
+        "LINE(标题栏分隔线) @ (264.87pt, 49.11pt) width(590.55pt)",
+        "TEXT_BOX(编号) @ (29.74pt, 32.35pt) 24pt bold",
+        "TEXT_BOX(标题) @ (79.55pt, 32.35pt) 24pt bold",
+        "PICTURE(左图) @ (29.74pt, 145.44pt) size(439.01pt×292.2pt)",
+        "TEXT_BOX(小标题) @ (519.56pt, 129.69pt/311.69pt) 22pt bold",
+        "LINE(小标题下划线) @ (519.56pt, 167.03pt/349.03pt)",
+        "TEXT_BOX(正文) @ (519.56pt, 177.22pt/359.22pt) size(378.19pt×105.76pt) 16pt",
+        "TEXT_BOX(图注) @ (164.41pt, 462.61pt) 14pt"
+      ]
+    },
+    "content_flow": {
+      "slide_index": 6,
+      "description": "流程图页：标题栏+椭圆流程节点+箭头+标签",
+      "key_elements": [
+        "标题栏同前",
+        "4×椭圆(流程节点) 各108.75pt×108.54pt",
+        "圆角矩形(流程标签条) 44.26pt高",
+        "三角形(箭头指示) 13.32pt×9.74pt",
+        "TextBox(节点标签) 122.59pt×21.81pt"
+      ]
+    },
+    "content_multi": {
+      "slide_indices": "7-9, 11-14, 16-19, 21-23",
+      "description": "多元素内容页(图表/结果/讨论)：标题栏+各种组合布局",
+      "note": "每个slide的具体元素差异较大，需按实际内容调整。共性：标题栏(编号+标题+分隔线)+页码footer"
+    },
+    "closing": {
+      "slide_index": 24,
+      "description": "致谢/结尾页：类似封面页布局，大字'谢谢聆听'",
+      "note": "Layout similar to cover page with different text content"
+    }
+  },
+  "reusable_components": {
+    "title_bar": {
+      "description": "标准内容页标题栏（编号+标题+分隔线）",
+      "elements": {
+        "number_text": { "x_pt": 29.74, "y_pt": 32.35, "w_pt": 51.27, "h_pt": 36.35, "font_pt": 24, "bold": true, "color": "SCHEME(2)" },
+        "title_text": { "x_pt": 79.55, "y_pt": 32.35, "w_pt": "flex(51-185)", "h_pt": 36.35, "font_pt": 24, "bold": true },
+        "separator_line": { "x_pt": "flex(240-264)", "y_pt": 49.11, "width_pt": "flex(590-616)", "height_emu": 18001 }
+      }
+    },
+    "footer_bar": {
+      "description": "底部页码+日期+页脚文本",
+      "elements": {
+        "page_number": { "x_pt": 706, "y_pt": 500.5, "w_pt": 216, "h_pt": 28.75, "type": "PLACEHOLDER" },
+        "date": { "x_pt": 66, "y_pt": 500.5, "w_pt": 216, "h_pt": 28.75 },
+        "footer_text": { "x_pt": 318, "y_pt": 500.5, "w_pt": 324, "h_pt": 28.75 }
+      }
+    },
+    "rounded_tag": {
+      "description": "圆角矩形标签（文献一/二/三、01-04编号、关键词）",
+      "standard_size": { "w_pt": 86.25, "h_pt": 29.08 },
+      "numbered_size": { "w_pt": 52.64, "h_pt": 50.14 },
+      "keyword_size": { "w_pt": 124.77, "h_pt": 32.25 }
+    },
+    "zju_emblem": {
+      "description": "浙大校徽（PNG图片，从模板内嵌提取）",
+      "cover_size": { "w_pt": 22.68, "h_pt": 22.68 },
+      "group_size": { "w_pt": 220.22, "h_pt": 50.18 },
+      "content_type": "image/png",
+      "note": "需从模板幻灯片母版提取原始校徽文件"
+    }
+  }
+}
